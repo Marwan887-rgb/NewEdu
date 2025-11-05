@@ -1255,61 +1255,67 @@
         <div class="mb-6">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4 terms-cards-container">
             
-            <!-- دائرة الفترة الأولى (يمين) -->
+            <!-- بطاقة الفترة الأولى -->
             <div class="w-full sm:w-64 term-card-mobile">
               <!-- البطاقة الرئيسية -->
-              <div class="rounded-t-2xl p-3 sm:p-4 glow-border h-full flex flex-col sm:flex-row items-center justify-center gap-3" style="background: rgba(219, 234, 254, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(147, 197, 253, 0.5); border-bottom: none;">
-                <!-- الدائرة (للشاشات الكبيرة) -->
-                <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
-                  <svg class="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90 drop-shadow-lg">
-                    <!-- Outer Glow -->
-                    <circle cx="48" cy="48" r="42" fill="none" stroke="url(#term1GlowGradient)" stroke-width="1.5" opacity="0.3" />
-                    <!-- دائرة الخلفية المتقطعة -->
-                    <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(59, 130, 246, 0.2)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
-                    <!-- دائرة التقدم الملونة -->
-                    <circle id="term1-circle-progress" cx="48" cy="48" r="38" fill="none" 
-                            stroke="url(#term1Gradient)" stroke-width="9" 
-                            stroke-dasharray="238.76" stroke-dashoffset="238.76"
-                            stroke-linecap="round"
-                            class="transition-all duration-1000 ease-out drop-shadow-lg"
-                            style="filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.5));" />
-                    <!-- التدرجات اللونية -->
-                    <defs>
-                      <linearGradient id="term1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
-                      </linearGradient>
-                      <linearGradient id="term1GlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#93c5fd;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
-                      </linearGradient>
-                    </defs>
-                    <!-- Inner Circle Shadow -->
-                    <circle cx="48" cy="48" r="31" fill="rgba(59, 130, 246, 0.1)" />
-                  </svg>
-                  <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <p id="term1-score" class="text-xl font-black bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent leading-none">0</p>
-                    <p class="text-xs text-gray-600 font-bold mt-0.5">من 100</p>
-                  </div>
-                </div>
+              <div class="rounded-t-2xl glow-border h-full flex flex-col sm:flex-row items-center justify-center gap-3" style="background: rgba(219, 234, 254, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(147, 197, 253, 0.5); border-bottom: none;">
                 
-                <!-- خط أفقي للجوال -->
-                <div class="flex-1 sm:hidden term-progress-bar">
-                  <div class="term-progress-text">
-                    <span class="text-blue-900 font-bold">📘 الفترة الأولى:</span>
-                    <span id="term1-score-mobile" class="text-blue-700 font-black">0</span>
-                    <span class="text-gray-600 text-xs">من 100</span>
+                <!-- المحتوى الرئيسي -->
+                <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4">
+                  
+                  <!-- الدائرة (للشاشات الكبيرة) -->
+                  <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
+                    <svg class="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90 drop-shadow-lg">
+                      <!-- Outer Glow -->
+                      <circle cx="48" cy="48" r="42" fill="none" stroke="url(#term1GlowGradient)" stroke-width="1.5" opacity="0.3" />
+                      <!-- دائرة الخلفية المتقطعة -->
+                      <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(59, 130, 246, 0.2)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
+                      <!-- دائرة التقدم الملونة -->
+                      <circle id="term1-circle-progress" cx="48" cy="48" r="38" fill="none" 
+                              stroke="url(#term1Gradient)" stroke-width="9" 
+                              stroke-dasharray="238.76" stroke-dashoffset="238.76"
+                              stroke-linecap="round"
+                              class="transition-all duration-1000 ease-out drop-shadow-lg"
+                              style="filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.5));" />
+                      <!-- التدرجات اللونية -->
+                      <defs>
+                        <linearGradient id="term1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                          <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="term1GlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" style="stop-color:#93c5fd;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
+                        </linearGradient>
+                      </defs>
+                      <!-- Inner Circle Shadow -->
+                      <circle cx="48" cy="48" r="31" fill="rgba(59, 130, 246, 0.1)" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                      <p id="term1-score" class="text-xl font-black bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent leading-none">0</p>
+                      <p class="text-xs text-gray-600 font-bold mt-0.5">من 100</p>
+                    </div>
                   </div>
-                  <div class="term-progress-bar-container">
-                    <div id="term1-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600" style="width: 0%;"></div>
+                  
+                  <!-- خط أفقي للجوال -->
+                  <div class="flex-1 sm:hidden term-progress-bar w-full">
+                    <div class="term-progress-text">
+                      <span class="text-blue-900 font-bold">📘 الفترة الأولى:</span>
+                      <span id="term1-score-mobile" class="text-blue-700 font-black">0</span>
+                      <span class="text-gray-600 text-xs">من 100</span>
+                    </div>
+                    <div class="term-progress-bar-container">
+                      <div id="term1-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600" style="width: 0%;"></div>
+                    </div>
                   </div>
+                  
+                  <!-- زر التفاصيل -->
+                  <button onclick="toggleTermsDetails()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all transform hover:scale-105 shadow-md min-h-[44px] w-full sm:w-auto flex-shrink-0">
+                    📊 التفاصيل
+                  </button>
+                  
                 </div>
-                
-                <!-- زر التفاصيل -->
-                <button onclick="toggleTermsDetails()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all transform hover:scale-105 shadow-md min-h-[44px] w-full sm:w-auto">
-                  📊 التفاصيل
-                </button>
               </div>
               
               <!-- شريط العنوان السفلي -->
