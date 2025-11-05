@@ -278,6 +278,17 @@ function updateScoresUI(scoresData) {
     }, 200);
   }
   
+  // تحديث الخط الأفقي للجوال
+  const progressPercentageMobile = document.getElementById('progress-percentage-mobile');
+  if (progressPercentageMobile) progressPercentageMobile.textContent = `${grandPercentage}%`;
+  
+  const progressBarFillMobile = document.getElementById('progress-bar-fill-mobile');
+  if (progressBarFillMobile) {
+    setTimeout(() => {
+      progressBarFillMobile.style.width = `${grandPercentage}%`;
+    }, 200);
+  }
+  
   // ════════════════════════════════════════════════════════
   // تحديث دائرة الفترة الأولى
   // ════════════════════════════════════════════════════════
@@ -290,6 +301,17 @@ function updateScoresUI(scoresData) {
       const term1Offset = 238.76 - (238.76 * term1.percentage / 100);
       setTimeout(() => {
         term1Circle.style.strokeDashoffset = term1Offset;
+      }, 200);
+    }
+    
+    // تحديث الخط الأفقي للجوال
+    const term1ScoreMobile = document.getElementById('term1-score-mobile');
+    if (term1ScoreMobile) term1ScoreMobile.textContent = term1.totalScore;
+    
+    const term1ProgressBarFill = document.getElementById('term1-progress-bar-fill');
+    if (term1ProgressBarFill) {
+      setTimeout(() => {
+        term1ProgressBarFill.style.width = `${term1.percentage}%`;
       }, 200);
     }
   }
@@ -306,6 +328,17 @@ function updateScoresUI(scoresData) {
       const term2Offset = 238.76 - (238.76 * term2.percentage / 100);
       setTimeout(() => {
         term2Circle.style.strokeDashoffset = term2Offset;
+      }, 300);
+    }
+    
+    // تحديث الخط الأفقي للجوال
+    const term2ScoreMobile = document.getElementById('term2-score-mobile');
+    if (term2ScoreMobile) term2ScoreMobile.textContent = term2.totalScore;
+    
+    const term2ProgressBarFill = document.getElementById('term2-progress-bar-fill');
+    if (term2ProgressBarFill) {
+      setTimeout(() => {
+        term2ProgressBarFill.style.width = `${term2.percentage}%`;
       }, 300);
     }
   }
@@ -334,6 +367,38 @@ function updateScoresUI(scoresData) {
     updateElement('term2-exams-score', `${term2.exams.score}/${term2.exams.maxScore}`);
     updateElement('term2-total-score', `${term2.totalScore}/${term2.maxScore}`);
     updateElement('term2-percentage', `${term2.percentage}%`);
+  }
+  
+  // ════════════════════════════════════════════════════════
+  // تحديث عدد المهام المكتملة
+  // ════════════════════════════════════════════════════════
+  let totalCompletedTasks = 0;
+  if (term1) {
+    totalCompletedTasks += (term1.performance?.completed || 0);
+    totalCompletedTasks += (term1.activities?.score > 0 ? 1 : 0) + (term1.activities?.score >= 5 ? 1 : 0); // نشاطان
+    totalCompletedTasks += (term1.projects?.score > 0 ? 1 : 0) + (term1.projects?.score >= 10 ? 1 : 0); // مشروعان
+    totalCompletedTasks += (term1.exams?.score > 0 ? 1 : 0); // اختبار واحد
+  }
+  if (term2) {
+    totalCompletedTasks += (term2.performance?.completed || 0);
+    totalCompletedTasks += (term2.activities?.score > 0 ? 1 : 0); // نشاط واحد
+    totalCompletedTasks += (term2.projects?.score > 0 ? 1 : 0); // مشروع واحد
+    totalCompletedTasks += (term2.exams?.score > 0 ? 1 : 0) + (term2.exams?.score >= 20 ? 1 : 0); // اختباران
+  }
+  
+  const tasksNumberEl = document.getElementById('student-completed-tasks-number');
+  if (tasksNumberEl) tasksNumberEl.textContent = totalCompletedTasks;
+  
+  // تحديث الخط الأفقي للجوال
+  const tasksScoreMobile = document.getElementById('tasks-score-mobile');
+  if (tasksScoreMobile) tasksScoreMobile.textContent = totalCompletedTasks;
+  
+  const tasksProgressBarFill = document.getElementById('tasks-progress-bar-fill');
+  if (tasksProgressBarFill) {
+    const tasksPercentage = Math.round((totalCompletedTasks / 45) * 100);
+    setTimeout(() => {
+      tasksProgressBarFill.style.width = `${tasksPercentage}%`;
+    }, 400);
   }
   
   console.log('✅ تم تحديث الواجهة بنجاح');
