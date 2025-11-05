@@ -1,0 +1,72 @@
+# ════════════════════════════════════════════════════════════
+# .gitignore - EduActive
+# ════════════════════════════════════════════════════════════
+
+# Node modules
+node_modules/
+functions/node_modules/
+netlify/functions/node_modules/
+
+# Environment variables (contains sensitive data)
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+functions/.env
+netlify/.env
+# ⚠️ .env.local.example يمكن رفعه (ملف قالب)
+
+# Local Netlify folder
+.netlify/
+.netlify-local/
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Firebase (legacy)
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Secrets and keys
+*.key
+*.pem
+*.p12
+*.crt
+secrets/
+
+# Telegram Bot Token (إذا أضفت التوكن مباشرة في الملف)
+config-telegram.local.js
+config-telegram.secret.js
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Documentation build
+docs/_build/

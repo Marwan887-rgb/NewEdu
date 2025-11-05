@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تعديل الدروس | EduActive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- تحميل Supabase من unpkg كبديل -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <h1 class="text-4xl font-bold text-purple-700 mb-2 flex items-center gap-3">
+        <span>✏️</span>
+        <span>تعديل الدروس</span>
+      </h1>
+      <p class="text-gray-600">عدّل معلومات أي درس بسهولة</p>
+    </div>
+
+    <button onclick="window.location.href='teacher.html'" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold mb-6 transition">
+      ← العودة للوحة المعلم
+    </button>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- القائمة: الدروس -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">📚 قائمة الدروس</h2>
+        
+        <!-- بحث -->
+        <input type="text" id="searchInput" placeholder="🔍 ابحث عن درس..." 
+          class="w-full border-2 border-gray-300 rounded-lg p-3 mb-4 focus:border-purple-500 focus:outline-none">
+        
+        <!-- فلتر حسب الوحدة -->
+        <select id="unitFilter" class="w-full border-2 border-gray-300 rounded-lg p-3 mb-4 focus:border-purple-500 focus:outline-none">
+          <option value="">-- كل الوحدات --</option>
+        </select>
+
+        <div id="lessonsList" class="space-y-2 max-h-[600px] overflow-y-auto">
+          <div class="text-center py-8 text-gray-400">
+            <div class="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+            جاري تحميل الدروس...
+          </div>
+        </div>
+      </div>
+
+      <!-- النموذج: تعديل الدرس -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">✏️ تعديل الدرس</h2>
+        
+        <div id="editForm" class="hidden space-y-4">
+          
+          <!-- عنوان الدرس -->
+          <div>
+            <label class="block text-gray-700 font-bold mb-2">📝 عنوان الدرس:</label>
+            <input type="text" id="lessonTitle" 
+              class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none"
+              placeholder="مثال: مقدمة في البرمجة">
+          </div>
+
+          <!-- الوحدة -->
+          <div>
+            <label class="block text-gray-700 font-bold mb-2">📚 الوحدة:</label>
+            <input type="text" id="lessonUnit" 
+              class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none"
+              placeholder="مثال: الوحدة الأولى">
+          </div>
+
+          <!-- نوع الدرس -->
+          <div>
+            <label class="block text-gray-700 font-bold mb-2">🎯 نوع الدرس:</label>
+            <select id="lessonType" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none">
+              <option value="lesson">📖 درس</option>
+              <option value="review">🔄 مراجعة</option>
+              <option value="project">💼 مشروع</option>
+              <option value="exam">📝 اختبار</option>
+              <option value="activity">⚡ نشاط</option>
+              <option value="unit_exam">🎯 اختبار وحدة</option>
+            </select>
+          </div>
+
+          <!-- رقم الأسبوع -->
+          <div>
+            <label class="block text-gray-700 font-bold mb-2">📅 رقم الأسبوع:</label>
+            <input type="number" id="lessonWeek" min="1" max="20"
+              class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none"
+              placeholder="مثال: 1">
+          </div>
+
+          <!-- رابط العرض التقديمي -->
+          <div>
+            <label class="block text-gray-700 font-bold mb-2">📊 رابط العرض التقديمي:</label>
+            <input type="url" id="lessonPowerpoint" 
+              class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none"
+              placeholder="https://...">
+          </div>
+
+          <!-- رابط الفيديو -->
+          <div>
+            <label class="block text-gray-700 font-bold mb-2">🎥 رابط الفيديو:</label>
+            <input type="url" id="lessonVideo" 
+              class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none"
+              placeholder="https://...">
+          </div>
+
+          <!-- الأزرار -->
+          <div class="flex gap-3 pt-4">
+            <button onclick="saveLesson()" 
+              class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition">
+              💾 حفظ التعديلات
+            </button>
+            <button onclick="cancelEdit()" 
+              class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition">
+              ❌ إلغاء
+            </button>
+          </div>
+
+          <!-- رسالة النتيجة -->
+          <div id="resultMessage"></div>
+        </div>
+
+        <!-- رسالة عدم اختيار درس -->
+        <div id="noSelection" class="text-center py-12 text-gray-400">
+          <div class="text-6xl mb-4">📝</div>
+          <p class="text-xl">اختر درساً من القائمة لتعديله</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://hsjsidhqikgckgqcpxnf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzanNpZGhxaWtnY2tncWNweG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk1MTExNzgsImV4cCI6MjA0NTA4NzE3OH0.Z4DXjcbxPv_iy2lrL_fsCfOECKz3AJ-1Sme1u6yiQaU';
+    
+    let supabase;
+    let allLessons = [];
+    let currentLessonId = null;
+
+    // Initialize Supabase
+    document.addEventListener('DOMContentLoaded', function() {
+      // التحقق من البروتوكول
+      if (window.location.protocol === 'file:') {
+        console.warn('⚠️ تحذير: الصفحة تعمل من file:// - قد تواجه مشاكل في CORS');
+      }
+
+      // التحقق من تحميل مكتبة Supabase
+      if (!window.supabase) {
+        console.error('❌ مكتبة Supabase غير محملة!');
+        document.getElementById('lessonsList').innerHTML = `
+          <div class="text-center py-8 text-red-500">
+            ❌ خطأ: مكتبة Supabase غير محملة<br>
+            <small>تأكد من اتصالك بالإنترنت وأعد تحميل الصفحة</small>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ تم تهيئة Supabase بنجاح');
+        
+        // انتظار قصير للتأكد من جاهزية الاتصال
+        setTimeout(() => {
+          loadLessons();
+        }, 500);
+      } catch (error) {
+        console.error('❌ خطأ في تهيئة Supabase:', error);
+        document.getElementById('lessonsList').innerHTML = `
+          <div class="text-center py-8 text-red-500">
+            ❌ خطأ في الاتصال بقاعدة البيانات<br>
+            <small>${error.message}</small>
+          </div>
+        `;
+      }
+    });
+
+    // تحميل الدروس
+    async function loadLessons() {
+      console.log('🔄 بدء تحميل الدروس...');
+      
+      try {
+        console.log('📡 إرسال طلب إلى Supabase...');
+        
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .order('id', { ascending: true });
+
+        console.log('📦 استلام الرد:', { data, error });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          console.warn('⚠️ لا توجد دروس في قاعدة البيانات');
+          document.getElementById('lessonsList').innerHTML = `
+            <div class="text-center py-8 text-yellow-600">
+              ⚠️ لا توجد دروس في قاعدة البيانات
+            </div>
+          `;
+          return;
+        }
+
+        allLessons = data;
+        console.log(`✅ تم تحميل ${data.length} درس`);
+        
+        // ملء فلتر الوحدات
+        const units = [...new Set(data.map(l => l.unit))].filter(Boolean);
+        const unitFilter = document.getElementById('unitFilter');
+        unitFilter.innerHTML = '<option value="">-- كل الوحدات --</option>';
+        units.forEach(unit => {
+          unitFilter.innerHTML += `<option value="${unit}">${unit}</option>`;
+        });
+
+        renderLessons(data);
+      } catch (error) {
+        console.error('❌ خطأ في تحميل الدروس:', error);
+        console.error('تفاصيل الخطأ:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+        
+        document.getElementById('lessonsList').innerHTML = `
+          <div class="text-center py-8 text-red-500">
+            <div class="text-4xl mb-3">❌</div>
+            <div class="font-bold mb-2">خطأ في تحميل الدروس</div>
+            <div class="text-sm mb-3">${error.message}</div>
+            <button onclick="location.reload()" 
+              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+              🔄 إعادة المحاولة
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // عرض الدروس
+    function renderLessons(lessons) {
+      const container = document.getElementById('lessonsList');
+      
+      if (!lessons || lessons.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-gray-400">
+            <div class="text-4xl mb-3">📭</div>
+            لا توجد دروس
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = lessons.map(lesson => {
+        const typeIcons = {
+          lesson: '📖',
+          review: '🔄',
+          project: '💼',
+          exam: '📝',
+          activity: '⚡',
+          unit_exam: '🎯'
+        };
+        const icon = typeIcons[lesson.type] || '📄';
+
+        return `
+          <div onclick="selectLesson(${lesson.id})" 
+            class="lesson-item p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition"
+            id="lesson-${lesson.id}">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${icon}</span>
+              <div class="flex-1">
+                <div class="font-bold text-gray-800">${lesson.title || 'بدون عنوان'}</div>
+                <div class="text-sm text-gray-500">${lesson.unit || 'بدون وحدة'} • الأسبوع ${lesson.week_number || '-'}</div>
+              </div>
+              <span class="text-xs bg-gray-200 px-2 py-1 rounded">#${lesson.id}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // اختيار درس للتعديل
+    window.selectLesson = async function(lessonId) {
+      currentLessonId = lessonId;
+
+      // إزالة التحديد من الكل
+      document.querySelectorAll('.lesson-item').forEach(item => {
+        item.classList.remove('border-purple-500', 'bg-purple-50', 'border-4');
+      });
+
+      // تحديد الدرس الحالي
+      const selectedItem = document.getElementById(`lesson-${lessonId}`);
+      if (selectedItem) {
+        selectedItem.classList.add('border-purple-500', 'bg-purple-50', 'border-4');
+      }
+
+      // تحميل بيانات الدرس
+      const { data: lesson, error } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('id', lessonId)
+        .single();
+
+      if (error) {
+        alert('خطأ في تحميل بيانات الدرس');
+        return;
+      }
+
+      // ملء النموذج
+      document.getElementById('lessonTitle').value = lesson.title || '';
+      document.getElementById('lessonUnit').value = lesson.unit || '';
+      document.getElementById('lessonType').value = lesson.type || 'lesson';
+      document.getElementById('lessonWeek').value = lesson.week_number || '';
+      document.getElementById('lessonPowerpoint').value = lesson.powerpoint_link || '';
+      document.getElementById('lessonVideo').value = lesson.video_link || '';
+
+      // إظهار النموذج
+      document.getElementById('editForm').classList.remove('hidden');
+      document.getElementById('noSelection').classList.add('hidden');
+      document.getElementById('resultMessage').innerHTML = '';
+    };
+
+    // حفظ التعديلات
+    window.saveLesson = async function() {
+      if (!currentLessonId) return;
+
+      const title = document.getElementById('lessonTitle').value.trim();
+      const unit = document.getElementById('lessonUnit').value.trim();
+      const type = document.getElementById('lessonType').value;
+      const weekNumber = parseInt(document.getElementById('lessonWeek').value) || null;
+      const powerpointLink = document.getElementById('lessonPowerpoint').value.trim();
+      const videoLink = document.getElementById('lessonVideo').value.trim();
+
+      if (!title) {
+        showMessage('⚠️ الرجاء إدخال عنوان الدرس', 'warning');
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('lessons')
+          .update({
+            title: title,
+            unit: unit,
+            type: type,
+            week_number: weekNumber,
+            powerpoint_link: powerpointLink || null,
+            video_link: videoLink || null
+          })
+          .eq('id', currentLessonId);
+
+        if (error) throw error;
+
+        showMessage('✅ تم حفظ التعديلات بنجاح!', 'success');
+        
+        // إعادة تحميل الدروس
+        await loadLessons();
+        
+        // إعادة تحديد الدرس
+        setTimeout(() => selectLesson(currentLessonId), 100);
+
+      } catch (error) {
+        showMessage('❌ خطأ في الحفظ: ' + error.message, 'error');
+      }
+    };
+
+    // إلغاء التعديل
+    window.cancelEdit = function() {
+      currentLessonId = null;
+      document.getElementById('editForm').classList.add('hidden');
+      document.getElementById('noSelection').classList.remove('hidden');
+      
+      // إزالة التحديد
+      document.querySelectorAll('.lesson-item').forEach(item => {
+        item.classList.remove('border-purple-500', 'bg-purple-50', 'border-4');
+      });
+    };
+
+    // عرض رسالة
+    function showMessage(message, type) {
+      const colors = {
+        success: 'bg-green-100 border-green-500 text-green-700',
+        error: 'bg-red-100 border-red-500 text-red-700',
+        warning: 'bg-yellow-100 border-yellow-500 text-yellow-700'
+      };
+
+      document.getElementById('resultMessage').innerHTML = `
+        <div class="${colors[type]} border-2 rounded-lg p-3 text-center font-bold">
+          ${message}
+        </div>
+      `;
+    }
+
+    // البحث
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const search = e.target.value.toLowerCase();
+      const unitFilter = document.getElementById('unitFilter').value;
+      
+      let filtered = allLessons;
+      
+      if (search) {
+        filtered = filtered.filter(l => 
+          (l.title && l.title.toLowerCase().includes(search)) ||
+          (l.unit && l.unit.toLowerCase().includes(search))
+        );
+      }
+      
+      if (unitFilter) {
+        filtered = filtered.filter(l => l.unit === unitFilter);
+      }
+      
+      renderLessons(filtered);
+    });
+
+    // فلتر الوحدة
+    document.getElementById('unitFilter').addEventListener('change', function(e) {
+      const unitFilter = e.target.value;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = allLessons;
+      
+      if (unitFilter) {
+        filtered = filtered.filter(l => l.unit === unitFilter);
+      }
+      
+      if (search) {
+        filtered = filtered.filter(l => 
+          (l.title && l.title.toLowerCase().includes(search)) ||
+          (l.unit && l.unit.toLowerCase().includes(search))
+        );
+      }
+      
+      renderLessons(filtered);
+    });
+  </script>
+</body>
+</html>

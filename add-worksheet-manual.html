@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة ورقة عمل يدوياً</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-pink-50 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+      <h1 class="text-3xl font-bold text-purple-700 mb-2">📝 إضافة ورقة عمل يدوياً</h1>
+      <p class="text-gray-600">أنشئ الأسئلة باستخدام Google AI Studio ثم الصقها هنا</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-6 mb-6">
+      <h2 class="text-xl font-bold text-blue-900 mb-4">📋 كيفية الاستخدام:</h2>
+      <ol class="space-y-3 text-blue-800">
+        <li class="flex items-start gap-3">
+          <span class="font-bold bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+          <div>
+            <p class="font-semibold mb-1">افتح Google AI Studio</p>
+            <a href="https://aistudio.google.com/app/prompts/new_chat" target="_blank" 
+               class="text-blue-600 underline hover:text-blue-800">👉 اضغط هنا للفتح</a>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="font-bold bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+          <div>
+            <p class="font-semibold mb-1">الصق هذا النص:</p>
+            <div class="bg-white rounded-lg p-3 mt-2 text-sm font-mono text-gray-700 border">
+              بناءً على المحتوى التالي، أنشئ 6 أسئلة تعليمية:<br>
+              - 3 أسئلة قصيرة (type: "short")<br>
+              - 3 أسئلة تفكير وتحليل (type: "analysis")<br><br>
+              المحتوى:<br>
+              [الصق محتوى الدرس هنا]<br><br>
+              أعد الأسئلة بصيغة JSON:<br>
+              [{"number": 1, "question": "السؤال؟", "type": "short"}, ...]
+            </div>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="font-bold bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+          <p><span class="font-semibold">انسخ الأسئلة المولدة</span> (JSON فقط)</p>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="font-bold bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+          <p><span class="font-semibold">الصقها في النموذج أدناه</span> واحفظ</p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- Lessons List -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">📚 اختر الدرس:</h2>
+      <select id="lesson-select" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-lg">
+        <option value="">-- اختر درس --</option>
+      </select>
+    </div>
+
+    <!-- Questions Input -->
+    <div id="questions-form" class="bg-white rounded-2xl shadow-xl p-6 hidden">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">📝 الصق الأسئلة (JSON):</h2>
+      
+      <textarea id="questions-json" rows="12" 
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none font-mono text-sm"
+                placeholder='[
+  {"number": 1, "question": "ما هو تخطيط المشروع؟", "type": "short"},
+  {"number": 2, "question": "اذكر ثلاث مراحل رئيسية", "type": "short"},
+  {"number": 3, "question": "ما أهمية التخطيط؟", "type": "short"},
+  {"number": 4, "question": "حلل العلاقة بين التخطيط والنجاح", "type": "analysis"},
+  {"number": 5, "question": "ناقش تأثير المخاطر", "type": "analysis"},
+  {"number": 6, "question": "قارن بين طرق التخطيط", "type": "analysis"}
+]'></textarea>
+
+      <div class="mt-4 flex gap-3">
+        <button onclick="validateAndSave()" 
+                class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-105">
+          💾 حفظ ورقة العمل
+        </button>
+        <button onclick="previewQuestions()" 
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-4 rounded-xl font-semibold transition">
+          👁️ معاينة
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div id="preview" class="mt-6 hidden"></div>
+
+    <!-- Status -->
+    <div id="status" class="mt-6 hidden"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let selectedLesson = null;
+
+    async function loadLessons() {
+      try {
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('type', 'lesson')
+          .order('id');
+
+        if (error) throw error;
+
+        const select = document.getElementById('lesson-select');
+        select.innerHTML = '<option value="">-- اختر درس --</option>';
+        
+        data.forEach(lesson => {
+          const option = document.createElement('option');
+          option.value = lesson.id;
+          option.textContent = `${lesson.unit} - ${lesson.title}`;
+          option.dataset.lesson = JSON.stringify(lesson);
+          select.appendChild(option);
+        });
+
+      } catch (error) {
+        showStatus('❌ خطأ في تحميل الدروس: ' + error.message, 'error');
+      }
+    }
+
+    document.getElementById('lesson-select').addEventListener('change', (e) => {
+      const option = e.target.selectedOptions[0];
+      if (option.value) {
+        selectedLesson = JSON.parse(option.dataset.lesson);
+        document.getElementById('questions-form').classList.remove('hidden');
+        document.getElementById('questions-json').focus();
+      } else {
+        selectedLesson = null;
+        document.getElementById('questions-form').classList.add('hidden');
+      }
+    });
+
+    function previewQuestions() {
+      try {
+        const json = document.getElementById('questions-json').value.trim();
+        if (!json) {
+          showStatus('⚠️ الرجاء إدخال الأسئلة أولاً', 'error');
+          return;
+        }
+
+        const questions = JSON.parse(json);
+        validateQuestions(questions);
+
+        const preview = document.getElementById('preview');
+        preview.classList.remove('hidden');
+        preview.innerHTML = `
+          <div class="bg-green-50 border-2 border-green-300 rounded-xl p-6">
+            <h3 class="text-lg font-bold text-green-900 mb-4">✅ معاينة الأسئلة (${questions.length}):</h3>
+            <div class="space-y-3">
+              ${questions.map(q => `
+                <div class="bg-white rounded-lg p-4 border border-green-200">
+                  <div class="flex items-start gap-3">
+                    <span class="font-bold text-purple-600">${q.number}.</span>
+                    <div class="flex-1">
+                      <p class="text-gray-900 font-semibold">${q.question}</p>
+                      <span class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                        q.type === 'short' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
+                      }">
+                        ${q.type === 'short' ? '📝 قصير' : '🧠 تحليل'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        showStatus('✅ الأسئلة صحيحة! يمكنك الحفظ الآن', 'success');
+
+      } catch (error) {
+        showStatus('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    function validateQuestions(questions) {
+      if (!Array.isArray(questions)) {
+        throw new Error('يجب أن تكون الأسئلة في صيغة array');
+      }
+      if (questions.length !== 6) {
+        throw new Error(`عدد الأسئلة ${questions.length} بدلاً من 6`);
+      }
+      questions.forEach((q, i) => {
+        if (!q.number || !q.question || !q.type) {
+          throw new Error(`السؤال ${i + 1} ناقص. يجب أن يحتوي على: number, question, type`);
+        }
+        if (q.type !== 'short' && q.type !== 'analysis') {
+          throw new Error(`السؤال ${i + 1}: type يجب أن يكون "short" أو "analysis"`);
+        }
+      });
+    }
+
+    async function validateAndSave() {
+      if (!selectedLesson) {
+        showStatus('⚠️ الرجاء اختيار درس أولاً', 'error');
+        return;
+      }
+
+      try {
+        const json = document.getElementById('questions-json').value.trim();
+        if (!json) {
+          showStatus('⚠️ الرجاء إدخال الأسئلة', 'error');
+          return;
+        }
+
+        const questions = JSON.parse(json);
+        validateQuestions(questions);
+
+        showStatus('⏳ جاري الحفظ...', 'info');
+
+        const { error } = await supabase
+          .from('worksheets')
+          .upsert({
+            lesson_id: selectedLesson.id,
+            questions: questions,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'lesson_id' });
+
+        if (error) throw error;
+
+        showStatus(`✅ تم حفظ ورقة العمل لـ "${selectedLesson.title}" بنجاح!`, 'success');
+        
+        // Clear form
+        document.getElementById('questions-json').value = '';
+        document.getElementById('preview').classList.add('hidden');
+        
+        // Show success for longer
+        setTimeout(() => {
+          document.getElementById('lesson-select').value = '';
+          document.getElementById('questions-form').classList.add('hidden');
+        }, 2000);
+
+      } catch (error) {
+        showStatus('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      const colors = {
+        info: 'bg-blue-50 border-blue-300 text-blue-800',
+        success: 'bg-green-50 border-green-300 text-green-800',
+        error: 'bg-red-50 border-red-300 text-red-800'
+      };
+      statusDiv.className = `mt-6 p-4 rounded-lg border-2 ${colors[type]}`;
+      statusDiv.textContent = message;
+      statusDiv.classList.remove('hidden');
+    }
+
+    loadLessons();
+  </script>
+</body>
+</html>

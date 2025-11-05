@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ربط Chat IDs</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen p-4">
+  
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="glass-card rounded-3xl p-6 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center">
+        <div class="text-5xl mb-3">🔗</div>
+        <h1 class="text-3xl font-black text-white mb-2">ربط Chat IDs بالطلاب</h1>
+        <p class="text-white/80 font-semibold">تحديث قاعدة البيانات بمعرفات تيليجرام</p>
+      </div>
+    </div>
+    
+    <!-- Data Preview -->
+    <div class="glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <h2 class="text-white font-black text-xl mb-4">📋 البيانات المتوفرة:</h2>
+      
+      <div class="bg-white/10 rounded-xl p-4 mb-6 max-h-96 overflow-y-auto">
+        <table class="w-full text-sm">
+          <thead class="border-b-2 border-white/30 sticky top-0 bg-purple-900/80">
+            <tr>
+              <th class="text-white font-bold p-2 text-right">#</th>
+              <th class="text-white font-bold p-2 text-right">رقم الجوال</th>
+              <th class="text-white font-bold p-2 text-right">Chat ID</th>
+              <th class="text-white font-bold p-2 text-center">الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="data-preview">
+            <!-- سيتم ملؤها بالـ JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-purple-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">إجمالي السجلات</p>
+          <p id="total-records" class="text-white font-black text-2xl">0</p>
+        </div>
+        <div class="bg-indigo-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">سجلات صالحة</p>
+          <p id="valid-records" class="text-white font-black text-2xl">0</p>
+        </div>
+      </div>
+      
+      <button onclick="linkChatIds()" 
+              id="link-btn"
+              class="w-full bg-white/25 hover:bg-white/35 text-white font-black py-4 rounded-xl transition transform hover:scale-105 border-2 border-white/40 text-lg">
+        <span class="flex items-center justify-center gap-2">
+          <span>🔗</span>
+          <span>ربط جميع Chat IDs</span>
+        </span>
+      </button>
+    </div>
+    
+    <!-- Progress -->
+    <div id="progress" class="hidden glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center mb-4">
+        <div class="text-5xl mb-3">⏳</div>
+        <p class="text-white font-bold text-lg">جاري الربط...</p>
+      </div>
+      
+      <div class="bg-white/20 rounded-full h-4 overflow-hidden">
+        <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      
+      <p id="progress-text" class="text-white text-center mt-3 font-semibold">0 / 0</p>
+    </div>
+    
+    <!-- Results -->
+    <div id="results" class="hidden glass-card rounded-3xl p-8 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center">
+        <div class="text-6xl mb-4">✅</div>
+        <h2 class="text-white font-black text-2xl mb-4">تم الربط بنجاح!</h2>
+        
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-green-500/30 rounded-xl p-4">
+            <p class="text-white/70 text-sm mb-1">تم التحديث</p>
+            <p id="updated-count" class="text-white font-black text-3xl">0</p>
+          </div>
+          <div class="bg-yellow-500/30 rounded-xl p-4">
+            <p class="text-white/70 text-sm mb-1">غير موجود</p>
+            <p id="notfound-count" class="text-white font-black text-3xl">0</p>
+          </div>
+          <div class="bg-red-500/30 rounded-xl p-4">
+            <p class="text-white/70 text-sm mb-1">فشل</p>
+            <p id="failed-count" class="text-white font-black text-3xl">0</p>
+          </div>
+        </div>
+        
+        <div id="error-list" class="hidden bg-yellow-500/20 rounded-xl p-4 text-right max-h-64 overflow-y-auto">
+          <p class="text-white font-bold mb-2">⚠️ التفاصيل:</p>
+          <ul id="errors" class="text-white/90 text-sm space-y-1"></ul>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://kzbbjtchszrngeaopcif.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6YmJqdGNoc3pybmdlYW9wY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAyMDQwNDUsImV4cCI6MjA0NTc4MDA0NX0.7uDUHkk_bD6cgCVx0Ig0K_Sko1NbMfFgZIe8zE1oEMY';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Telegram Data
+    const telegramData = [
+      { mobile: "966566403439", chat_id: "2139820763" },
+      { mobile: "966566997366", chat_id: "759260546" },
+      { mobile: "966599502562", chat_id: "6075063788" },
+      { mobile: "966559059606", chat_id: "5604802409" },
+      { mobile: "966567225805", chat_id: "1753052980" },
+      { mobile: "966554928584", chat_id: "1677979983" },
+      { mobile: "966560567029", chat_id: "5109287601" },
+      { mobile: "966593434286", chat_id: "7119758686" },
+      { mobile: "966561459322", chat_id: "1933024299" },
+      { mobile: "966552293823", chat_id: "5861430849" },
+      { mobile: "966560456534", chat_id: "5992990975" },
+      { mobile: "966568770913", chat_id: "1425123428" },
+      { mobile: "966582089536", chat_id: "1961479064" },
+      { mobile: "966545294720", chat_id: "818146509" },
+      { mobile: "966557311820", chat_id: "6398668631" },
+      { mobile: "966550943475", chat_id: "7176088223" },
+      { mobile: "966595811476", chat_id: "7140601555" },
+      { mobile: "966539465084", chat_id: "6022506706" },
+      { mobile: "966553573073", chat_id: "7694623882" },
+      { mobile: "966546594418", chat_id: "2008825646" },
+      { mobile: "966503829744", chat_id: "8104049714" },
+      { mobile: "966510096530", chat_id: "6861223204" },
+      { mobile: "966578017401", chat_id: "6907011727" },
+      { mobile: "966542759414", chat_id: "1373652703" },
+      { mobile: "966557539744", chat_id: "1876085396" },
+      { mobile: "966557369209", chat_id: "1533321379" },
+      { mobile: "966541149047", chat_id: "7631597726" },
+      { mobile: "966591317212", chat_id: "5462122904" },
+      { mobile: "966538956068", chat_id: "6565188331" },
+      { mobile: "966580568189", chat_id: "5615590742" },
+      { mobile: "966501089805", chat_id: "6407502380" },
+      { mobile: "966538842856", chat_id: "1879612050" },
+      { mobile: "966569786714", chat_id: "6931167496" },
+      { mobile: "966545578855", chat_id: "660483058" }
+    ];
+    
+    // Remove duplicates and invalid entries
+    const uniqueData = telegramData.reduce((acc, item) => {
+      // Skip if mobile starts with 9665 (invalid - should be 966)
+      if (item.mobile.startsWith('9665')) {
+        const corrected = '966' + item.mobile.substring(4);
+        item.mobile = corrected;
+      }
+      
+      // Add only if not duplicate
+      if (!acc.find(x => x.mobile === item.mobile)) {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+    
+    // Display preview
+    function displayPreview() {
+      const tbody = document.getElementById('data-preview');
+      let validCount = 0;
+      
+      uniqueData.forEach((item, index) => {
+        const isValid = item.mobile.length >= 12 && item.chat_id;
+        if (isValid) validCount++;
+        
+        const statusBadge = isValid 
+          ? '<span class="px-2 py-1 bg-green-500/50 rounded text-xs">✓ صالح</span>'
+          : '<span class="px-2 py-1 bg-red-500/50 rounded text-xs">✗ غير صالح</span>';
+        
+        const row = `
+          <tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="text-white/90 p-2">${index + 1}</td>
+            <td class="text-purple-200 font-mono p-2">${item.mobile}</td>
+            <td class="text-white font-mono p-2">${item.chat_id}</td>
+            <td class="text-center p-2">${statusBadge}</td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+      
+      document.getElementById('total-records').textContent = uniqueData.length;
+      document.getElementById('valid-records').textContent = validCount;
+    }
+    
+    // Link Chat IDs
+    async function linkChatIds() {
+      if (!confirm(`هل أنت متأكد من ربط ${uniqueData.length} سجل؟`)) {
+        return;
+      }
+      
+      // Hide button, show progress
+      document.getElementById('link-btn').disabled = true;
+      document.getElementById('progress').classList.remove('hidden');
+      document.getElementById('results').classList.add('hidden');
+      
+      let updatedCount = 0;
+      let notFoundCount = 0;
+      let failedCount = 0;
+      const details = [];
+      
+      for (let i = 0; i < uniqueData.length; i++) {
+        const item = uniqueData[i];
+        
+        try {
+          // Update student with chat_id (استخدام chat_id بدلاً من telegram_chat_id)
+          const { data, error } = await supabase
+            .from('students')
+            .update({ chat_id: item.chat_id })
+            .eq('mobile', item.mobile)
+            .select();
+          
+          if (error) {
+            failedCount++;
+            details.push(`❌ ${item.mobile}: ${error.message}`);
+          } else if (!data || data.length === 0) {
+            notFoundCount++;
+            details.push(`⚠️ ${item.mobile}: رقم الجوال غير موجود في قاعدة البيانات`);
+          } else {
+            updatedCount++;
+          }
+        } catch (error) {
+          failedCount++;
+          details.push(`❌ ${item.mobile}: ${error.message}`);
+        }
+        
+        // Update progress
+        const progress = Math.round(((i + 1) / uniqueData.length) * 100);
+        document.getElementById('progress-bar').style.width = progress + '%';
+        document.getElementById('progress-text').textContent = `${i + 1} / ${uniqueData.length}`;
+      }
+      
+      // Show results
+      document.getElementById('progress').classList.add('hidden');
+      document.getElementById('results').classList.remove('hidden');
+      
+      document.getElementById('updated-count').textContent = updatedCount;
+      document.getElementById('notfound-count').textContent = notFoundCount;
+      document.getElementById('failed-count').textContent = failedCount;
+      
+      if (details.length > 0) {
+        document.getElementById('error-list').classList.remove('hidden');
+        const errorList = document.getElementById('errors');
+        details.forEach(detail => {
+          errorList.innerHTML += `<li class="text-right">${detail}</li>`;
+        });
+      }
+    }
+    
+    // Initialize
+    displayPreview();
+  </script>
+  
+</body>
+</html>

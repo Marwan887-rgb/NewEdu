@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار نظام التقييم النهائي</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+      <h1 class="text-3xl font-bold text-indigo-700 mb-2 flex items-center gap-3">
+        <span>🧪</span>
+        <span>اختبار نظام الاختبارات النهائية</span>
+      </h1>
+      <p class="text-gray-600">فحص سريع للتأكد من عمل جميع المكونات</p>
+    </div>
+
+    <!-- Test Buttons -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🔧 اختبارات النظام</h2>
+      <div class="space-y-3">
+        <button onclick="testSupabaseConnection()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition text-right">
+          1️⃣ اختبار الاتصال بـ Supabase
+        </button>
+        <button onclick="testLessonsTable()" class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition text-right">
+          2️⃣ اختبار جدول الدروس
+        </button>
+        <button onclick="testFinalExamsTable()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition text-right">
+          3️⃣ اختبار جدول الاختبارات النهائية
+        </button>
+        <button onclick="testExamSubmissionsTable()" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition text-right">
+          4️⃣ اختبار جدول إجابات الطلاب
+        </button>
+        <button onclick="testDefinitionChecker()" class="w-full bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg font-semibold transition text-right">
+          5️⃣ اختبار نظام تصحيح التعريفات
+        </button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="space-y-3"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function showResult(title, message, type) {
+      const colors = {
+        success: 'bg-green-50 border-green-300 text-green-800',
+        error: 'bg-red-50 border-red-300 text-red-800',
+        info: 'bg-blue-50 border-blue-300 text-blue-800'
+      };
+      
+      const result = document.createElement('div');
+      result.className = `border-2 rounded-xl p-4 ${colors[type]}`;
+      result.innerHTML = `
+        <h3 class="font-bold mb-2">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'} ${title}</h3>
+        <p class="text-sm whitespace-pre-wrap">${message}</p>
+      `;
+      
+      document.getElementById('results').appendChild(result);
+    }
+
+    async function testSupabaseConnection() {
+      document.getElementById('results').innerHTML = '';
+      try {
+        const { data, error } = await supabase.from('lessons').select('count', { count: 'exact', head: true });
+        if (error) throw error;
+        showResult('اختبار الاتصال', 'تم الاتصال بـ Supabase بنجاح! ✅', 'success');
+      } catch (error) {
+        showResult('اختبار الاتصال', `فشل الاتصال: ${error.message}`, 'error');
+      }
+    }
+
+    async function testLessonsTable() {
+      try {
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('type', 'lesson')
+          .limit(5);
+        
+        if (error) throw error;
+        
+        showResult(
+          'جدول الدروس',
+          `عدد الدروس: ${data.length}\n\nأمثلة:\n${data.map(l => `- ${l.title} (ID: ${l.id})`).join('\n')}`,
+          'success'
+        );
+      } catch (error) {
+        showResult('جدول الدروس', `خطأ: ${error.message}`, 'error');
+      }
+    }
+
+    async function testFinalExamsTable() {
+      try {
+        const { data, error } = await supabase
+          .from('final_exams')
+          .select('*')
+          .limit(5);
+        
+        if (error) throw error;
+        
+        if (data.length === 0) {
+          showResult('جدول الاختبارات', 'لا توجد اختبارات مولدة بعد. استخدم generate-exam-deepseek.html لتوليد اختبارات.', 'info');
+        } else {
+          const details = data.map(exam => {
+            const qCount = Array.isArray(exam.questions) ? exam.questions.length : 0;
+            const trueFalse = exam.questions?.filter(q => q.type === 'true_false').length || 0;
+            const mcq = exam.questions?.filter(q => q.type === 'multiple_choice').length || 0;
+            const def = exam.questions?.filter(q => q.type === 'definition').length || 0;
+            return `- درس ${exam.lesson_id}: ${qCount} سؤال (${trueFalse} صح/خطأ + ${mcq} اختيار + ${def} تعريف)`;
+          }).join('\n');
+          
+          showResult(
+            'جدول الاختبارات',
+            `عدد الاختبارات: ${data.length}\n\n${details}`,
+            'success'
+          );
+        }
+      } catch (error) {
+        showResult('جدول الاختبارات', `خطأ: ${error.message}`, 'error');
+      }
+    }
+
+    async function testExamSubmissionsTable() {
+      try {
+        const { data, error } = await supabase
+          .from('exam_submissions')
+          .select('*')
+          .limit(5);
+        
+        if (error) throw error;
+        
+        if (data.length === 0) {
+          showResult('إجابات الطلاب', 'لا توجد إجابات مسلمة بعد. ✅ الجدول جاهز للاستخدام.', 'info');
+        } else {
+          const details = data.map(sub => 
+            `- طالب ${sub.student_mobile}: درس ${sub.lesson_id} - الدرجة: ${sub.score}/10`
+          ).join('\n');
+          
+          showResult(
+            'إجابات الطلاب',
+            `عدد الإجابات: ${data.length}\n\n${details}`,
+            'success'
+          );
+        }
+      } catch (error) {
+        showResult('إجابات الطلاب', `خطأ: ${error.message}`, 'error');
+      }
+    }
+
+    function testDefinitionChecker() {
+      // محاكاة نظام التصحيح
+      function checkDefinitionAnswer(studentAnswer, correctAnswer) {
+        const normalize = (str) => str.toLowerCase()
+          .replace(/[.,،؛:!؟\-_]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        const studentNorm = normalize(studentAnswer);
+        const correctNorm = normalize(correctAnswer);
+        
+        if (studentNorm === correctNorm) return true;
+        if (studentNorm.includes(correctNorm) || correctNorm.includes(studentNorm)) return true;
+        
+        const stopWords = ['هي', 'هو', 'من', 'الى', 'إلى', 'في', 'على', 'عن', 'مع', 'إن', 'أن', 'التي', 'الذي', 'ذلك', 'هذا', 'هذه'];
+        const keywords = correctNorm.split(/\s+/).filter(w => w.length >= 3 && !stopWords.includes(w));
+        
+        if (keywords.length === 0) return false;
+        
+        const matchedKeywords = keywords.filter(kw => studentNorm.includes(kw));
+        const matchPercentage = (matchedKeywords.length / keywords.length) * 100;
+        
+        return matchPercentage >= 50;
+      }
+
+      // اختبارات
+      const tests = [
+        {
+          correct: "البرمجة هي عملية كتابة التعليمات للحاسب الآلي",
+          student: "البرمجة عملية كتابة تعليمات للحاسوب",
+          expected: true
+        },
+        {
+          correct: "الخوارزمية مجموعة من الخطوات المنظمة لحل مشكلة معينة",
+          student: "هي مجموعة خطوات منظمة لحل مشكلة",
+          expected: true
+        },
+        {
+          correct: "البرمجة هي عملية كتابة التعليمات للحاسب",
+          student: "الرياضيات علم الأعداد",
+          expected: false
+        }
+      ];
+
+      let results = 'نتائج الاختبار:\n\n';
+      let passed = 0;
+
+      tests.forEach((test, i) => {
+        const result = checkDefinitionAnswer(test.student, test.correct);
+        const status = result === test.expected ? '✅' : '❌';
+        passed += (result === test.expected) ? 1 : 0;
+        
+        results += `${status} اختبار ${i + 1}:\n`;
+        results += `   الإجابة الصحيحة: "${test.correct}"\n`;
+        results += `   إجابة الطالب: "${test.student}"\n`;
+        results += `   النتيجة: ${result ? 'مقبول' : 'مرفوض'} (متوقع: ${test.expected ? 'مقبول' : 'مرفوض'})\n\n`;
+      });
+
+      results += `\nالنتيجة النهائية: ${passed}/${tests.length} ✅`;
+
+      showResult(
+        'نظام تصحيح التعريفات',
+        results,
+        passed === tests.length ? 'success' : 'error'
+      );
+    }
+
+    // رسالة ترحيبية
+    window.onload = () => {
+      showResult(
+        'مرحباً!',
+        'اضغط على الأزرار أعلاه لاختبار مكونات النظام واحداً تلو الآخر.',
+        'info'
+      );
+    };
+  </script>
+</body>
+</html>

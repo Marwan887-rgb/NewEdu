@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار نظام الفترتين</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config-terms.js"></script>
+  <script src="terms-calculator.js"></script>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #4ec9b0;
+      border-bottom: 2px solid #3e3e42;
+      padding-bottom: 10px;
+    }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 10px 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    .success { color: #4ec9b0; }
+    .error { color: #f48771; }
+    .warning { color: #dcdcaa; }
+    .info { color: #569cd6; }
+    pre {
+      background: #1e1e1e;
+      border: 1px solid #3e3e42;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #2d2d30;
+      border-radius: 4px;
+      border-left: 4px solid #0e639c;
+    }
+    .result-box {
+      background: #1e1e1e;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #3e3e42;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: right;
+      border: 1px solid #3e3e42;
+    }
+    th {
+      background: #2d2d30;
+      color: #4ec9b0;
+      font-weight: bold;
+    }
+    tr:hover {
+      background: #2d2d30;
+    }
+    .input-group {
+      margin: 15px 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #569cd6;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      background: #1e1e1e;
+      border: 1px solid #3e3e42;
+      color: #d4d4d4;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 اختبار نظام الفترتين - Terms Calculator</h1>
+    
+    <div class="test-section">
+      <h2>📋 خطوات الاختبار:</h2>
+      <ol>
+        <li>إدخال رقم جوال طالب</li>
+        <li>اختبار حساب الفترة الأولى</li>
+        <li>اختبار حساب الفترة الثانية</li>
+        <li>اختبار الإجمالي الكلي</li>
+        <li>التحقق من صحة الحسابات</li>
+      </ol>
+    </div>
+
+    <div class="input-group">
+      <label for="student-mobile">📱 رقم جوال الطالب:</label>
+      <input type="text" 
+             id="student-mobile" 
+             placeholder="05xxxxxxxx" 
+             value="0501234567">
+    </div>
+
+    <div style="margin: 20px 0;">
+      <button onclick="testConfigValidation()">1️⃣ اختبار إعدادات الفترات</button>
+      <button onclick="testTerm1Calculation()">2️⃣ اختبار الفترة الأولى</button>
+      <button onclick="testTerm2Calculation()">3️⃣ اختبار الفترة الثانية</button>
+      <button onclick="testAllTerms()">4️⃣ اختبار الإجمالي الكلي</button>
+      <button onclick="runAllTests()">🚀 تشغيل جميع الاختبارات</button>
+      <button onclick="clearResults()">🗑️ مسح النتائج</button>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let testResults = [];
+
+    function addResult(title, content, type = 'info') {
+      const resultsDiv = document.getElementById('results');
+      const colorClass = type === 'success' ? 'success' : 
+                        type === 'error' ? 'error' : 
+                        type === 'warning' ? 'warning' : 'info';
+      
+      const resultBox = document.createElement('div');
+      resultBox.className = 'result-box';
+      resultBox.innerHTML = `
+        <h3 class="${colorClass}">${title}</h3>
+        <pre>${content}</pre>
+      `;
+      resultsDiv.appendChild(resultBox);
+      
+      // تمرير تلقائي للأسفل
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    function clearResults() {
+      document.getElementById('results').innerHTML = '';
+      testResults = [];
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 1. اختبار إعدادات الفترات
+    // ═══════════════════════════════════════════════════════════
+    function testConfigValidation() {
+      addResult('🔍 اختبار إعدادات الفترات', 'جاري الاختبار...', 'info');
+      
+      const validation = validateTermsConfig();
+      
+      let report = `📊 نتائج التحقق من الإعدادات:\n\n`;
+      report += `═══════════════════════════════════════════════\n`;
+      report += `📘 الفترة الأولى:\n`;
+      report += `   • المهام الأدائية: ${validation.term1.performance} درجة\n`;
+      report += `   • الأنشطة: ${validation.term1.activities} درجة\n`;
+      report += `   • المشاريع: ${validation.term1.projects} درجة\n`;
+      report += `   • الاختبارات: ${validation.term1.exams} درجة\n`;
+      report += `   ────────────────────────────────────────\n`;
+      report += `   الإجمالي: ${validation.term1.total} درجة ${validation.term1.isValid ? '✅' : '❌'}\n\n`;
+      
+      report += `📗 الفترة الثانية:\n`;
+      report += `   • المهام الأدائية: ${validation.term2.performance} درجة\n`;
+      report += `   • الأنشطة: ${validation.term2.activities} درجة\n`;
+      report += `   • المشاريع: ${validation.term2.projects} درجة\n`;
+      report += `   • الاختبارات: ${validation.term2.exams} درجة\n`;
+      report += `   ────────────────────────────────────────\n`;
+      report += `   الإجمالي: ${validation.term2.total} درجة ${validation.term2.isValid ? '✅' : '❌'}\n\n`;
+      
+      report += `═══════════════════════════════════════════════\n`;
+      report += `🎯 الإجمالي الكلي: ${validation.grandTotal} درجة\n`;
+      report += `الحالة: ${validation.isValid ? '✅ صحيح' : '❌ خطأ في التوزيع'}\n`;
+      report += `═══════════════════════════════════════════════`;
+      
+      const type = validation.isValid ? 'success' : 'error';
+      addResult('✅ نتيجة اختبار الإعدادات', report, type);
+      
+      return validation.isValid;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 2. اختبار حساب الفترة الأولى
+    // ═══════════════════════════════════════════════════════════
+    async function testTerm1Calculation() {
+      const mobile = document.getElementById('student-mobile').value;
+      
+      if (!mobile) {
+        addResult('❌ خطأ', 'يرجى إدخال رقم جوال الطالب', 'error');
+        return;
+      }
+      
+      addResult('🔄 اختبار الفترة الأولى', `جاري حساب درجات الطالب: ${mobile}`, 'info');
+      
+      try {
+        const term1Result = await calculateTermScore(mobile, 1, supabase);
+        
+        let report = `📘 الفترة الأولى (أسابيع 1-8):\n\n`;
+        report += `═══════════════════════════════════════════════\n`;
+        report += `1️⃣ المهام الأدائية:\n`;
+        report += `   • المهام المكتملة: ${term1Result.performance.completed}/${term1Result.performance.total}\n`;
+        report += `   • الدرجة: ${term1Result.performance.score}/${term1Result.performance.maxScore}\n\n`;
+        
+        report += `2️⃣ الأنشطة:\n`;
+        report += `   • الدرجة: ${term1Result.activities.score}/${term1Result.activities.maxScore}\n\n`;
+        
+        report += `3️⃣ المشاريع:\n`;
+        report += `   • الدرجة: ${term1Result.projects.score}/${term1Result.projects.maxScore}\n\n`;
+        
+        report += `4️⃣ اختبارات الوحدة:\n`;
+        report += `   • الدرجة: ${term1Result.exams.score}/${term1Result.exams.maxScore}\n\n`;
+        
+        report += `═══════════════════════════════════════════════\n`;
+        report += `🎯 إجمالي الفترة الأولى: ${term1Result.totalScore}/${term1Result.maxScore}\n`;
+        report += `📊 النسبة المئوية: ${term1Result.percentage}%\n`;
+        report += `═══════════════════════════════════════════════`;
+        
+        addResult('✅ نتيجة الفترة الأولى', report, 'success');
+        
+        testResults.push({ term: 1, result: term1Result });
+        return term1Result;
+        
+      } catch (error) {
+        addResult('❌ خطأ في حساب الفترة الأولى', error.message, 'error');
+        console.error(error);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 3. اختبار حساب الفترة الثانية
+    // ═══════════════════════════════════════════════════════════
+    async function testTerm2Calculation() {
+      const mobile = document.getElementById('student-mobile').value;
+      
+      if (!mobile) {
+        addResult('❌ خطأ', 'يرجى إدخال رقم جوال الطالب', 'error');
+        return;
+      }
+      
+      addResult('🔄 اختبار الفترة الثانية', `جاري حساب درجات الطالب: ${mobile}`, 'info');
+      
+      try {
+        const term2Result = await calculateTermScore(mobile, 2, supabase);
+        
+        let report = `📗 الفترة الثانية (أسابيع 9-16):\n\n`;
+        report += `═══════════════════════════════════════════════\n`;
+        report += `1️⃣ المهام الأدائية:\n`;
+        report += `   • المهام المكتملة: ${term2Result.performance.completed}/${term2Result.performance.total}\n`;
+        report += `   • الدرجة: ${term2Result.performance.score}/${term2Result.performance.maxScore}\n\n`;
+        
+        report += `2️⃣ الأنشطة:\n`;
+        report += `   • الدرجة: ${term2Result.activities.score}/${term2Result.activities.maxScore}\n\n`;
+        
+        report += `3️⃣ المشاريع:\n`;
+        report += `   • الدرجة: ${term2Result.projects.score}/${term2Result.projects.maxScore}\n\n`;
+        
+        report += `4️⃣ اختبارات الوحدة:\n`;
+        report += `   • الدرجة: ${term2Result.exams.score}/${term2Result.exams.maxScore}\n\n`;
+        
+        report += `═══════════════════════════════════════════════\n`;
+        report += `🎯 إجمالي الفترة الثانية: ${term2Result.totalScore}/${term2Result.maxScore}\n`;
+        report += `📊 النسبة المئوية: ${term2Result.percentage}%\n`;
+        report += `═══════════════════════════════════════════════`;
+        
+        addResult('✅ نتيجة الفترة الثانية', report, 'success');
+        
+        testResults.push({ term: 2, result: term2Result });
+        return term2Result;
+        
+      } catch (error) {
+        addResult('❌ خطأ في حساب الفترة الثانية', error.message, 'error');
+        console.error(error);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 4. اختبار الإجمالي الكلي
+    // ═══════════════════════════════════════════════════════════
+    async function testAllTerms() {
+      const mobile = document.getElementById('student-mobile').value;
+      
+      if (!mobile) {
+        addResult('❌ خطأ', 'يرجى إدخال رقم جوال الطالب', 'error');
+        return;
+      }
+      
+      addResult('🔄 اختبار الإجمالي الكلي', `جاري حساب جميع الدرجات للطالب: ${mobile}`, 'info');
+      
+      try {
+        const allScores = await calculateAllTermsScores(mobile, supabase);
+        
+        if (!allScores.success) {
+          addResult('❌ فشل الحساب', allScores.error, 'error');
+          return;
+        }
+        
+        const { term1, term2, grandTotal, grandPercentage } = allScores;
+        
+        let report = `🎓 تقرير الدرجات الكامل:\n\n`;
+        report += `═══════════════════════════════════════════════\n`;
+        report += `📘 الفترة الأولى:\n`;
+        report += `   • المهام: ${term1.performance.score}/${term1.performance.maxScore}\n`;
+        report += `   • الأنشطة: ${term1.activities.score}/${term1.activities.maxScore}\n`;
+        report += `   • المشاريع: ${term1.projects.score}/${term1.projects.maxScore}\n`;
+        report += `   • الاختبارات: ${term1.exams.score}/${term1.exams.maxScore}\n`;
+        report += `   ────────────────────────────────────────\n`;
+        report += `   الإجمالي: ${term1.totalScore}/${term1.maxScore} (${term1.percentage}%)\n\n`;
+        
+        report += `📗 الفترة الثانية:\n`;
+        report += `   • المهام: ${term2.performance.score}/${term2.performance.maxScore}\n`;
+        report += `   • الأنشطة: ${term2.activities.score}/${term2.activities.maxScore}\n`;
+        report += `   • المشاريع: ${term2.projects.score}/${term2.projects.maxScore}\n`;
+        report += `   • الاختبارات: ${term2.exams.score}/${term2.exams.maxScore}\n`;
+        report += `   ────────────────────────────────────────\n`;
+        report += `   الإجمالي: ${term2.totalScore}/${term2.maxScore} (${term2.percentage}%)\n\n`;
+        
+        report += `═══════════════════════════════════════════════\n`;
+        report += `🏆 الإجمالي الكلي: ${grandTotal}/200 (${grandPercentage}%)\n`;
+        report += `═══════════════════════════════════════════════\n\n`;
+        
+        // التحقق من صحة الحسابات
+        const expectedTotal = term1.totalScore + term2.totalScore;
+        const isValid = (grandTotal === expectedTotal);
+        
+        report += `\n🔍 التحقق من صحة الحسابات:\n`;
+        report += `   • الفترة 1 + الفترة 2 = ${term1.totalScore} + ${term2.totalScore} = ${expectedTotal}\n`;
+        report += `   • الإجمالي المحسوب = ${grandTotal}\n`;
+        report += `   • النتيجة: ${isValid ? '✅ صحيح' : '❌ خطأ في الحساب'}\n`;
+        
+        const type = isValid ? 'success' : 'error';
+        addResult('🎯 التقرير النهائي', report, type);
+        
+        return allScores;
+        
+      } catch (error) {
+        addResult('❌ خطأ في حساب الإجمالي', error.message, 'error');
+        console.error(error);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // تشغيل جميع الاختبارات
+    // ═══════════════════════════════════════════════════════════
+    async function runAllTests() {
+      clearResults();
+      
+      addResult('🚀 بدء تشغيل جميع الاختبارات', 'جاري تشغيل الاختبارات...', 'info');
+      
+      // 1. اختبار الإعدادات
+      const configValid = testConfigValidation();
+      
+      if (!configValid) {
+        addResult('⚠️ تحذير', 'إعدادات الفترات غير صحيحة! يُنصح بإصلاحها قبل المتابعة.', 'warning');
+      }
+      
+      // انتظار قليلاً قبل المتابعة
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 2. اختبار الفترة الأولى
+      await testTerm1Calculation();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // 3. اختبار الفترة الثانية
+      await testTerm2Calculation();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // 4. اختبار الإجمالي
+      await testAllTerms();
+      
+      addResult('✅ اكتملت جميع الاختبارات', 'تم الانتهاء من تشغيل جميع الاختبارات بنجاح!', 'success');
+    }
+
+    // تشغيل تلقائي عند التحميل
+    window.addEventListener('load', () => {
+      console.log('✅ تم تحميل صفحة الاختبار بنجاح');
+      console.log('💡 استخدم الأزرار أعلاه لتشغيل الاختبارات');
+    });
+  </script>
+</body>
+</html>

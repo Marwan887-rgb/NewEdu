@@ -1,0 +1,126 @@
+<!-- ============================================================ -->
+<!-- صفحة اعتماد الواجبات للمعلم -->
+<!-- ============================================================ -->
+<!-- 
+  هذا الكود يُضاف إلى teacher-main.html بعد #projects-approval-screen
+  ويُضاف <script src="teacher-homework-approval.js"></script> في النهاية
+-->
+
+<!-- Homework Approval Screen -->
+<div id="homework-approval-screen" class="hidden min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-red-50 py-8">
+  <div class="container mx-auto px-4">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">📝 اعتماد درجات الواجبات</h1>
+          <p class="text-gray-600">راجع الواجبات المرفوعة واعتمد الدرجات</p>
+        </div>
+        <button onclick="backToDashboardFromHomework()" 
+                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-bold transition">
+          ← العودة
+        </button>
+      </div>
+    </div>
+
+    <!-- Homework List -->
+    <div id="homework-approval-list">
+      <!-- سيتم ملؤها ديناميكياً -->
+    </div>
+  </div>
+</div>
+
+<!-- Homework Approval Modal -->
+<div id="homework-approval-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="p-6">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">✅ اعتماد درجة الواجب</h2>
+        <button onclick="closeHomeworkApprovalModal()" 
+                class="text-gray-500 hover:text-gray-700 text-2xl font-bold">
+          ×
+        </button>
+      </div>
+
+      <!-- Homework Info -->
+      <form id="homework-approval-form" class="space-y-6">
+        <div class="bg-gradient-to-r from-rose-50 to-pink-50 border-2 border-rose-200 rounded-xl p-4">
+          <p class="text-sm text-gray-600 mb-1">👤 الطالب:</p>
+          <p id="homework-approval-student-name" class="text-lg font-bold text-gray-900 mb-3"></p>
+          
+          <p class="text-sm text-gray-600 mb-1">📝 الواجب:</p>
+          <p id="homework-approval-lesson-title" class="text-lg font-bold text-gray-900"></p>
+        </div>
+
+        <!-- Action Selection -->
+        <div class="space-y-3">
+          <label class="block text-sm font-bold text-gray-700 mb-2">الإجراء:</label>
+          
+          <label class="flex items-center gap-3 p-4 border-2 border-green-300 bg-green-50 rounded-xl cursor-pointer hover:bg-green-100 transition">
+            <input type="radio" name="homework-approval-action" value="approve" checked 
+                   class="w-5 h-5 text-green-600">
+            <div>
+              <p class="font-bold text-green-900">✅ اعتماد الواجب</p>
+              <p class="text-xs text-green-700">قبول الواجب واعتماد الدرجة</p>
+            </div>
+          </label>
+
+          <label class="flex items-center gap-3 p-4 border-2 border-red-300 bg-red-50 rounded-xl cursor-pointer hover:bg-red-100 transition">
+            <input type="radio" name="homework-approval-action" value="reject" 
+                   class="w-5 h-5 text-red-600">
+            <div>
+              <p class="font-bold text-red-900">❌ رفض الواجب</p>
+              <p class="text-xs text-red-700">رفض الواجب بدون اعتماد درجة</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Grade Input -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">🎯 الدرجة (من 5):</label>
+          <input type="number" 
+                 id="homework-approval-grade" 
+                 min="0" 
+                 max="5" 
+                 step="0.5"
+                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-lg font-bold"
+                 placeholder="أدخل الدرجة (مثال: 4.5)">
+          <p class="text-xs text-gray-500 mt-1">* يمكنك إدخال أرقام عشرية (مثال: 3.5، 4.5)</p>
+        </div>
+
+        <!-- Teacher Notes -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">💬 ملاحظات المعلم (اختياري):</label>
+          <textarea id="homework-approval-notes" 
+                    rows="4" 
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 resize-none"
+                    placeholder="أضف ملاحظاتك هنا..."></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3 pt-4">
+          <button type="button" 
+                  onclick="closeHomeworkApprovalModal()" 
+                  class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-xl font-bold transition">
+            إلغاء
+          </button>
+          <button type="button" 
+                  id="save-homework-approval-btn"
+                  onclick="saveHomeworkApproval()" 
+                  class="flex-1 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">
+            💾 حفظ
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 
+  ملاحظات الإضافة:
+  1. أضف هذا الكود في teacher-main.html بعد </div> الخاص بـ #projects-approval-screen
+  2. أضف السكريبت في نهاية الصفحة: <script src="teacher-homework-approval.js"></script>
+  3. أضف <div id="pending-homework-alert"></div> في لوحة المعلم
+  4. استدع displayPendingHomeworkAlert() عند تحميل لوحة المعلم
+-->

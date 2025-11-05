@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ربط حساب التليجرام</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen flex items-center justify-center p-4">
+  
+  <div class="max-w-2xl w-full">
+    <div class="glass-card rounded-3xl p-8 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="text-6xl mb-4">📱</div>
+        <h1 class="text-3xl font-black text-white mb-2">ربط حساب التليجرام</h1>
+        <p class="text-white/80 font-semibold">احصل على Chat ID للطالب</p>
+      </div>
+      
+      <!-- Steps -->
+      <div class="space-y-6 mb-8">
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">1</span>
+            <span>إنشاء بوت تليجرام</span>
+          </h3>
+          <p class="text-white/90 mb-3">راسل <a href="https://t.me/BotFather" target="_blank" class="underline font-bold">@BotFather</a> وأنشئ بوت جديد</p>
+          <div class="bg-black/30 rounded-lg p-3 font-mono text-sm text-white">
+            /newbot
+          </div>
+        </div>
+        
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">2</span>
+            <span>احصل على Bot Token</span>
+          </h3>
+          <p class="text-white/90 mb-3">بعد إنشاء البوت، ستحصل على Token مثل:</p>
+          <div class="bg-black/30 rounded-lg p-3 font-mono text-xs text-white break-all">
+            123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ
+          </div>
+        </div>
+        
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">3</span>
+            <span>إنشاء رابط للطالب</span>
+          </h3>
+          <p class="text-white/90 mb-3">الرابط يكون بهذا الشكل:</p>
+          <div class="bg-black/30 rounded-lg p-3 font-mono text-xs text-white break-all">
+            https://t.me/YourBotUsername?start=0500000000
+          </div>
+          <p class="text-white/70 text-sm mt-2">استبدل YourBotUsername برقم الجوال</p>
+        </div>
+        
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">4</span>
+            <span>حفظ Chat ID</span>
+          </h3>
+          <p class="text-white/90 mb-3">عندما يضغط الطالب على الرابط ويرسل /start:</p>
+          <ul class="text-white/80 space-y-2 text-sm">
+            <li>✅ البوت يستقبل رسالة بـ chat_id</li>
+            <li>✅ احفظ chat_id في قاعدة البيانات</li>
+            <li>✅ الآن يمكنك إرسال إشعارات للطالب</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Tool -->
+      <div class="bg-gradient-to-r from-purple-500/30 to-indigo-500/30 backdrop-blur-sm rounded-xl p-6 border-2 border-white/40">
+        <h3 class="text-white font-black text-xl mb-4">🔧 مولد الروابط</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-white font-semibold mb-2">اسم البوت (username):</label>
+            <input type="text" id="bot-username" placeholder="YourBotUsername" 
+                   class="w-full bg-white/90 border-2 border-white/50 text-gray-900 rounded-lg p-3 text-center font-semibold">
+          </div>
+          
+          <div>
+            <label class="block text-white font-semibold mb-2">رقم جوال الطالب:</label>
+            <input type="tel" id="student-mobile" placeholder="0500000000" 
+                   class="w-full bg-white/90 border-2 border-white/50 text-gray-900 rounded-lg p-3 text-center font-semibold">
+          </div>
+          
+          <button onclick="generateLink()" 
+                  class="w-full bg-white/25 hover:bg-white/35 text-white font-black py-3 rounded-lg transition transform hover:scale-105 border-2 border-white/40">
+            🚀 إنشاء الرابط
+          </button>
+          
+          <div id="result" class="hidden">
+            <div class="bg-black/40 rounded-lg p-4">
+              <p class="text-white/70 text-sm mb-2">الرابط:</p>
+              <p id="generated-link" class="text-white font-mono text-sm break-all mb-3"></p>
+              <button onclick="copyLink()" 
+                      class="w-full bg-green-500/80 hover:bg-green-600/80 text-white font-bold py-2 rounded-lg transition">
+                📋 نسخ الرابط
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+    function generateLink() {
+      const botUsername = document.getElementById('bot-username').value.trim();
+      const studentMobile = document.getElementById('student-mobile').value.trim();
+      
+      if (!botUsername || !studentMobile) {
+        alert('⚠️ الرجاء ملء جميع الحقول');
+        return;
+      }
+      
+      const link = `https://t.me/${botUsername}?start=${studentMobile}`;
+      document.getElementById('generated-link').textContent = link;
+      document.getElementById('result').classList.remove('hidden');
+    }
+    
+    function copyLink() {
+      const link = document.getElementById('generated-link').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('✅ تم نسخ الرابط!');
+      });
+    }
+  </script>
+  
+</body>
+</html>

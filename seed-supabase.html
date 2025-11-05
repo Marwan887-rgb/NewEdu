@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة البيانات إلى Supabase</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-6 text-center">📚 إضافة البيانات إلى Supabase</h1>
+    
+    <div id="status" class="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+      <p class="text-blue-800 font-semibold">⏳ جاهز للبدء...</p>
+    </div>
+
+    <div id="results" class="space-y-3 max-h-96 overflow-y-auto"></div>
+
+    <div class="flex gap-4 mt-6">
+      <button onclick="seedLessons()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition">
+        📚 إضافة الدروس (9 دروس)
+      </button>
+      <button onclick="clearData()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">
+        🗑️ حذف جميع البيانات
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // معلومات Supabase
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // بيانات الدروس مع التوقيت الزمني
+    const lessonsData = [
+      { "id": 1, "unit": "الوحدة الأولى", "title": "اساسيات تخطيط المشروع", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vTfI83cMUy1RB9RDxvkRAdmjF37gdJ1RP7Uh6hiaWgvXSMWTPqCYz4g4F4JeXkpwg/pubembed?start=true&loop=false&delayms=3000", "video_link": "", "week_number": 1, "start_date_hijri": "1447/2/3", "end_date_hijri": "1447/2/14" },
+      { "id": 2, "unit": "الوحدة الأولى", "title": "بناء وأتمتة خطة المشروع", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vRuPNDqeLlEog2UYbVJE795OYlb0o8OIQYcC09PDKi2Bp4iu7janPvjDcfsjSwSousEsI-FFxT6az01/pubembed?start=false&loop=false&delayms=3000", "video_link": "", "week_number": 3, "start_date_hijri": "1447/3/1", "end_date_hijri": "1447/3/5" },
+      { "id": 3, "unit": "الوحدة الأولى", "title": "إدارة المهام", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vQUR1VvkdxLeEQJGIrWBhSfe83G6s8T2Zc6JBz8LFK8N2MaOA3Ox4cwxQHuUfiWaQ/pubembed?start=false&loop=false&delayms=3000", "video_link": "", "week_number": 4, "start_date_hijri": "1447/3/8", "end_date_hijri": "1447/3/12" },
+      { "id": 4, "unit": "الوحدة الثانية", "title": "دورة حياة النظام", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vS5FfHdry5do-Zxdzw_3eIPy9sEsqgBjcna7vm1eH2Snzit0GeuaDUwrl28X-yJMw/pubembed?start=false&loop=false&delayms=3000", "video_link": "", "week_number": 7, "start_date_hijri": "1447/4/5", "end_date_hijri": "1447/4/9" },
+      { "id": 5, "unit": "الوحدة الثانية", "title": "إنشاء المخطط", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vRS8ZaQ5PUcPGwPqV1DcmQEe-wD9b1dg7CKSx2gbDPSoBhTkg9qmrg9l2UqfRoK5A/pubembed?start=false&loop=false&delayms=3000", "video_link": "", "week_number": 8, "start_date_hijri": "1447/4/12", "end_date_hijri": "1447/4/16" },
+      { "id": 6, "unit": "الوحدة الثانية", "title": "الأمن السيبراني", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vTsH4rkSfmXi5yWHbzX5tzkaYgPWUrMfxHqzRMaWSBWQssA80MiDnICvPjwkJDLpQ/pubembed?start=true&loop=false&delayms=3000", "video_link": "", "week_number": 9, "start_date_hijri": "1447/5/3", "end_date_hijri": "1447/5/7" },
+      { "id": 7, "unit": "الوحدة الثالثة", "title": "مقدمة عن تطبيقات الهواتف الذكية", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vRyn0Dshqs8z-pzA32KcfZuTmhBAr1Cu75eX-fyLkcX7N8-ifho8QYeGhnltKJpwg/pubembed?start=true&loop=false&delayms=3000", "video_link": "", "week_number": 12, "start_date_hijri": "1447/5/24", "end_date_hijri": "1447/5/28" },
+      { "id": 8, "unit": "الوحدة الثالثة", "title": "بناء تطبيقات الهاتف الذكي", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vRgRw4J9Z3MQ13Y1XDVF7oCkmUOul9GLiIjwazSswFZNyNqsPrTMJLNKVAosrSvJQ/pubembed?start=true&loop=false&delayms=3000", "video_link": "", "week_number": 13, "start_date_hijri": "1447/6/1", "end_date_hijri": "1447/6/5" },
+      { "id": 9, "unit": "الوحدة الثالثة", "title": "برمجة التطبيق", "powerpoint_link": "https://docs.google.com/presentation/d/e/2PACX-1vRWzdAPF4p1HVuXxIKinaEkiQOmrBRFMr9n5DRlKEB3-CuYae2YauNSNCbyc0kksQ/pubembed?start=true&loop=false&delayms=3000", "video_link": "", "week_number": 14, "start_date_hijri": "1447/6/8", "end_date_hijri": "1447/6/12" }
+    ];
+
+    function showLog(message, type = 'info') {
+      const resultsDiv = document.getElementById('results');
+      const colors = {
+        info: 'blue',
+        success: 'green',
+        error: 'red',
+        warning: 'yellow'
+      };
+      const icons = {
+        info: 'ℹ️',
+        success: '✅',
+        error: '❌',
+        warning: '⚠️'
+      };
+      const color = colors[type] || 'gray';
+      const icon = icons[type] || '•';
+      
+      const div = document.createElement('div');
+      div.className = `p-3 rounded-lg bg-${color}-50 border border-${color}-200`;
+      div.innerHTML = `<p class="text-${color}-800 text-sm">${icon} ${message}</p>`;
+      resultsDiv.appendChild(div);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    function updateStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('status');
+      const colors = {
+        info: 'blue',
+        success: 'green',
+        error: 'red'
+      };
+      const color = colors[type] || 'blue';
+      statusDiv.innerHTML = `<p class="text-${color}-800 font-semibold">${message}</p>`;
+    }
+
+    async function seedLessons() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      
+      updateStatus('⏳ جارٍ إضافة الدروس...', 'info');
+      showLog('بدء إضافة 9 دروس إلى جدول lessons...', 'info');
+
+      try {
+        // إضافة الدروس
+        const { data, error } = await supabase
+          .from('lessons')
+          .upsert(lessonsData, { onConflict: 'id' });
+
+        if (error) {
+          showLog(`خطأ: ${error.message}`, 'error');
+          updateStatus('❌ فشل إضافة الدروس', 'error');
+          return;
+        }
+
+        showLog('تم إضافة 9 دروس بنجاح!', 'success');
+
+        // التحقق من البيانات
+        const { data: checkData, error: checkError } = await supabase
+          .from('lessons')
+          .select('*');
+
+        if (checkError) {
+          showLog(`خطأ في التحقق: ${checkError.message}`, 'error');
+        } else {
+          showLog(`✅ تم التحقق: يوجد ${checkData.length} درس/دروس في قاعدة البيانات`, 'success');
+          
+          // عرض ملخص الدروس
+          const units = {};
+          checkData.forEach(lesson => {
+            if (!units[lesson.unit]) units[lesson.unit] = 0;
+            units[lesson.unit]++;
+          });
+          
+          showLog('ملخص الدروس حسب الوحدات:', 'info');
+          Object.keys(units).forEach(unit => {
+            showLog(`  • ${unit}: ${units[unit]} درس/دروس`, 'info');
+          });
+        }
+
+        updateStatus('✅ تم إضافة جميع البيانات بنجاح!', 'success');
+
+      } catch (error) {
+        showLog(`خطأ عام: ${error.message}`, 'error');
+        updateStatus('❌ حدث خطأ', 'error');
+      }
+    }
+
+    async function clearData() {
+      if (!confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) {
+        return;
+      }
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      
+      updateStatus('⏳ جارٍ حذف البيانات...', 'info');
+
+      try {
+        // حذف جميع السجلات من كل جدول
+        const tables = ['progress', 'otp_codes', 'lessons', 'students'];
+        
+        for (const table of tables) {
+          showLog(`حذف بيانات جدول ${table}...`, 'info');
+          
+          const { error } = await supabase
+            .from(table)
+            .delete()
+            .neq('id', 0); // حذف جميع السجلات (شرط دائماً صحيح)
+
+          if (error) {
+            showLog(`خطأ في حذف ${table}: ${error.message}`, 'error');
+          } else {
+            showLog(`✅ تم حذف بيانات ${table}`, 'success');
+          }
+        }
+
+        updateStatus('✅ تم حذف جميع البيانات', 'success');
+
+      } catch (error) {
+        showLog(`خطأ عام: ${error.message}`, 'error');
+        updateStatus('❌ حدث خطأ', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

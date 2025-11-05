@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عرض مستخدمي البوت</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen p-4">
+  
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="glass-card rounded-3xl p-6 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center">
+        <div class="text-5xl mb-3">🤖</div>
+        <h1 class="text-3xl font-black text-white mb-2">عرض مستخدمي البوت</h1>
+        <p class="text-white/80 font-semibold">احصل على Chat IDs لجميع من راسل البوت</p>
+      </div>
+    </div>
+    
+    <!-- Input Section -->
+    <div class="glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-white font-bold mb-2 flex items-center gap-2">
+            <span>🔑</span>
+            <span>Bot Token:</span>
+          </label>
+          <input type="text" 
+                 id="bot-token" 
+                 placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
+                 class="w-full bg-white/90 border-2 border-white/50 text-gray-900 rounded-xl p-4 font-mono text-sm">
+          <p class="text-white/70 text-xs mt-2">💡 احصل عليه من @BotFather</p>
+        </div>
+        
+        <div class="space-y-3">
+          <button onclick="deleteWebhook()" 
+                  class="w-full bg-red-500/80 hover:bg-red-600/80 text-white font-bold py-3 rounded-xl transition transform hover:scale-105 border-2 border-white/40">
+            <span class="flex items-center justify-center gap-2">
+              <span>🗑️</span>
+              <span>حذف Webhook (افعلها أولاً)</span>
+            </span>
+          </button>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button onclick="openDirectLink()" 
+                    class="bg-green-500/80 hover:bg-green-600/80 text-white font-black py-4 rounded-xl transition transform hover:scale-105 border-2 border-white/40 text-lg">
+              <span class="flex items-center justify-center gap-2">
+                <span>🔗</span>
+                <span>فتح في نافذة جديدة</span>
+              </span>
+            </button>
+            
+            <button onclick="getUsers()" 
+                    class="bg-white/25 hover:bg-white/35 text-white font-black py-4 rounded-xl transition transform hover:scale-105 border-2 border-white/40 text-lg">
+              <span class="flex items-center justify-center gap-2">
+                <span>🔍</span>
+                <span>عرض المستخدمين</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Loading -->
+    <div id="loading" class="hidden glass-card rounded-3xl p-8 text-center" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-5xl mb-4">⏳</div>
+      <p class="text-white font-bold text-lg">جاري التحميل...</p>
+    </div>
+    
+    <!-- Results -->
+    <div id="results" class="hidden">
+      
+      <!-- Stats -->
+      <div class="glass-card rounded-3xl p-6 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white/20 rounded-xl p-4 text-center">
+            <p class="text-white/70 text-sm mb-1">إجمالي الرسائل</p>
+            <p id="total-messages" class="text-white font-black text-2xl">0</p>
+          </div>
+          <div class="bg-white/20 rounded-xl p-4 text-center">
+            <p class="text-white/70 text-sm mb-1">عدد المستخدمين</p>
+            <p id="total-users" class="text-white font-black text-2xl">0</p>
+          </div>
+          <div class="bg-white/20 rounded-xl p-4 text-center">
+            <p class="text-white/70 text-sm mb-1">مع اسم</p>
+            <p id="users-with-name" class="text-white font-black text-2xl">0</p>
+          </div>
+          <div class="bg-white/20 rounded-xl p-4 text-center">
+            <p class="text-white/70 text-sm mb-1">بدون اسم</p>
+            <p id="users-without-name" class="text-white font-black text-2xl">0</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Users Table -->
+      <div class="glass-card rounded-3xl p-6 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+        <h2 class="text-white font-black text-xl mb-4 flex items-center gap-2">
+          <span>👥</span>
+          <span>قائمة المستخدمين</span>
+        </h2>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b-2 border-white/30">
+                <th class="text-white font-bold p-3 text-right">#</th>
+                <th class="text-white font-bold p-3 text-right">الاسم</th>
+                <th class="text-white font-bold p-3 text-right">Username</th>
+                <th class="text-white font-bold p-3 text-right">Chat ID</th>
+                <th class="text-white font-bold p-3 text-right">آخر رسالة</th>
+                <th class="text-white font-bold p-3 text-center">نسخ</th>
+              </tr>
+            </thead>
+            <tbody id="users-table">
+              <!-- سيتم ملؤها بالـ JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Export -->
+      <div class="mt-6 text-center">
+        <button onclick="exportToCSV()" 
+                class="bg-green-500/80 hover:bg-green-600/80 text-white font-bold py-3 px-8 rounded-xl transition transform hover:scale-105">
+          📥 تصدير إلى CSV
+        </button>
+      </div>
+      
+    </div>
+    
+    <!-- Error -->
+    <div id="error" class="hidden glass-card rounded-3xl p-8 text-center" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-5xl mb-4">❌</div>
+      <p class="text-white font-bold text-lg mb-2">حدث خطأ</p>
+      <p id="error-message" class="text-white/80"></p>
+    </div>
+    
+  </div>
+  
+  <script>
+    let usersData = [];
+    
+    async function deleteWebhook() {
+      const token = document.getElementById('bot-token').value.trim();
+      
+      if (!token) {
+        alert('⚠️ الرجاء إدخال Bot Token');
+        return;
+      }
+      
+      if (!confirm('هل أنت متأكد من حذف Webhook؟\n\nهذا قد يوقف أي سكريبت آخر يستقبل الرسائل.')) {
+        return;
+      }
+      
+      try {
+        const apiUrl = `https://api.telegram.org/bot${token}/deleteWebhook`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        if (data.ok) {
+          alert('✅ تم حذف Webhook بنجاح!\n\nالآن جرب "عرض المستخدمين" - قد تظهر رسائل قديمة!');
+        } else {
+          alert('❌ فشل: ' + (data.description || 'خطأ غير معروف'));
+        }
+      } catch (error) {
+        alert('❌ خطأ: ' + error.message);
+      }
+    }
+    
+    function openDirectLink() {
+      const token = document.getElementById('bot-token').value.trim();
+      
+      if (!token) {
+        alert('⚠️ الرجاء إدخال Bot Token');
+        return;
+      }
+      
+      const url = `https://api.telegram.org/bot${token}/getUpdates`;
+      window.open(url, '_blank');
+      
+      alert('💡 ستفتح نافذة جديدة بالبيانات الخام. انسخ chat_id من هناك!');
+    }
+    
+    async function getUsers() {
+      const token = document.getElementById('bot-token').value.trim();
+      
+      if (!token) {
+        alert('⚠️ الرجاء إدخال Bot Token');
+        return;
+      }
+      
+      // Hide all sections
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('error').classList.add('hidden');
+      document.getElementById('loading').classList.remove('hidden');
+      
+      try {
+        const apiUrl = `https://api.telegram.org/bot${token}/getUpdates`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        if (!data.ok) {
+          throw new Error(data.description || 'خطأ في التوكن');
+        }
+        
+        const updates = data.result || [];
+        
+        if (updates.length === 0) {
+          throw new Error('لا توجد رسائل بعد. تأكد من أن أحداً راسل البوت.');
+        }
+        
+        // Extract unique users
+        const usersMap = new Map();
+        
+        updates.forEach(update => {
+          const message = update.message || update.edited_message;
+          if (message && message.from) {
+            const userId = message.from.id;
+            const chatId = message.chat.id;
+            
+            if (!usersMap.has(userId)) {
+              usersMap.set(userId, {
+                id: userId,
+                chatId: chatId,
+                firstName: message.from.first_name || '',
+                lastName: message.from.last_name || '',
+                username: message.from.username || '',
+                lastMessage: message.text || '',
+                date: message.date
+              });
+            } else {
+              // Update if newer
+              const existing = usersMap.get(userId);
+              if (message.date > existing.date) {
+                existing.lastMessage = message.text || '';
+                existing.date = message.date;
+              }
+            }
+          }
+        });
+        
+        usersData = Array.from(usersMap.values());
+        
+        // Display results
+        displayResults(usersData, updates.length);
+        
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('results').classList.remove('hidden');
+        
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('error').classList.remove('hidden');
+        document.getElementById('error-message').textContent = error.message;
+      }
+    }
+    
+    function displayResults(users, totalMessages) {
+      // Stats
+      document.getElementById('total-messages').textContent = totalMessages;
+      document.getElementById('total-users').textContent = users.length;
+      
+      const withName = users.filter(u => u.firstName || u.lastName).length;
+      document.getElementById('users-with-name').textContent = withName;
+      document.getElementById('users-without-name').textContent = users.length - withName;
+      
+      // Table
+      const tbody = document.getElementById('users-table');
+      tbody.innerHTML = '';
+      
+      users.forEach((user, index) => {
+        const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'بدون اسم';
+        const username = user.username ? `@${user.username}` : '-';
+        const date = new Date(user.date * 1000).toLocaleString('ar-SA');
+        
+        const row = `
+          <tr class="border-b border-white/10 hover:bg-white/5 transition">
+            <td class="text-white/90 p-3">${index + 1}</td>
+            <td class="text-white font-semibold p-3">${fullName}</td>
+            <td class="text-purple-200 p-3">${username}</td>
+            <td class="text-white font-mono p-3">${user.chatId}</td>
+            <td class="text-white/70 text-sm p-3">${user.lastMessage.substring(0, 30)}...</td>
+            <td class="p-3 text-center">
+              <button onclick="copyChatId('${user.chatId}')" 
+                      class="bg-purple-500/80 hover:bg-purple-600/80 text-white px-3 py-1 rounded-lg text-sm font-semibold transition">
+                📋
+              </button>
+            </td>
+          </tr>
+        `;
+        
+        tbody.innerHTML += row;
+      });
+    }
+    
+    function copyChatId(chatId) {
+      navigator.clipboard.writeText(chatId).then(() => {
+        alert(`✅ تم نسخ Chat ID: ${chatId}`);
+      });
+    }
+    
+    function exportToCSV() {
+      let csv = 'الاسم الأول,الاسم الأخير,Username,Chat ID,آخر رسالة\n';
+      
+      usersData.forEach(user => {
+        csv += `"${user.firstName}","${user.lastName}","${user.username}",${user.chatId},"${user.lastMessage}"\n`;
+      });
+      
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'telegram_users.csv';
+      link.click();
+    }
+  </script>
+  
+</body>
+</html>

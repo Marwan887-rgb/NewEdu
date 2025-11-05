@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>توليد اختبارات الوحدات</title>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-red-50 to-pink-100 min-h-screen p-4">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- العنوان -->
+    <div class="bg-white rounded-2xl shadow-2xl p-6 mb-6">
+      <h1 class="text-4xl font-bold text-red-700 mb-3 text-center">📋 توليد اختبارات الوحدات</h1>
+      <p class="text-gray-600 text-center">توليد اختبار نهائي شامل لكل وحدة (10 أسئلة متنوعة)</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- القسم الأيسر: الإدخال -->
+      <div class="space-y-6">
+        
+        <!-- مفتاح API -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">🔑 الإعدادات</h2>
+          
+          <label class="block text-gray-700 font-bold mb-2">مفتاح DeepSeek API:</label>
+          <input type="password" id="apiKey" 
+            placeholder="sk-..." 
+            class="w-full border-2 border-gray-300 rounded-lg p-3 mb-2 focus:border-red-500 focus:outline-none">
+          <button onclick="saveApiKey()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 rounded-lg mt-2">
+            💾 حفظ المفتاح محلياً
+          </button>
+        </div>
+
+        <!-- اختيار الوحدة -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">📚 الوحدة الدراسية</h2>
+          
+          <label class="block text-gray-700 font-bold mb-2">اختر الوحدة:</label>
+          <select id="unitSelect" class="w-full border-2 border-gray-300 rounded-lg p-3 mb-4 focus:border-red-500 focus:outline-none">
+            <option value="">-- اختر وحدة --</option>
+            <option value="20">الوحدة الأولى: تخطيط المشروعات</option>
+            <option value="21">الوحدة الثانية: دورة حياة النظام</option>
+            <option value="22">الوحدة الثالثة: تطبيقات الهواتف الذكية</option>
+          </select>
+
+          <div id="unitInfo" class="hidden bg-red-50 rounded-lg p-4">
+            <p class="text-red-800 font-semibold" id="unitName"></p>
+            <div class="mt-3 bg-white rounded p-3 text-sm">
+              <p class="font-bold text-gray-700 mb-2">📝 تفاصيل الاختبار:</p>
+              <ul class="space-y-1 text-gray-600">
+                <li>✓ 4 أسئلة صح/خطأ</li>
+                <li>✓ 4 أسئلة اختيار من متعدد</li>
+                <li>✓ 2 أسئلة تعريفات</li>
+                <li class="font-bold text-red-700 mt-2">= 10 أسئلة إجمالاً</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- محتوى الدروس -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">📄 محتوى الوحدة</h2>
+          
+          <label class="block text-gray-700 font-bold mb-2">انسخ محتوى دروس الوحدة:</label>
+          <textarea id="lessonsContent" 
+            rows="10" 
+            placeholder="انسخ محتوى جميع دروس الوحدة هنا...
+يمكن نسخها من:
+• المراجعة التي تم توليدها
+• العروض التقديمية
+• ملاحظات الدروس"
+            class="w-full border-2 border-gray-300 rounded-lg p-4 focus:border-red-500 focus:outline-none font-mono text-sm"></textarea>
+        </div>
+
+        <!-- زر التوليد -->
+        <button onclick="generateExam()" 
+          class="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl shadow-lg transition text-xl">
+          ✨ توليد الاختبار
+        </button>
+
+      </div>
+
+      <!-- القسم الأيمن: النتيجة -->
+      <div class="space-y-6">
+        
+        <!-- حالة العملية -->
+        <div id="status" class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 الحالة</h2>
+          <div id="statusContent" class="text-gray-600">
+            <p>⏳ في انتظار بدء التوليد...</p>
+          </div>
+        </div>
+
+        <!-- الاختبار المولد -->
+        <div id="examOutput" class="hidden bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">✅ الاختبار المولد</h2>
+          
+          <div class="bg-gray-50 rounded-lg p-4 mb-4 max-h-[500px] overflow-y-auto">
+            <div id="examPreview"></div>
+          </div>
+
+          <div class="flex gap-4">
+            <button onclick="saveExam()" 
+              class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+              💾 حفظ في قاعدة البيانات
+            </button>
+          </div>
+        </div>
+
+        <!-- السجل -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 السجل</h2>
+          <div id="log" class="space-y-2 max-h-64 overflow-y-auto"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let generatedExam = null;
+    let selectedUnitId = null;
+
+    const unitNames = {
+      '20': 'الوحدة الأولى: تخطيط المشروعات',
+      '21': 'الوحدة الثانية: دورة حياة النظام',
+      '22': 'الوحدة الثالثة: تطبيقات الهواتف الذكية'
+    };
+
+    // تحميل المفتاح المحفوظ أو من config.js
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('deepseek_api_key');
+      const configKey = typeof DEEPSEEK_CONFIG !== 'undefined' ? DEEPSEEK_CONFIG.API_KEY : null;
+      
+      if (savedKey) {
+        document.getElementById('apiKey').value = savedKey;
+        log('✅ تم تحميل مفتاح API من localStorage', 'success');
+      } else if (configKey && configKey !== 'ضع_المفتاح_هنا' && configKey !== 'YOUR_DEEPSEEK_API_KEY_HERE') {
+        document.getElementById('apiKey').value = configKey;
+        log('✅ تم تحميل مفتاح API من config.js', 'success');
+      }
+    });
+
+    // حفظ المفتاح
+    function saveApiKey() {
+      const key = document.getElementById('apiKey').value.trim();
+      if (key) {
+        localStorage.setItem('deepseek_api_key', key);
+        log('✅ تم حفظ المفتاح', 'success');
+        alert('✅ تم حفظ المفتاح');
+      } else {
+        alert('⚠️ الرجاء إدخال المفتاح');
+      }
+    }
+
+    // عند اختيار وحدة
+    document.getElementById('unitSelect').addEventListener('change', function() {
+      selectedUnitId = this.value;
+      if (selectedUnitId) {
+        document.getElementById('unitInfo').classList.remove('hidden');
+        document.getElementById('unitName').textContent = unitNames[selectedUnitId];
+        log(`تم اختيار: ${unitNames[selectedUnitId]}`, 'info');
+      } else {
+        document.getElementById('unitInfo').classList.add('hidden');
+      }
+    });
+
+    // تسجيل الأحداث
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const colors = {
+        info: 'bg-blue-50 border-blue-200 text-blue-800',
+        success: 'bg-green-50 border-green-200 text-green-800',
+        error: 'bg-red-50 border-red-200 text-red-800'
+      };
+      const entry = document.createElement('div');
+      entry.className = `p-2 rounded border ${colors[type]} text-xs`;
+      entry.innerHTML = `<strong>${new Date().toLocaleTimeString('ar-SA')}</strong> - ${message}`;
+      logDiv.insertBefore(entry, logDiv.firstChild);
+    }
+
+    // تحديث الحالة
+    function updateStatus(message, type = 'info') {
+      const statusContent = document.getElementById('statusContent');
+      const icons = { info: '⏳', loading: '🔄', success: '✅', error: '❌' };
+      const colors = { info: 'text-gray-600', loading: 'text-blue-600', success: 'text-green-600', error: 'text-red-600' };
+      statusContent.innerHTML = `<p class="${colors[type]} font-semibold text-lg">${icons[type]} ${message}</p>`;
+    }
+
+    // توليد الاختبار
+    async function generateExam() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const lessonsContent = document.getElementById('lessonsContent').value.trim();
+
+      if (!apiKey) {
+        alert('⚠️ الرجاء إدخال مفتاح API');
+        return;
+      }
+
+      if (!selectedUnitId) {
+        alert('⚠️ الرجاء اختيار الوحدة');
+        return;
+      }
+
+      if (!lessonsContent) {
+        alert('⚠️ الرجاء نسخ محتوى الوحدة');
+        return;
+      }
+
+      try {
+        updateStatus('جارٍ توليد الاختبار...', 'loading');
+        log(`بدء توليد اختبار: ${unitNames[selectedUnitId]}`, 'info');
+
+        const prompt = `أنت معلم خبير في مادة الحاسب وتقنية المعلومات.
+
+الوحدة: ${unitNames[selectedUnitId]}
+
+محتوى الوحدة:
+${lessonsContent}
+
+المطلوب:
+أنشئ اختباراً نهائياً شاملاً يتكون من 10 أسئلة كالتالي:
+
+1️⃣ أسئلة صح/خطأ (4 أسئلة):
+- سؤال واضح ومباشر
+- الإجابة: صح أو خطأ
+
+2️⃣ أسئلة اختيار من متعدد (4 أسئلة):
+- السؤال
+- 4 خيارات (أ، ب، ج، د)
+- خيار واحد صحيح
+
+3️⃣ أسئلة تعريفات (2 سؤال):
+- "عرّف المصطلح التالي: [مصطلح]"
+- الطالب يكتب التعريف
+
+⚠️ التنسيق المطلوب (بدقة):
+
+أرجع JSON صالح فقط بهذا التنسيق:
+
+{
+  "true_false": [
+    {"question": "نص السؤال", "answer": true},
+    {"question": "نص السؤال", "answer": false},
+    ...
+  ],
+  "mcq": [
+    {
+      "question": "نص السؤال",
+      "options": ["أ) ...", "ب) ...", "ج) ...", "د) ..."],
+      "answer": 0
+    },
+    ...
+  ],
+  "definitions": [
+    {"term": "المصطلح", "answer": "التعريف الصحيح"},
+    ...
+  ]
+}
+
+ملاحظات:
+- answer في MCQ هو رقم الخيار (0-3)
+- answer في true_false هو true أو false
+- الأسئلة تغطي كامل موضوعات الوحدة
+- مستوى الصعوبة متوسط
+- لغة واضحة وسليمة
+
+أرجع JSON فقط، بدون أي نص إضافي.`;
+
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: 'أنت معلم خبير. أرجع JSON صالح فقط.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 3000
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error?.message || `خطأ ${response.status}`);
+        }
+
+        const data = await response.json();
+        let content = data.choices[0].message.content.trim();
+        
+        // إزالة أي نص قبل أو بعد JSON
+        content = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          content = jsonMatch[0];
+        }
+
+        generatedExam = JSON.parse(content);
+
+        // عرض معاينة
+        displayExamPreview(generatedExam);
+        document.getElementById('examOutput').classList.remove('hidden');
+        
+        updateStatus('تم توليد الاختبار بنجاح! ✨', 'success');
+        log(`✅ تم التوليد (${generatedExam.true_false.length + generatedExam.mcq.length + generatedExam.definitions.length} سؤال)`, 'success');
+
+      } catch (error) {
+        updateStatus(`فشل التوليد: ${error.message}`, 'error');
+        log(`❌ خطأ: ${error.message}`, 'error');
+        alert(`❌ خطأ: ${error.message}`);
+      }
+    }
+
+    // عرض معاينة الاختبار
+    function displayExamPreview(exam) {
+      let html = '<div class="space-y-4">';
+      
+      // صح/خطأ
+      html += '<h3 class="font-bold text-lg text-red-800 mb-2">✓ أسئلة صح/خطأ:</h3>';
+      exam.true_false.forEach((q, i) => {
+        html += `<div class="bg-white p-3 rounded border">
+          <p class="font-semibold">${i+1}. ${q.question}</p>
+          <p class="text-sm text-green-600 mt-1">الإجابة: ${q.answer ? 'صح' : 'خطأ'}</p>
+        </div>`;
+      });
+
+      // اختيار متعدد
+      html += '<h3 class="font-bold text-lg text-red-800 mb-2 mt-4">📝 أسئلة اختيار من متعدد:</h3>';
+      exam.mcq.forEach((q, i) => {
+        html += `<div class="bg-white p-3 rounded border">
+          <p class="font-semibold">${i+1}. ${q.question}</p>
+          <ul class="text-sm mt-2 space-y-1">
+            ${q.options.map((opt, idx) => `<li class="${idx === q.answer ? 'text-green-600 font-bold' : ''}">${opt}</li>`).join('')}
+          </ul>
+        </div>`;
+      });
+
+      // تعريفات
+      html += '<h3 class="font-bold text-lg text-red-800 mb-2 mt-4">📚 أسئلة التعريفات:</h3>';
+      exam.definitions.forEach((q, i) => {
+        html += `<div class="bg-white p-3 rounded border">
+          <p class="font-semibold">${i+1}. عرّف: ${q.term}</p>
+          <p class="text-sm text-green-600 mt-1">الإجابة: ${q.answer}</p>
+        </div>`;
+      });
+
+      html += '</div>';
+      document.getElementById('examPreview').innerHTML = html;
+    }
+
+    // حفظ الاختبار
+    async function saveExam() {
+      if (!selectedUnitId || !generatedExam) {
+        alert('⚠️ لا يوجد اختبار لحفظه');
+        return;
+      }
+
+      if (!confirm(`هل تريد حفظ هذا الاختبار؟`)) {
+        return;
+      }
+
+      try {
+        updateStatus('جارٍ الحفظ...', 'loading');
+        log(`حفظ الاختبار للوحدة ID: ${selectedUnitId}`, 'info');
+
+        const { data, error } = await supabase
+          .from('final_exams')
+          .upsert({
+            lesson_id: parseInt(selectedUnitId),
+            questions: generatedExam,
+            total_questions: generatedExam.true_false.length + generatedExam.mcq.length + generatedExam.definitions.length
+          }, { onConflict: 'lesson_id' });
+
+        if (error) throw error;
+
+        updateStatus('تم الحفظ بنجاح! 🎉', 'success');
+        log(`✅ تم حفظ الاختبار في final_exams`, 'success');
+        
+        alert('✅ تم حفظ الاختبار بنجاح!');
+
+        setTimeout(() => {
+          document.getElementById('examOutput').classList.add('hidden');
+          document.getElementById('unitSelect').value = '';
+          document.getElementById('lessonsContent').value = '';
+          document.getElementById('unitInfo').classList.add('hidden');
+          generatedExam = null;
+          selectedUnitId = null;
+          updateStatus('في انتظار بدء التوليد...', 'info');
+        }, 3000);
+
+      } catch (error) {
+        updateStatus(`فشل الحفظ: ${error.message}`, 'error');
+        log(`❌ خطأ: ${error.message}`, 'error');
+        alert(`❌ خطأ: ${error.message}`);
+      }
+    }
+  </script>
+</body>
+</html>

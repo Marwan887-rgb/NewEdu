@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدخال محتوى الدروس | EduActive</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #667eea;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .card-title {
+      font-size: 1.8rem;
+      color: #667eea;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lessons-list {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .lesson-item {
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lesson-item:hover {
+      background: #f8f9fa;
+      transform: translateX(-5px);
+    }
+
+    .lesson-item.active {
+      background: #e7e9fc;
+      border-color: #667eea;
+      font-weight: bold;
+    }
+
+    .lesson-item.has-content {
+      border-left: 4px solid #28a745;
+      background: #f0fff4;
+    }
+
+    .lesson-item.no-content {
+      border-left: 4px solid #dc3545;
+      background: #fff5f5;
+    }
+
+    .lesson-type {
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .type-lesson { background: #e7e9fc; color: #667eea; }
+    .type-review { background: #fce7f3; color: #db2777; }
+    .type-project { background: #dbeafe; color: #2563eb; }
+    .type-exam { background: #fef3c7; color: #d97706; }
+    .type-activity { background: #d1fae5; color: #059669; }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 400px;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Courier New', monospace;
+      resize: vertical;
+      transition: all 0.3s;
+      line-height: 1.6;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 2px solid #ffeaa7;
+    }
+
+    .info-box {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .char-count {
+      text-align: left;
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>📝 إدخال محتوى الدروس</h1>
+      <p>أضف المحتوى النصي لكل درس لاستخدامه في توليد المراجعات والاختبارات</p>
+    </div>
+
+    <button onclick="window.location.href='teacher.html'" class="btn btn-secondary" style="margin-bottom: 1rem;">
+      ← العودة للوحة المعلم
+    </button>
+
+    <!-- Statistics -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="total-lessons">0</div>
+        <div class="stat-label">إجمالي الدروس</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="completed-lessons">0</div>
+        <div class="stat-label">تم إدخال المحتوى</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="remaining-lessons">0</div>
+        <div class="stat-label">متبقي</div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Lessons List -->
+      <div class="card">
+        <h2 class="card-title">📚 قائمة الدروس</h2>
+        <div class="info-box">
+          <strong>🟢 أخضر:</strong> تم إدخال المحتوى<br>
+          <strong>🔴 أحمر:</strong> لم يتم إدخال المحتوى
+        </div>
+        <div id="lessons-list" class="lessons-list">
+          <div class="loader"></div>
+        </div>
+      </div>
+
+      <!-- Content Editor -->
+      <div class="card">
+        <h2 class="card-title" id="editor-title">✏️ محرر المحتوى</h2>
+        
+        <div id="editor-area">
+          <div class="empty-state">
+            <div class="empty-state-icon">📖</div>
+            <p>اختر درساً من القائمة لإدخال محتواه</p>
+          </div>
+        </div>
+
+        <div id="editor-form" style="display: none;">
+          <div class="info-box" id="lesson-info"></div>
+          
+          <div class="form-group">
+            <label>محتوى الدرس:</label>
+            <textarea id="content-input" placeholder="أدخل محتوى الدرس النصي هنا...
+
+مثال:
+- المفاهيم الأساسية
+- الشرح التفصيلي
+- الأمثلة
+- التطبيقات
+- الملاحظات المهمة"></textarea>
+            <div class="char-count">
+              <span id="char-count">0</span> حرف
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem;">
+            <button onclick="saveContent()" class="btn btn-success" id="save-btn">
+              💾 حفظ المحتوى
+            </button>
+            <button onclick="clearEditor()" class="btn btn-secondary">
+              🗑️ مسح
+            </button>
+          </div>
+
+          <div id="save-result"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+
+    let supabase;
+    let allLessons = [];
+    let lessonsWithContent = [];
+    let currentLessonId = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      await loadLessons();
+      
+      // Character counter
+      document.getElementById('content-input')?.addEventListener('input', (e) => {
+        document.getElementById('char-count').textContent = e.target.value.length;
+      });
+    });
+
+    // Load all lessons
+    async function loadLessons() {
+      try {
+        // Get only lessons (type = 'lesson')
+        const { data: lessons, error: lessonsError } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('type', 'lesson')
+          .order('id');
+
+        if (lessonsError) throw lessonsError;
+        allLessons = lessons;
+
+        // Get lessons with content
+        const { data: contents, error: contentsError } = await supabase
+          .from('lesson_content')
+          .select('lesson_id');
+
+        if (contentsError) throw contentsError;
+        lessonsWithContent = contents ? contents.map(c => c.lesson_id) : [];
+
+        // Update stats
+        document.getElementById('total-lessons').textContent = allLessons.length;
+        document.getElementById('completed-lessons').textContent = lessonsWithContent.length;
+        document.getElementById('remaining-lessons').textContent = allLessons.length - lessonsWithContent.length;
+
+        // Render lessons list
+        renderLessonsList();
+
+      } catch (error) {
+        console.error('Error loading lessons:', error);
+        document.getElementById('lessons-list').innerHTML = `
+          <div class="alert alert-error">
+            ❌ خطأ في تحميل الدروس: ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    // Render lessons list
+    function renderLessonsList() {
+      const listDiv = document.getElementById('lessons-list');
+      
+      if (allLessons.length === 0) {
+        listDiv.innerHTML = '<p class="text-center text-gray-500">لا توجد دروس</p>';
+        return;
+      }
+
+      let html = '';
+      
+      allLessons.forEach(lesson => {
+        const hasContent = lessonsWithContent.includes(lesson.id);
+        const contentClass = hasContent ? 'has-content' : 'no-content';
+        
+        html += `
+          <div class="lesson-item ${contentClass}" onclick="selectLesson(${lesson.id})">
+            ${hasContent ? '✅' : '❌'}
+            <span class="lesson-type type-lesson">درس ${lesson.id}</span>
+            <div style="flex: 1;">
+              <strong>${lesson.title || 'بدون عنوان'}</strong>
+              <div style="font-size: 0.85rem; color: #666;">
+                ${lesson.unit || ''} ${lesson.week_number ? '• الأسبوع ' + lesson.week_number : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      listDiv.innerHTML = html;
+    }
+
+    // Select lesson
+    async function selectLesson(lessonId) {
+      currentLessonId = lessonId;
+      const lesson = allLessons.find(l => l.id === lessonId);
+      
+      if (!lesson) return;
+
+      // Update active state
+      document.querySelectorAll('.lesson-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+
+      // Show editor
+      document.getElementById('editor-area').style.display = 'none';
+      document.getElementById('editor-form').style.display = 'block';
+      document.getElementById('editor-title').textContent = `✏️ ${lesson.title || 'بدون عنوان'}`;
+
+      // Update lesson info
+      document.getElementById('lesson-info').innerHTML = `
+        <strong>📌 رقم الدرس:</strong> ${lesson.id}<br>
+        <strong>📚 الوحدة:</strong> ${lesson.unit || 'غير محدد'}<br>
+        <strong>📅 الأسبوع:</strong> ${lesson.week_number ? 'الأسبوع ' + lesson.week_number : 'غير محدد'}
+      `;
+
+      // Load existing content if any
+      try {
+        const { data, error } = await supabase
+          .from('lesson_content')
+          .select('content')
+          .eq('lesson_id', lessonId)
+          .single();
+
+        if (!error && data) {
+          document.getElementById('content-input').value = data.content;
+          document.getElementById('char-count').textContent = data.content.length;
+        } else {
+          document.getElementById('content-input').value = '';
+          document.getElementById('char-count').textContent = '0';
+        }
+
+        document.getElementById('save-result').innerHTML = '';
+      } catch (error) {
+        console.error('Error loading content:', error);
+      }
+
+      // Scroll to top of editor
+      document.getElementById('editor-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Save content
+    async function saveContent() {
+      if (!currentLessonId) {
+        alert('الرجاء اختيار درس أولاً');
+        return;
+      }
+
+      const content = document.getElementById('content-input').value.trim();
+      
+      if (!content) {
+        alert('الرجاء إدخال محتوى الدرس');
+        return;
+      }
+
+      const btn = document.getElementById('save-btn');
+      const resultDiv = document.getElementById('save-result');
+      
+      btn.disabled = true;
+      btn.innerHTML = '⏳ جاري الحفظ...';
+      resultDiv.innerHTML = '';
+
+      try {
+        const { error } = await supabase
+          .from('lesson_content')
+          .upsert({
+            lesson_id: currentLessonId,
+            content: content,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'lesson_id'
+          });
+
+        if (error) throw error;
+
+        resultDiv.innerHTML = `
+          <div class="alert alert-success">
+            ✅ تم حفظ المحتوى بنجاح!
+          </div>
+        `;
+
+        // Reload lessons to update status
+        await loadLessons();
+
+        // Update active lesson styling
+        setTimeout(() => {
+          const lessonItems = document.querySelectorAll('.lesson-item');
+          lessonItems.forEach(item => {
+            if (item.classList.contains('active')) {
+              item.classList.remove('no-content');
+              item.classList.add('has-content');
+              item.innerHTML = item.innerHTML.replace('❌', '✅');
+            }
+          });
+        }, 100);
+
+      } catch (error) {
+        console.error('Error saving content:', error);
+        resultDiv.innerHTML = `
+          <div class="alert alert-error">
+            ❌ خطأ في الحفظ: ${error.message}
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💾 حفظ المحتوى';
+      }
+    }
+
+    // Clear editor
+    function clearEditor() {
+      if (confirm('هل أنت متأكد من مسح المحتوى؟')) {
+        document.getElementById('content-input').value = '';
+        document.getElementById('char-count').textContent = '0';
+        document.getElementById('save-result').innerHTML = '';
+      }
+    }
+  </script>
+</body>
+</html>

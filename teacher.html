@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>لوحة المعلم</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-6xl mx-auto p-6 space-y-6">
+    <h1 class="text-2xl font-bold text-indigo-700">لوحة المعلم</h1>
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <input id="teacherPass" type="password" placeholder="كلمة المرور" class="border rounded p-2" />
+        <input id="filterMobile" type="text" placeholder="جوال الطالب (اختياري)" class="border rounded p-2" />
+        <input id="filterLessonId" type="number" placeholder="رقم الدرس (اختياري)" class="border rounded p-2" />
+        <select id="filterTask" class="border rounded p-2">
+          <option value="">كل المهام</option>
+          <option value="lesson">عرض الدرس</option>
+          <option value="video">فيديو</option>
+          <option value="worksheet">ورقة عمل</option>
+          <option value="assignment">واجب</option>
+          <option value="final">تقويم نهائي</option>
+        </select>
+        <button id="loadBtn" class="bg-indigo-600 text-white rounded p-2">تحميل</button>
+      </div>
+      <p id="status" class="text-sm text-gray-600"></p>
+    </div>
+    <div class="bg-white rounded-xl shadow overflow-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-3 py-2 text-right">الوقت</th>
+            <th class="px-3 py-2 text-right">الجوال</th>
+            <th class="px-3 py-2 text-right">الاسم</th>
+            <th class="px-3 py-2 text-right">الصف</th>
+            <th class="px-3 py-2 text-right">الدرس</th>
+            <th class="px-3 py-2 text-right">المهمة</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const FUNCTIONS_BASE = window.FUNCTIONS_BASE || 'https://us-central1-edu2-740e0.cloudfunctions.net';
+    const loadBtn = document.getElementById('loadBtn');
+    const rows = document.getElementById('rows');
+    const status = document.getElementById('status');
+
+    async function apiGet(path, headers) {
+      const res = await fetch(`${FUNCTIONS_BASE}/${path}`, { headers: headers || {} });
+      return res.json();
+    }
+
+    function render(items) {
+      rows.innerHTML = '';
+      items.forEach(it => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b';
+        const ts = it.timestamp || '';
+        tr.innerHTML = `
+          <td class="px-3 py-2">${ts}</td>
+          <td class="px-3 py-2">${it.studentMobile || ''}</td>
+          <td class="px-3 py-2">${it.studentName || ''}</td>
+          <td class="px-3 py-2">${it.class || ''}</td>
+          <td class="px-3 py-2">${it.lessonTitle || it.lessonId || ''}</td>
+          <td class="px-3 py-2">${it.task || ''}</td>
+        `;
+        rows.appendChild(tr);
+      });
+    }
+
+    loadBtn.addEventListener('click', async () => {
+      status.textContent = 'جارٍ التحميل...';
+      rows.innerHTML = '';
+      const pass = document.getElementById('teacherPass').value.trim();
+      const mobile = document.getElementById('filterMobile').value.trim();
+      const lessonId = document.getElementById('filterLessonId').value.trim();
+      const task = document.getElementById('filterTask').value;
+      const q = new URLSearchParams();
+      if (mobile) q.set('mobile', mobile);
+      if (lessonId) q.set('lessonId', lessonId);
+      if (task) q.set('task', task);
+      try {
+        const data = await apiGet(`listAllProgress?${q.toString()}`, { 'x-teacher-password': pass });
+        if (data && data.success) {
+          render(data.items || []);
+          status.textContent = '';
+        } else {
+          status.textContent = (data && data.message) || 'فشل التحميل';
+        }
+      } catch (e) {
+        status.textContent = 'حدث خطأ';
+      }
+    });
+  </script>
+</body>
+</html>

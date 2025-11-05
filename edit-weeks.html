@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تعديل أسابيع الدروس | EduActive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen p-6">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <h1 class="text-4xl font-bold text-purple-700 mb-2 flex items-center gap-3">
+        <span>📅</span>
+        <span>تعديل أسابيع الدروس</span>
+      </h1>
+      <p class="text-gray-600">عدّل رقم الأسبوع لكل درس، ثم احفظ التغييرات</p>
+    </div>
+
+    <button onclick="window.location.href='teacher.html'" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold mb-6 transition">
+      ← العودة للوحة المعلم
+    </button>
+
+    <!-- إحصائيات -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+        <div class="text-4xl font-bold text-blue-600" id="totalLessons">0</div>
+        <div class="text-gray-600 font-bold mt-2">إجمالي الدروس</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+        <div class="text-4xl font-bold text-green-600" id="withWeeks">0</div>
+        <div class="text-gray-600 font-bold mt-2">دروس محددة بأسبوع</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+        <div class="text-4xl font-bold text-red-600" id="withoutWeeks">0</div>
+        <div class="text-gray-600 font-bold mt-2">دروس بدون أسبوع</div>
+      </div>
+    </div>
+
+    <!-- رسالة الحالة -->
+    <div id="statusMessage" class="mb-4"></div>
+
+    <!-- جدول الدروس -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+            <tr>
+              <th class="px-4 py-4 text-right font-bold">ID</th>
+              <th class="px-4 py-4 text-right font-bold">عنوان الدرس</th>
+              <th class="px-4 py-4 text-right font-bold">الوحدة</th>
+              <th class="px-4 py-4 text-right font-bold">النوع</th>
+              <th class="px-4 py-4 text-right font-bold">الأسبوع الحالي</th>
+              <th class="px-4 py-4 text-right font-bold">الأسبوع الجديد</th>
+              <th class="px-4 py-4 text-center font-bold">حفظ</th>
+            </tr>
+          </thead>
+          <tbody id="lessonsTable">
+            <tr>
+              <td colspan="7" class="text-center py-12">
+                <div class="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                <p class="text-gray-500">جاري تحميل الدروس...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- أزرار سريعة -->
+    <div class="mt-6 bg-white rounded-2xl shadow-lg p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">🚀 أدوات سريعة:</h3>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="removeWeeks(17, 18)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold transition">
+          ❌ إزالة الأسابيع 17 و 18
+        </button>
+        <button onclick="loadLessons()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold transition">
+          🔄 إعادة تحميل
+        </button>
+        <button onclick="showOnlyEmpty()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-bold transition">
+          ⚠️ عرض الدروس بدون أسبوع فقط
+        </button>
+        <button onclick="loadLessons()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold transition">
+          👁️ عرض الكل
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://hsjsidhqikgckgqcpxnf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzanNpZGhxaWtnY2tncWNweG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk1MTExNzgsImV4cCI6MjA0NTA4NzE3OH0.Z4DXjcbxPv_iy2lrL_fsCfOECKz3AJ-1Sme1u6yiQaU';
+    
+    let supabase;
+    let allLessons = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      loadLessons();
+    });
+
+    // تحميل جميع الدروس
+    async function loadLessons() {
+      try {
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        allLessons = data;
+        renderLessons(data);
+        updateStats(data);
+      } catch (error) {
+        showStatus('❌ خطأ في تحميل الدروس: ' + error.message, 'error');
+      }
+    }
+
+    // عرض الدروس في الجدول
+    function renderLessons(lessons) {
+      const tbody = document.getElementById('lessonsTable');
+      
+      if (!lessons || lessons.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-8 text-gray-400">
+              لا توجد دروس
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const typeLabels = {
+        lesson: '📚 درس',
+        review: '🔄 مراجعة',
+        project: '💼 مشروع',
+        exam: '🎯 تقويم',
+        activity: '✏️ نشاط',
+        unit_exam: '📝 اختبار وحدة'
+      };
+
+      tbody.innerHTML = lessons.map(lesson => {
+        const typeLabel = typeLabels[lesson.type] || '📄 عنصر';
+        const rowColor = lesson.week_number ? '' : 'bg-yellow-50';
+        
+        return `
+          <tr class="border-b hover:bg-gray-50 ${rowColor}" id="row-${lesson.id}">
+            <td class="px-4 py-3 font-bold text-gray-700">${lesson.id}</td>
+            <td class="px-4 py-3 text-gray-800 font-semibold">${lesson.title || 'بدون عنوان'}</td>
+            <td class="px-4 py-3 text-gray-600 text-sm">${lesson.unit || '-'}</td>
+            <td class="px-4 py-3 text-sm">${typeLabel}</td>
+            <td class="px-4 py-3">
+              <span class="inline-block px-3 py-1 rounded-full text-sm font-bold ${lesson.week_number ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                ${lesson.week_number || 'غير محدد'}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <input type="number" 
+                id="week-${lesson.id}" 
+                value="${lesson.week_number || ''}" 
+                min="1" 
+                max="20"
+                placeholder="الأسبوع"
+                class="w-24 border-2 border-gray-300 rounded-lg px-3 py-2 text-center font-bold focus:border-purple-500 focus:outline-none">
+            </td>
+            <td class="px-4 py-3 text-center">
+              <button onclick="saveWeek(${lesson.id})" 
+                class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-bold transition">
+                💾 حفظ
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // حفظ أسبوع درس واحد
+    async function saveWeek(lessonId) {
+      const input = document.getElementById(`week-${lessonId}`);
+      const weekNumber = input.value ? parseInt(input.value) : null;
+
+      try {
+        const { error } = await supabase
+          .from('lessons')
+          .update({ week_number: weekNumber })
+          .eq('id', lessonId);
+
+        if (error) throw error;
+
+        // تحديث الصف بصرياً
+        const row = document.getElementById(`row-${lessonId}`);
+        row.classList.remove('bg-yellow-50');
+        row.classList.add('bg-green-50');
+        
+        setTimeout(() => {
+          row.classList.remove('bg-green-50');
+        }, 1000);
+
+        showStatus(`✅ تم حفظ الأسبوع ${weekNumber || 'فارغ'} للدرس #${lessonId}`, 'success');
+        
+        // إعادة تحميل لتحديث الإحصائيات
+        await loadLessons();
+      } catch (error) {
+        showStatus('❌ خطأ في الحفظ: ' + error.message, 'error');
+      }
+    }
+
+    // إزالة أسابيع معينة
+    async function removeWeeks(...weeks) {
+      if (!confirm(`هل أنت متأكد من إزالة الأسابيع: ${weeks.join(', ')}؟`)) {
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('lessons')
+          .update({ week_number: null })
+          .in('week_number', weeks);
+
+        if (error) throw error;
+
+        showStatus(`✅ تم إزالة الأسابيع: ${weeks.join(', ')}`, 'success');
+        await loadLessons();
+      } catch (error) {
+        showStatus('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    // عرض الدروس بدون أسبوع فقط
+    function showOnlyEmpty() {
+      const filtered = allLessons.filter(l => !l.week_number);
+      renderLessons(filtered);
+      showStatus(`📊 عرض ${filtered.length} درس بدون أسبوع`, 'info');
+    }
+
+    // تحديث الإحصائيات
+    function updateStats(lessons) {
+      const total = lessons.length;
+      const withWeeks = lessons.filter(l => l.week_number).length;
+      const withoutWeeks = total - withWeeks;
+
+      document.getElementById('totalLessons').textContent = total;
+      document.getElementById('withWeeks').textContent = withWeeks;
+      document.getElementById('withoutWeeks').textContent = withoutWeeks;
+    }
+
+    // عرض رسالة حالة
+    function showStatus(message, type) {
+      const colors = {
+        success: 'bg-green-100 border-green-500 text-green-700',
+        error: 'bg-red-100 border-red-500 text-red-700',
+        info: 'bg-blue-100 border-blue-500 text-blue-700'
+      };
+
+      document.getElementById('statusMessage').innerHTML = `
+        <div class="${colors[type]} border-2 rounded-lg p-4 font-bold text-center">
+          ${message}
+        </div>
+      `;
+
+      setTimeout(() => {
+        document.getElementById('statusMessage').innerHTML = '';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

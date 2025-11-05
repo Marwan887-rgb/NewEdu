@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حذف طلاب فصل</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-red-700 mb-6 text-center">🗑️ حذف طلاب فصل</h1>
+    
+    <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+      <p class="text-yellow-800 font-semibold">⚠️ تحذير:</p>
+      <p class="text-yellow-700 text-sm mt-1">
+        هذا الإجراء سيحذف جميع الطلاب في الفصل المحدد نهائياً. تأكد من اختيار الفصل الصحيح!
+      </p>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Step 1: View Classes -->
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h2 class="text-xl font-bold text-gray-800 mb-3">الخطوة 1: عرض الفصول</h2>
+        <button onclick="loadClasses()" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+          📋 عرض جميع الفصول
+        </button>
+        <div id="classesList" class="mt-4"></div>
+      </div>
+
+      <!-- Step 2: Select and Delete -->
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h2 class="text-xl font-bold text-gray-800 mb-3">الخطوة 2: حذف فصل</h2>
+        <div class="flex gap-3">
+          <input type="text" 
+                 id="classToDelete" 
+                 placeholder="اكتب اسم الفصل (مثال: الثالث الثانوي)" 
+                 class="flex-1 border-2 border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-red-500">
+          <button onclick="deleteClass()" 
+                  class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition whitespace-nowrap">
+            🗑️ حذف الفصل
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Message -->
+      <div id="statusMessage"></div>
+    </div>
+  </div>
+
+  <script>
+    // إعدادات Supabase
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      const colors = {
+        success: 'bg-green-50 border-green-200 text-green-800',
+        error: 'bg-red-50 border-red-200 text-red-800',
+        info: 'bg-blue-50 border-blue-200 text-blue-800',
+        warning: 'bg-yellow-50 border-yellow-200 text-yellow-800'
+      };
+      const color = colors[type] || colors.info;
+      statusDiv.innerHTML = `
+        <div class="${color} border-2 rounded-lg p-4">
+          <p class="font-semibold">${message}</p>
+        </div>`;
+    }
+
+    async function loadClasses() {
+      const listDiv = document.getElementById('classesList');
+      listDiv.innerHTML = '<p class="text-gray-500 text-sm">جارٍ التحميل...</p>';
+
+      try {
+        const { data: students, error } = await supabase
+          .from('students')
+          .select('class');
+
+        if (error) throw error;
+
+        // تجميع الطلاب حسب الفصل
+        const classes = {};
+        students.forEach(student => {
+          const className = student.class || 'غير محدد';
+          if (!classes[className]) {
+            classes[className] = 0;
+          }
+          classes[className]++;
+        });
+
+        if (Object.keys(classes).length === 0) {
+          listDiv.innerHTML = '<p class="text-gray-500 text-sm">لا توجد فصول</p>';
+          return;
+        }
+
+        // عرض الفصول
+        listDiv.innerHTML = `
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-gray-700 mb-2">الفصول المتوفرة:</p>
+            ${Object.keys(classes).sort().map(className => `
+              <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition">
+                <div>
+                  <span class="font-semibold text-gray-800">📚 ${className}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-600">${classes[className]} طالب</span>
+                  <button onclick="document.getElementById('classToDelete').value = '${className}'" 
+                          class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm font-semibold transition">
+                    اختر →
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading classes:', error);
+        listDiv.innerHTML = '<p class="text-red-500 text-sm">❌ خطأ في تحميل الفصول</p>';
+      }
+    }
+
+    async function deleteClass() {
+      const className = document.getElementById('classToDelete').value.trim();
+
+      if (!className) {
+        showStatus('⚠️ الرجاء إدخال اسم الفصل', 'warning');
+        return;
+      }
+
+      // التحقق من عدد الطلاب
+      try {
+        const { data: students, error: fetchError } = await supabase
+          .from('students')
+          .select('*')
+          .eq('class', className);
+
+        if (fetchError) throw fetchError;
+
+        if (!students || students.length === 0) {
+          showStatus(`⚠️ لا يوجد طلاب في فصل "${className}"`, 'warning');
+          return;
+        }
+
+        // تأكيد الحذف
+        const confirmMessage = `⚠️ هل أنت متأكد من حذف جميع الطلاب في فصل "${className}"?\n\n` +
+                              `عدد الطلاب: ${students.length}\n\n` +
+                              `لا يمكن التراجع عن هذا الإجراء!`;
+        
+        if (!confirm(confirmMessage)) {
+          showStatus('تم إلغاء العملية', 'info');
+          return;
+        }
+
+        // طلب تأكيد إضافي
+        const finalConfirm = prompt(`للتأكيد، اكتب اسم الفصل "${className}":`);
+        if (finalConfirm !== className) {
+          showStatus('❌ الاسم غير متطابق. تم إلغاء العملية', 'error');
+          return;
+        }
+
+        showStatus('⏳ جارٍ حذف الطلاب...', 'info');
+
+        // حذف الطلاب
+        const { error: deleteError } = await supabase
+          .from('students')
+          .delete()
+          .eq('class', className);
+
+        if (deleteError) throw deleteError;
+
+        showStatus(`✅ تم حذف ${students.length} طالب من فصل "${className}" بنجاح!`, 'success');
+        
+        // تفريغ الحقل وإعادة تحميل القائمة
+        document.getElementById('classToDelete').value = '';
+        loadClasses();
+
+      } catch (error) {
+        console.error('Error:', error);
+        showStatus('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    // تحميل الفصول عند بدء الصفحة
+    window.addEventListener('load', loadClasses);
+  </script>
+</body>
+</html>

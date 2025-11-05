@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة خطة المنهج الكاملة</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-6 text-center">📚 إضافة خطة المنهج الكاملة</h1>
+    
+    <div id="status" class="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+      <p class="text-blue-800 font-semibold">⏳ جاهز للبدء...</p>
+    </div>
+
+    <div id="results" class="space-y-3 max-h-96 overflow-y-auto mb-6"></div>
+
+    <div class="flex gap-4">
+      <button onclick="seedFullCurriculum()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition">
+        📚 إضافة الخطة الكاملة (27 عنصر)
+      </button>
+      <button onclick="clearData()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">
+        🗑️ حذف جميع البيانات
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // خطة المنهج الكاملة حسب توزيع المنهج
+    const fullCurriculum = [
+      // الوحدة الأولى - أساسيات تخطيط المشروع
+      { id: 1, unit: "الوحدة الأولى: تخطيط المشروعات", title: "اساسيات تخطيط المشروع", type: "lesson", week_number: 1, start_date_hijri: "1447/2/3", end_date_hijri: "1447/2/14", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vRuPNDqeLlEog2UYbVJE795OYlb0o8OIQYcC09PDKi2Bp4iu7janPvjDcfsjSwSousEsI-FFxT6az01/pubembed?start=false&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=Acp0EuAWLYs", description: "التعرف على أساسيات إدارة وتخطيط المشروعات" },
+      { id: 2, unit: "الوحدة الأولى: تخطيط المشروعات", title: "بناء وأتمتة خطة المشروع", type: "lesson", week_number: 3, start_date_hijri: "1447/3/1", end_date_hijri: "1447/3/5", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vQUR1VvkdxLeEQJGIrWBhSfe83G6s8T2Zc6JBz8LFK8N2MaOA3Ox4cwxQHuUfiWaQ/pubembed?start=false&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=CPkxo8SdyEk", description: "تعلم كيفية بناء خطة مشروع وأتمتتها" },
+      { id: 3, unit: "الوحدة الأولى: تخطيط المشروعات", title: "إدارة المهام", type: "lesson", week_number: 4, start_date_hijri: "1447/3/8", end_date_hijri: "1447/3/12", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vS5FfHdry5do-Zxdzw_3eIPy9sEsqgBjcna7vm1eH2Snzit0GeuaDUwrl28X-yJMw/pubembed?start=false&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=oMYrBiUnONg", description: "تنظيم وإدارة المهام في المشاريع" },
+      { id: 5, unit: "الوحدة الأولى: تخطيط المشروعات", title: "مشروع الوحدة الأولى", type: "project", week_number: 5, start_date_hijri: "1447/3/15", end_date_hijri: "1447/3/19", powerpoint_link: "", video_link: "", description: "تطبيق عملي لتخطيط مشروع متكامل" },
+      { id: 4, unit: "الوحدة الأولى: تخطيط المشروعات", title: "اختبر نفسك", type: "activity", week_number: 6, start_date_hijri: "1447/3/22", end_date_hijri: "1447/4/4", powerpoint_link: "", video_link: "", description: "أنشطة واختبارات لتقييم مستواك في تخطيط المشروعات" },
+      { id: 6, unit: "الوحدة الأولى: تخطيط المشروعات", title: "مراجعة الوحدة الأولى", type: "review", week_number: 6, start_date_hijri: "1447/3/22", end_date_hijri: "1447/4/4", powerpoint_link: "", video_link: "", description: "مراجعة شاملة لموضوعات الوحدة الأولى" },
+
+      // الوحدة الثانية - دورة حياة النظام
+      { id: 7, unit: "الوحدة الثانية: دورة حياة النظام", title: "دورة حياة النظام", type: "lesson", week_number: 7, start_date_hijri: "1447/4/5", end_date_hijri: "1447/4/9", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vRS8ZaQ5PUcPGwPqV1DcmQEe-wD9b1dg7CKSx2gbDPSoBhTkg9qmrg9l2UqfRoK5A/pubembed?start=false&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=GreLNQeW5b4", description: "فهم مراحل تطوير الأنظمة" },
+      { id: 8, unit: "الوحدة الثانية: دورة حياة النظام", title: "إنشاء المخطط", type: "lesson", week_number: 8, start_date_hijri: "1447/4/12", end_date_hijri: "1447/4/16", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vTsH4rkSfmXi5yWHbzX5tzkaYgPWUrMfxHqzRMaWSBWQssA80MiDnICvPjwkJDLpQ/pubembed?start=true&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=G_VbqPLz3UU", description: "تصميم وإنشاء المخططات الانسيابية" },
+      { id: 9, unit: "الوحدة الثانية: دورة حياة النظام", title: "الأمن السيبراني", type: "lesson", week_number: 9, start_date_hijri: "1447/5/3", end_date_hijri: "1447/5/7", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vRyn0Dshqs8z-pzA32KcfZuTmhBAr1Cu75eX-fyLkcX7N8-ifho8QYeGhnltKJpwg/pubembed?start=true&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=hi_GJCWoyIQ", description: "أساسيات حماية الأنظمة والبيانات" },
+      { id: 10, unit: "الوحدة الثانية: دورة حياة النظام", title: "مشروع الوحدة الثانية", type: "project", week_number: 10, start_date_hijri: "1447/5/10", end_date_hijri: "1447/5/14", powerpoint_link: "", video_link: "", description: "تصميم نظام متكامل" },
+      { id: 11, unit: "الوحدة الثانية: دورة حياة النظام", title: "اختبر نفسك", type: "activity", week_number: 11, start_date_hijri: "1447/5/17", end_date_hijri: "1447/5/21", powerpoint_link: "", video_link: "", description: "أنشطة واختبارات لتقييم مستواك في دورة حياة النظام" },
+      { id: 12, unit: "الوحدة الثانية: دورة حياة النظام", title: "مراجعة الوحدة الثانية", type: "review", week_number: 11, start_date_hijri: "1447/5/17", end_date_hijri: "1447/5/21", powerpoint_link: "", video_link: "", description: "مراجعة شاملة لموضوعات الوحدة الثانية" },
+
+      // الوحدة الثالثة - تطبيقات الهواتف الذكية
+      { id: 13, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "مقدمة عن تطبيقات الهواتف الذكية", type: "lesson", week_number: 12, start_date_hijri: "1447/5/24", end_date_hijri: "1447/5/28", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vRgRw4J9Z3MQ13Y1XDVF7oCkmUOul9GLiIjwazSswFZNyNqsPrTMJLNKVAosrSvJQ/pubembed?start=true&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=T1so5pfVpwA", description: "التعرف على تطوير تطبيقات الهواتف" },
+      { id: 14, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "بناء تطبيقات الهاتف الذكي", type: "lesson", week_number: 13, start_date_hijri: "1447/6/1", end_date_hijri: "1447/6/5", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vRWzdAPF4p1HVuXxIKinaEkiQOmrBRFMr9n5DRlKEB3-CuYae2YauNSNCbyc0kksQ/pubembed?start=true&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=T1so5pfVpwA", description: "أساسيات بناء التطبيقات" },
+      { id: 15, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "برمجة التطبيق", type: "lesson", week_number: 14, start_date_hijri: "1447/6/8", end_date_hijri: "1447/6/12", powerpoint_link: "https://docs.google.com/presentation/d/e/2PACX-1vTfI83cMUy1RB9RDxvkRAdmjF37gdJ1RP7Uh6hiaWgvXSMWTPqCYz4g4F4JeXkpwg/pubembed?start=true&loop=false&delayms=3000", video_link: "https://www.youtube.com/watch?v=rBYgB3EP91g", description: "تطوير وبرمجة التطبيقات" },
+      { id: 16, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "مشروع الوحدة الثالثة", type: "project", week_number: 15, start_date_hijri: "1447/6/15", end_date_hijri: "1447/6/19", powerpoint_link: "", video_link: "", description: "تطوير تطبيق هاتف ذكي متكامل" },
+      { id: 17, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "اختبر نفسك", type: "activity", week_number: 16, start_date_hijri: "1447/6/22", end_date_hijri: "1447/6/26", powerpoint_link: "", video_link: "", description: "أنشطة واختبارات لتقييم مستواك في تطبيقات الهواتف الذكية" },
+      { id: 19, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "مراجعة الوحدة الثالثة", type: "review", week_number: 17, start_date_hijri: "1447/7/3", end_date_hijri: "1447/7/7", powerpoint_link: "", video_link: "", description: "مراجعة شاملة لموضوعات الوحدة الثالثة" },
+
+      // الاختبارات النهائية لكل وحدة
+      { id: 20, unit: "الوحدة الأولى: تخطيط المشروعات", title: "الاختبار النهائي - الوحدة الأولى", type: "exam", week_number: 7, start_date_hijri: "1447/4/5", end_date_hijri: "1447/4/11", powerpoint_link: "", video_link: "", description: "اختبار شامل لتقييم فهمك لموضوعات الوحدة الأولى" },
+      { id: 21, unit: "الوحدة الثانية: دورة حياة النظام", title: "الاختبار النهائي - الوحدة الثانية", type: "exam", week_number: 13, start_date_hijri: "1447/5/22", end_date_hijri: "1447/5/28", powerpoint_link: "", video_link: "", description: "اختبار شامل لتقييم فهمك لموضوعات الوحدة الثانية" },
+      { id: 22, unit: "الوحدة الثالثة: تطبيقات الهواتف الذكية", title: "الاختبار النهائي - الوحدة الثالثة", type: "exam", week_number: 18, start_date_hijri: "1447/6/18", end_date_hijri: "1447/6/24", powerpoint_link: "", video_link: "", description: "اختبار شامل لتقييم فهمك لموضوعات الوحدة الثالثة" }
+    ];
+
+    function showLog(message, type = 'info') {
+      const resultsDiv = document.getElementById('results');
+      const colors = { info: 'blue', success: 'green', error: 'red', warning: 'yellow' };
+      const color = colors[type] || 'gray';
+      const div = document.createElement('div');
+      div.className = `p-3 rounded-lg bg-${color}-50 border border-${color}-200`;
+      div.innerHTML = `<p class="text-${color}-800 text-sm">${message}</p>`;
+      resultsDiv.appendChild(div);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    function updateStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('status');
+      const colors = { info: 'blue', success: 'green', error: 'red' };
+      const color = colors[type] || 'blue';
+      statusDiv.innerHTML = `<p class="text-${color}-800 font-semibold">${message}</p>`;
+    }
+
+    async function seedFullCurriculum() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      
+      updateStatus('⏳ جارٍ إضافة الخطة الكاملة...', 'info');
+      showLog(`بدء إضافة ${fullCurriculum.length} عنصر إلى قاعدة البيانات...`, 'info');
+
+      try {
+        const { data, error } = await supabase
+          .from('lessons')
+          .upsert(fullCurriculum, { onConflict: 'id' });
+
+        if (error) {
+          showLog(`خطأ: ${error.message}`, 'error');
+          updateStatus('❌ فشل إضافة البيانات', 'error');
+          return;
+        }
+
+        showLog(`✅ تم إضافة ${fullCurriculum.length} عنصر بنجاح!`, 'success');
+
+        // التحقق وعرض الإحصائيات
+        const { data: checkData, error: checkError } = await supabase
+          .from('lessons')
+          .select('*');
+
+        if (checkError) {
+          showLog(`خطأ في التحقق: ${checkError.message}`, 'error');
+        } else {
+          showLog(`✅ تم التحقق: يوجد ${checkData.length} عنصر في قاعدة البيانات`, 'success');
+          
+          // إحصائيات حسب النوع
+          const stats = {
+            lesson: checkData.filter(item => item.type === 'lesson').length,
+            review: checkData.filter(item => item.type === 'review').length,
+            project: checkData.filter(item => item.type === 'project').length,
+            exam: checkData.filter(item => item.type === 'exam').length,
+            activity: checkData.filter(item => item.type === 'activity').length
+          };
+          
+          showLog('📊 الإحصائيات:', 'info');
+          showLog(`  📚 دروس: ${stats.lesson}`, 'info');
+          showLog(`  📝 مراجعات: ${stats.review}`, 'info');
+          showLog(`  🎯 مشاريع: ${stats.project}`, 'info');
+          showLog(`  📋 اختبارات: ${stats.exam}`, 'info');
+          showLog(`  🎨 أنشطة: ${stats.activity}`, 'info');
+        }
+
+        updateStatus('✅ تم إضافة الخطة الكاملة بنجاح!', 'success');
+
+      } catch (error) {
+        showLog(`خطأ عام: ${error.message}`, 'error');
+        updateStatus('❌ حدث خطأ', 'error');
+      }
+    }
+
+    async function clearData() {
+      if (!confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) return;
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      updateStatus('⏳ جارٍ حذف البيانات...', 'info');
+
+      try {
+        const { error } = await supabase
+          .from('lessons')
+          .delete()
+          .neq('id', 0);
+
+        if (error) {
+          showLog(`خطأ: ${error.message}`, 'error');
+        } else {
+          showLog('✅ تم حذف جميع البيانات', 'success');
+        }
+
+        updateStatus('✅ تم حذف البيانات', 'success');
+      } catch (error) {
+        showLog(`خطأ: ${error.message}`, 'error');
+        updateStatus('❌ حدث خطأ', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

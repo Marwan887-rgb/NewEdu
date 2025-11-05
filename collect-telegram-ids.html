@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جمع Chat IDs تلقائياً</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen p-4">
+  
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="glass-card rounded-3xl p-6 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center">
+        <div class="text-5xl mb-3">🤖</div>
+        <h1 class="text-3xl font-black text-white mb-2">جمع Chat IDs تلقائياً</h1>
+        <p class="text-white/80 font-semibold">نظام آلي لربط حسابات التليجرام</p>
+      </div>
+    </div>
+    
+    <!-- Setup Section -->
+    <div id="setup-section" class="glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <h2 class="text-white font-black text-2xl mb-6">⚙️ الإعداد</h2>
+      
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-white font-semibold mb-2">Telegram Bot Token:</label>
+          <input type="password" id="botToken" 
+            placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
+            class="w-full bg-white/90 border-2 border-purple-300 text-gray-900 rounded-lg p-3">
+          <p class="text-white/70 text-sm mt-1">احصل عليه من @BotFather</p>
+        </div>
+        
+        <div>
+          <label class="block text-white font-semibold mb-2">اسم البوت (Username):</label>
+          <input type="text" id="botUsername" 
+            placeholder="eduactive_bot"
+            class="w-full bg-white/90 border-2 border-purple-300 text-gray-900 rounded-lg p-3">
+        </div>
+      </div>
+      
+      <div class="bg-yellow-500/20 border-2 border-yellow-500/50 rounded-xl p-4 mb-6">
+        <p class="text-white font-bold mb-2">📱 الرابط للطلاب:</p>
+        <p id="studentLink" class="text-white/90 font-mono text-sm break-all">
+          أدخل اسم البوت أولاً
+        </p>
+      </div>
+      
+      <button onclick="startCollecting()" 
+        id="startBtn"
+        class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black py-4 rounded-xl transition transform hover:scale-105 border-2 border-white/40 text-lg shadow-xl">
+        🚀 بدء جمع Chat IDs
+      </button>
+    </div>
+    
+    <!-- Status Section -->
+    <div id="status-section" class="hidden glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center mb-6">
+        <div class="text-6xl mb-3 pulse-animation">👁️</div>
+        <h3 class="text-white font-black text-2xl mb-2">النظام يعمل...</h3>
+        <p class="text-white/80 font-semibold">في انتظار الطلاب</p>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-blue-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">رسائل جديدة</p>
+          <p id="newMessages" class="text-white font-black text-3xl">0</p>
+        </div>
+        <div class="bg-green-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">تم الربط</p>
+          <p id="linkedCount" class="text-white font-black text-3xl">0</p>
+        </div>
+        <div class="bg-orange-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">أخطاء</p>
+          <p id="errorCount" class="text-white font-black text-3xl">0</p>
+        </div>
+      </div>
+      
+      <button onclick="stopCollecting()" 
+        class="w-full bg-red-500/80 hover:bg-red-600/80 text-white font-bold py-3 rounded-xl transition">
+        ⏹️ إيقاف
+      </button>
+    </div>
+    
+    <!-- Log Section -->
+    <div id="log-section" class="hidden glass-card rounded-3xl p-8 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <h3 class="text-white font-black text-xl mb-4">📋 السجل المباشر</h3>
+      <div id="logContainer" class="bg-black/40 rounded-xl p-4 max-h-96 overflow-y-auto font-mono text-sm">
+        <!-- سيتم ملؤه تلقائياً -->
+      </div>
+    </div>
+    
+  </div>
+  
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let isCollecting = false;
+    let botToken = '';
+    let lastUpdateId = 0;
+    let newMessagesCount = 0;
+    let linkedCount = 0;
+    let errorCount = 0;
+    
+    // تحديث الرابط عند إدخال اسم البوت
+    document.getElementById('botUsername').addEventListener('input', (e) => {
+      const username = e.target.value.trim();
+      const link = username ? `https://t.me/${username}?start=register` : 'أدخل اسم البوت أولاً';
+      document.getElementById('studentLink').textContent = link;
+    });
+    
+    // بدء الجمع
+    async function startCollecting() {
+      botToken = document.getElementById('botToken').value.trim();
+      const botUsername = document.getElementById('botUsername').value.trim();
+      
+      if (!botToken) {
+        alert('⚠️ الرجاء إدخال Bot Token');
+        return;
+      }
+      
+      if (!botUsername) {
+        alert('⚠️ الرجاء إدخال اسم البوت');
+        return;
+      }
+      
+      // إخفاء قسم الإعداد وإظهار الحالة
+      document.getElementById('setup-section').classList.add('hidden');
+      document.getElementById('status-section').classList.remove('hidden');
+      document.getElementById('log-section').classList.remove('hidden');
+      
+      isCollecting = true;
+      log('✅ بدء نظام جمع Chat IDs...', 'success');
+      log(`📱 شارك الرابط مع الطلاب: https://t.me/${botUsername}?start=register`, 'info');
+      
+      // بدء polling
+      pollUpdates();
+    }
+    
+    // إيقاف الجمع
+    function stopCollecting() {
+      isCollecting = false;
+      document.getElementById('setup-section').classList.remove('hidden');
+      document.getElementById('status-section').classList.add('hidden');
+      log('⏹️ تم إيقاف النظام', 'warning');
+    }
+    
+    // جلب التحديثات من Telegram
+    async function pollUpdates() {
+      if (!isCollecting) return;
+      
+      try {
+        const response = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates?offset=${lastUpdateId + 1}&timeout=30`);
+        const data = await response.json();
+        
+        if (data.ok && data.result.length > 0) {
+          for (const update of data.result) {
+            await processUpdate(update);
+            lastUpdateId = update.update_id;
+          }
+        }
+        
+        // استمر في polling
+        setTimeout(pollUpdates, 1000);
+        
+      } catch (error) {
+        log(`❌ خطأ في الاتصال: ${error.message}`, 'error');
+        errorCount++;
+        updateCounts();
+        setTimeout(pollUpdates, 5000); // أعد المحاولة بعد 5 ثوان
+      }
+    }
+    
+    // معالجة رسالة
+    async function processUpdate(update) {
+      if (!update.message || !update.message.text) return;
+      
+      const chatId = update.message.chat.id;
+      const text = update.message.text.trim();
+      const userName = update.message.from.first_name || 'طالب';
+      
+      newMessagesCount++;
+      updateCounts();
+      
+      log(`📩 رسالة جديدة من ${userName}: ${text}`, 'info');
+      
+      // إذا كانت رسالة /start
+      if (text.startsWith('/start')) {
+        await sendMessage(chatId, '👋 مرحباً!\n\nالرجاء إرسال رقم جوالك المسجل في النظام\n\nمثال: 0500000000');
+        log(`✉️ تم إرسال رسالة ترحيب إلى ${userName}`, 'success');
+        return;
+      }
+      
+      // إذا كانت رسالة تحتوي رقم جوال
+      const mobilePattern = /^(05|5)\d{8}$/;
+      let mobile = text.replace(/\s+/g, '');
+      
+      // تنسيق الرقم
+      if (mobile.startsWith('5')) {
+        mobile = '0' + mobile;
+      }
+      
+      if (!mobilePattern.test(mobile)) {
+        await sendMessage(chatId, '⚠️ الرقم غير صحيح!\n\nالرجاء إرسال رقم جوال صحيح\nمثال: 0500000000');
+        log(`⚠️ رقم غير صحيح من ${userName}: ${text}`, 'warning');
+        return;
+      }
+      
+      // البحث عن الطالب في قاعدة البيانات
+      const { data: student, error: findError } = await supabase
+        .from('students')
+        .select('*')
+        .eq('mobile', mobile)
+        .single();
+      
+      if (findError || !student) {
+        await sendMessage(chatId, `❌ رقم الجوال ${mobile} غير مسجل في النظام!\n\nتأكد من الرقم أو راجع المعلم.`);
+        log(`❌ رقم غير مسجل: ${mobile}`, 'error');
+        errorCount++;
+        updateCounts();
+        return;
+      }
+      
+      // تحديث chat_id في قاعدة البيانات
+      const { error: updateError } = await supabase
+        .from('students')
+        .update({ chat_id: chatId.toString() })
+        .eq('mobile', mobile);
+      
+      if (updateError) {
+        await sendMessage(chatId, '❌ حدث خطأ في الربط. حاول مرة أخرى أو راجع المعلم.');
+        log(`❌ خطأ في الحفظ: ${updateError.message}`, 'error');
+        errorCount++;
+        updateCounts();
+        return;
+      }
+      
+      // نجح الربط!
+      await sendMessage(chatId, `✅ تم ربط حسابك بنجاح!\n\n👤 الاسم: ${student.name}\n📱 الجوال: ${mobile}\n🎓 الصف: ${student.class}\n\nستصلك الإشعارات والدرجات هنا.`);
+      log(`✅ تم ربط ${student.name} (${mobile}) بنجاح!`, 'success');
+      linkedCount++;
+      updateCounts();
+    }
+    
+    // إرسال رسالة عبر Telegram
+    async function sendMessage(chatId, text) {
+      try {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: text,
+            parse_mode: 'HTML'
+          })
+        });
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    }
+    
+    // تحديث العدادات
+    function updateCounts() {
+      document.getElementById('newMessages').textContent = newMessagesCount;
+      document.getElementById('linkedCount').textContent = linkedCount;
+      document.getElementById('errorCount').textContent = errorCount;
+    }
+    
+    // كتابة في السجل
+    function log(message, type = 'info') {
+      const colors = {
+        success: 'text-green-400',
+        error: 'text-red-400',
+        warning: 'text-yellow-400',
+        info: 'text-blue-400'
+      };
+      
+      const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+      
+      const time = new Date().toLocaleTimeString('ar-SA');
+      const logContainer = document.getElementById('logContainer');
+      
+      const entry = document.createElement('div');
+      entry.className = `mb-2 ${colors[type]}`;
+      entry.textContent = `[${time}] ${icons[type]} ${message}`;
+      
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+  </script>
+  
+</body>
+</html>

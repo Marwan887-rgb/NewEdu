@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>🔍 تشخيص المشكلة</title>
+  <script src="config-telegram.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1e1e1e;
+      color: #fff;
+      padding: 40px;
+      line-height: 1.8;
+    }
+    .box {
+      background: #2d2d30;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 4px solid #4ec9b0;
+    }
+    .box.error {
+      border-color: #f48771;
+    }
+    .box.success {
+      border-color: #4ec9b0;
+    }
+    .box.warning {
+      border-color: #dcdcaa;
+    }
+    h1 {
+      color: #4ec9b0;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #569cd6;
+      font-size: 18px;
+      margin-top: 30px;
+    }
+    code {
+      background: #1e1e1e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #ce9178;
+      font-family: 'Courier New', monospace;
+    }
+    .status {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    button {
+      background: #4ec9b0;
+      color: #1e1e1e;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #5ed9c0;
+    }
+    pre {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 تشخيص مشكلة OTP</h1>
+  <p>هذه الصفحة ستساعدك في معرفة سبب المشكلة</p>
+
+  <div id="diagnosis"></div>
+
+  <h2>🛠️ إجراءات سريعة:</h2>
+  <button onclick="window.location.href='telegram-setup.html'">📝 احفظ التوكن</button>
+  <button onclick="testToken()">🧪 اختبر التوكن الآن</button>
+  <button onclick="location.reload()">🔄 إعادة التحميل</button>
+
+  <script>
+    function diagnose() {
+      const diagnosisDiv = document.getElementById('diagnosis');
+      let html = '';
+
+      // 1. التحقق من تحميل config-telegram.js
+      html += '<h2>1️⃣ التحقق من تحميل config-telegram.js</h2>';
+      if (typeof hasTelegramToken !== 'undefined') {
+        html += '<div class="box success">✅ config-telegram.js محمّل بنجاح</div>';
+      } else {
+        html += '<div class="box error">❌ config-telegram.js غير محمّل!<br><br>الحل: تأكد من وجود الملف في نفس المجلد</div>';
+        diagnosisDiv.innerHTML = html;
+        return;
+      }
+
+      // 2. التحقق من وجود التوكن
+      html += '<h2>2️⃣ التحقق من وجود التوكن</h2>';
+      const hasToken = hasTelegramToken();
+      if (hasToken) {
+        html += '<div class="box success">✅ التوكن موجود في localStorage</div>';
+        
+        const token = getTelegramToken();
+        const maskedToken = token.substring(0, 10) + '...' + token.substring(token.length - 10);
+        html += `<div class="box">📌 التوكن: <code>${maskedToken}</code></div>`;
+      } else {
+        html += '<div class="box error">';
+        html += '❌ التوكن غير موجود!<br><br>';
+        html += '<strong>الحل:</strong><br>';
+        html += '1. افتح <code>telegram-setup.html</code><br>';
+        html += '2. ألصق التوكن<br>';
+        html += '3. احفظه<br>';
+        html += '4. ارجع لهذه الصفحة';
+        html += '</div>';
+        diagnosisDiv.innerHTML = html;
+        return;
+      }
+
+      // 3. التحقق من صحة التوكن
+      html += '<h2>3️⃣ التحقق من صحة التوكن</h2>';
+      html += '<div class="box warning">⏳ جاري الاختبار...</div>';
+      html += '<div id="token-test"></div>';
+
+      diagnosisDiv.innerHTML = html;
+
+      // اختبار التوكن
+      testTokenInternal();
+
+      // 4. التحقق من البيئة
+      html += '<h2>4️⃣ معلومات البيئة</h2>';
+      const isLocal = window.location.hostname === 'localhost' || 
+                     window.location.hostname === '127.0.0.1' ||
+                     window.location.port !== '';
+      
+      html += '<div class="box">';
+      html += `<strong>URL:</strong> ${window.location.href}<br>`;
+      html += `<strong>Hostname:</strong> ${window.location.hostname}<br>`;
+      html += `<strong>Port:</strong> ${window.location.port || '(فارغ)'}<br>`;
+      html += `<strong>البيئة:</strong> ${isLocal ? '🔧 محلي (Local)' : '🚀 إنتاج (Production)'}<br>`;
+      html += '</div>';
+
+      diagnosisDiv.innerHTML = html;
+    }
+
+    async function testTokenInternal() {
+      const testDiv = document.getElementById('token-test');
+      
+      try {
+        const result = await validateTelegramToken();
+        
+        if (result.valid) {
+          testDiv.innerHTML = `
+            <div class="box success">
+              <div class="status">✅ التوكن يعمل!</div>
+              <strong>معلومات البوت:</strong><br>
+              الاسم: ${result.botInfo.first_name}<br>
+              Username: @${result.botInfo.username}<br>
+              Bot ID: ${result.botInfo.id}
+            </div>
+          `;
+        } else {
+          testDiv.innerHTML = `
+            <div class="box error">
+              <div class="status">❌ التوكن لا يعمل!</div>
+              <strong>الخطأ:</strong> ${result.error}<br><br>
+              <strong>الحل:</strong><br>
+              - تحقق من صحة التوكن<br>
+              - احصل على توكن جديد من @BotFather<br>
+              - احفظه في telegram-setup.html
+            </div>
+          `;
+        }
+      } catch (error) {
+        testDiv.innerHTML = `
+          <div class="box error">
+            <div class="status">❌ خطأ في الاتصال!</div>
+            ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    async function testToken() {
+      const testDiv = document.getElementById('token-test');
+      if (!testDiv) {
+        alert('يرجى إعادة تحميل الصفحة أولاً');
+        return;
+      }
+      
+      testDiv.innerHTML = '<div class="box warning">⏳ جاري الاختبار...</div>';
+      await testTokenInternal();
+    }
+
+    // تشغيل التشخيص عند التحميل
+    window.addEventListener('load', diagnose);
+  </script>
+</body>
+</html>

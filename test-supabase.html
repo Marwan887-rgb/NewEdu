@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار اتصال Supabase</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-6 text-center">🔌 اختبار اتصال Supabase</h1>
+    
+    <div id="status" class="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+      <p class="text-blue-800 font-semibold">⏳ جارٍ الاتصال...</p>
+    </div>
+
+    <div id="results" class="space-y-4"></div>
+
+    <button onclick="runAllTests()" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition">
+      🔄 إعادة الاختبار
+    </button>
+  </div>
+
+  <script>
+    // معلومات Supabase (من ملف .env)
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+
+    // إنشاء عميل Supabase
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // عرض النتائج
+    function showResult(title, success, message, details = null) {
+      const resultsDiv = document.getElementById('results');
+      const color = success ? 'green' : 'red';
+      const icon = success ? '✅' : '❌';
+      
+      let html = `
+        <div class="p-4 rounded-lg border border-${color}-200 bg-${color}-50">
+          <h3 class="font-bold text-${color}-800 mb-2">${icon} ${title}</h3>
+          <p class="text-${color}-700">${message}</p>
+      `;
+      
+      if (details) {
+        html += `<pre class="mt-2 p-2 bg-white rounded text-xs overflow-auto">${JSON.stringify(details, null, 2)}</pre>`;
+      }
+      
+      html += `</div>`;
+      resultsDiv.innerHTML += html;
+    }
+
+    // الاختبارات
+    async function runAllTests() {
+      const statusDiv = document.getElementById('status');
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      
+      statusDiv.innerHTML = '<p class="text-blue-800 font-semibold">⏳ جارٍ تشغيل الاختبارات...</p>';
+
+      try {
+        // اختبار 1: التحقق من إنشاء العميل
+        if (supabase) {
+          showResult('إنشاء عميل Supabase', true, 'تم إنشاء العميل بنجاح');
+        } else {
+          showResult('إنشاء عميل Supabase', false, 'فشل إنشاء العميل');
+          return;
+        }
+
+        // اختبار 2: قراءة جدول lessons
+        statusDiv.innerHTML = '<p class="text-blue-800 font-semibold">⏳ اختبار قراءة جدول lessons...</p>';
+        const { data: lessons, error: lessonsError } = await supabase
+          .from('lessons')
+          .select('*')
+          .limit(5);
+
+        if (lessonsError) {
+          showResult('قراءة جدول lessons', false, lessonsError.message, lessonsError);
+        } else {
+          showResult('قراءة جدول lessons', true, `تم العثور على ${lessons.length} درس/دروس`, lessons);
+        }
+
+        // اختبار 3: قراءة جدول students
+        statusDiv.innerHTML = '<p class="text-blue-800 font-semibold">⏳ اختبار قراءة جدول students...</p>';
+        const { data: students, error: studentsError } = await supabase
+          .from('students')
+          .select('*')
+          .limit(5);
+
+        if (studentsError) {
+          showResult('قراءة جدول students', false, studentsError.message, studentsError);
+        } else {
+          showResult('قراءة جدول students', true, `تم العثور على ${students.length} طالب/طلاب`, students);
+        }
+
+        // اختبار 4: قراءة جدول progress
+        statusDiv.innerHTML = '<p class="text-blue-800 font-semibold">⏳ اختبار قراءة جدول progress...</p>';
+        const { data: progress, error: progressError } = await supabase
+          .from('progress')
+          .select('*')
+          .limit(5);
+
+        if (progressError) {
+          showResult('قراءة جدول progress', false, progressError.message, progressError);
+        } else {
+          showResult('قراءة جدول progress', true, `تم العثور على ${progress.length} سجل/سجلات`, progress);
+        }
+
+        // اختبار 5: قراءة جدول otp_codes
+        statusDiv.innerHTML = '<p class="text-blue-800 font-semibold">⏳ اختبار قراءة جدول otp_codes...</p>';
+        const { data: otpCodes, error: otpError } = await supabase
+          .from('otp_codes')
+          .select('*')
+          .limit(5);
+
+        if (otpError) {
+          showResult('قراءة جدول otp_codes', false, otpError.message, otpError);
+        } else {
+          showResult('قراءة جدول otp_codes', true, `تم العثور على ${otpCodes.length} رمز/رموز`, otpCodes);
+        }
+
+        statusDiv.innerHTML = '<p class="text-green-800 font-semibold">✅ اكتملت جميع الاختبارات!</p>';
+
+      } catch (error) {
+        showResult('خطأ عام', false, error.message, error);
+        statusDiv.innerHTML = '<p class="text-red-800 font-semibold">❌ حدث خطأ أثناء الاختبار</p>';
+      }
+    }
+
+    // تشغيل الاختبارات عند تحميل الصفحة
+    window.addEventListener('load', runAllTests);
+  </script>
+</body>
+</html>

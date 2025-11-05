@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة عمود Chat ID</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen flex items-center justify-center p-4">
+  
+  <div class="max-w-2xl w-full">
+    <div class="glass-card rounded-3xl p-8 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      
+      <div class="text-center mb-6">
+        <div class="text-6xl mb-4">🔧</div>
+        <h1 class="text-3xl font-black text-white mb-2">إصلاح جدول الطلاب</h1>
+        <p class="text-white/80 font-semibold">إضافة عمود chat_id إلى جدول students</p>
+      </div>
+      
+      <div class="space-y-4">
+        
+        <!-- Step 1 -->
+        <div class="bg-white/20 rounded-xl p-6">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">1</span>
+            <span>افتح Supabase Dashboard</span>
+          </h3>
+          <a href="https://supabase.com/dashboard/project/kzbbjtchszrngeaopcif" target="_blank"
+             class="block bg-purple-500/80 hover:bg-purple-600/80 text-white font-bold py-3 px-6 rounded-lg text-center transition">
+            🔗 افتح Dashboard
+          </a>
+        </div>
+        
+        <!-- Step 2 -->
+        <div class="bg-white/20 rounded-xl p-6">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">2</span>
+            <span>اذهب إلى Table Editor</span>
+          </h3>
+          <p class="text-white/90 mb-2">اختر جدول <code class="bg-black/30 px-2 py-1 rounded">students</code></p>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="bg-white/20 rounded-xl p-6">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="bg-white text-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-black">3</span>
+            <span>أضف عمود جديد</span>
+          </h3>
+          <div class="space-y-2 text-white/90 text-sm">
+            <p>• اضغط على <strong>"+ New Column"</strong></p>
+            <p>• الاسم: <code class="bg-black/30 px-2 py-1 rounded">chat_id</code></p>
+            <p>• النوع: <code class="bg-black/30 px-2 py-1 rounded">text</code> أو <code class="bg-black/30 px-2 py-1 rounded">varchar</code></p>
+            <p>• اجعله <strong>nullable</strong> (يمكن أن يكون فارغ)</p>
+            <p>• احفظ التغييرات</p>
+          </div>
+        </div>
+        
+        <!-- SQL Alternative -->
+        <div class="bg-gradient-to-r from-purple-500/30 to-indigo-500/30 rounded-xl p-6 border-2 border-white/40">
+          <h3 class="text-white font-black text-lg mb-3 flex items-center gap-2">
+            <span>⚡</span>
+            <span>أو استخدم SQL مباشرة:</span>
+          </h3>
+          
+          <div class="bg-black/40 rounded-lg p-4 mb-3">
+            <code class="text-green-300 text-sm font-mono">
+ALTER TABLE students<br>
+ADD COLUMN IF NOT EXISTS chat_id TEXT;
+            </code>
+          </div>
+          
+          <p class="text-white/80 text-sm mb-3">انسخ هذا الكود وشغله في SQL Editor</p>
+          
+          <button onclick="copySql()" 
+                  class="w-full bg-green-500/80 hover:bg-green-600/80 text-white font-bold py-3 rounded-lg transition">
+            📋 نسخ الكود
+          </button>
+        </div>
+        
+        <!-- Verification -->
+        <div class="bg-white/20 rounded-xl p-6">
+          <h3 class="text-white font-bold text-lg mb-3 flex items-center gap-2">
+            <span>✅</span>
+            <span>التحقق</span>
+          </h3>
+          <p class="text-white/90 mb-3">بعد إضافة العمود، تحقق بهذا الكود:</p>
+          
+          <div class="bg-black/40 rounded-lg p-3 mb-3">
+            <code class="text-green-300 text-xs font-mono">
+SELECT * FROM students LIMIT 1;
+            </code>
+          </div>
+          
+          <p class="text-white/80 text-sm">يجب أن ترى عمود <strong>chat_id</strong> في النتائج!</p>
+        </div>
+        
+        <!-- Done -->
+        <div class="bg-green-500/30 rounded-xl p-6 border-2 border-green-400/50 text-center">
+          <p class="text-white font-bold text-lg mb-2">🎉 بعد الإضافة</p>
+          <p class="text-white/90">ارجع لصفحة <strong>link-telegram-ids.html</strong> وجرب مرة أخرى!</p>
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+    function copySql() {
+      const sql = 'ALTER TABLE students ADD COLUMN IF NOT EXISTS chat_id TEXT;';
+      navigator.clipboard.writeText(sql).then(() => {
+        alert('✅ تم نسخ الكود!\n\nالصقه في SQL Editor في Supabase');
+      });
+    }
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تصدير الدروس</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+    #output {
+      background: #252526;
+      border: 1px solid #3e3e42;
+      padding: 20px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-size: 12px;
+      max-height: 80vh;
+      overflow: auto;
+    }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 10px 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    .success { color: #4ec9b0; }
+    .error { color: #f48771; }
+  </style>
+</head>
+<body>
+  <h1>📊 تصدير جميع الدروس من Supabase</h1>
+  <p>اضغط على الزر لعرض جميع الدروس الحالية في قاعدة البيانات:</p>
+  
+  <button onclick="exportLessons()">📥 تصدير الدروس</button>
+  <button onclick="copyToClipboard()">📋 نسخ للحافظة</button>
+  
+  <div id="output">جاري الانتظار...</div>
+
+  <script>
+    // إعدادات Supabase
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let exportedData = '';
+
+    async function exportLessons() {
+      const output = document.getElementById('output');
+      output.innerHTML = '<div class="success">🔄 جاري التحميل من Supabase...</div>';
+
+      try {
+        const { data: lessons, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .order('week_number', { ascending: true });
+
+        if (error) throw error;
+
+        if (!lessons || lessons.length === 0) {
+          output.innerHTML = '<div class="error">❌ لا توجد دروس في قاعدة البيانات</div>';
+          return;
+        }
+
+        // إنشاء جدول منسق
+        let result = `✅ تم العثور على ${lessons.length} درس\n\n`;
+        result += `${'='.repeat(120)}\n`;
+        result += `| ID  | الأسبوع | النوع        | العنوان\n`;
+        result += `${'='.repeat(120)}\n`;
+
+        lessons.forEach(lesson => {
+          const id = String(lesson.id).padEnd(4);
+          const week = lesson.week_number ? String(lesson.week_number).padEnd(8) : 'غير محدد'.padEnd(8);
+          const type = (lesson.type || 'lesson').padEnd(12);
+          const title = lesson.title || 'بدون عنوان';
+          result += `| ${id}| ${week}| ${type}| ${title}\n`;
+        });
+
+        result += `${'='.repeat(120)}\n\n`;
+
+        // إحصائيات حسب الأسبوع
+        result += `\n📊 توزيع الدروس حسب الأسابيع:\n`;
+        result += `${'─'.repeat(60)}\n`;
+        
+        const weekGroups = {};
+        lessons.forEach(lesson => {
+          const week = lesson.week_number || 'غير محدد';
+          if (!weekGroups[week]) weekGroups[week] = [];
+          weekGroups[week].push(lesson);
+        });
+
+        Object.keys(weekGroups).sort((a, b) => {
+          if (a === 'غير محدد') return 1;
+          if (b === 'غير محدد') return -1;
+          return Number(a) - Number(b);
+        }).forEach(week => {
+          result += `\n📅 الأسبوع ${week}:\n`;
+          weekGroups[week].forEach(lesson => {
+            const typeEmoji = {
+              lesson: '📖',
+              project: '💼',
+              activity: '✏️',
+              review: '🔄',
+              exam: '🎯',
+              unit_exam: '📝'
+            };
+            const emoji = typeEmoji[lesson.type] || '📄';
+            result += `   ${emoji} [${lesson.id}] ${lesson.title}\n`;
+          });
+        });
+
+        result += `\n${'─'.repeat(60)}\n`;
+        result += `\n📦 JSON الكامل (للنسخ):\n\n`;
+        result += JSON.stringify(lessons, null, 2);
+
+        exportedData = result;
+        output.innerHTML = `<div class="success">${result}</div>`;
+
+      } catch (error) {
+        output.innerHTML = `<div class="error">❌ خطأ: ${error.message}</div>`;
+        console.error(error);
+      }
+    }
+
+    function copyToClipboard() {
+      if (!exportedData) {
+        alert('⚠️ قم بالتصدير أولاً!');
+        return;
+      }
+      
+      navigator.clipboard.writeText(exportedData).then(() => {
+        alert('✅ تم النسخ للحافظة!');
+      }).catch(err => {
+        alert('❌ فشل النسخ: ' + err);
+      });
+    }
+
+    // تحميل تلقائي
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(exportLessons, 500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار إرسال التليجرام</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen flex items-center justify-center p-4">
+  
+  <div class="max-w-2xl w-full">
+    <div class="glass-card rounded-3xl p-8 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      
+      <div class="text-center mb-6">
+        <div class="text-6xl mb-4">🧪</div>
+        <h1 class="text-3xl font-black text-white mb-2">اختبار إرسال التليجرام</h1>
+        <p class="text-white/80 font-semibold">تأكد من عمل البوت قبل استخدامه في النظام</p>
+      </div>
+      
+      <div class="space-y-4">
+        
+        <!-- Bot Token -->
+        <div>
+          <label class="block text-white font-bold mb-2">🔑 Bot Token:</label>
+          <input id="bot-token" 
+                 type="text" 
+                 placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
+                 class="w-full bg-white/90 border-2 border-white/50 text-gray-900 rounded-xl p-3 font-mono text-sm">
+          <p class="text-white/70 text-xs mt-1">احصل عليه من @BotFather</p>
+        </div>
+        
+        <!-- Chat ID -->
+        <div>
+          <label class="block text-white font-bold mb-2">💬 Chat ID:</label>
+          <input id="chat-id" 
+                 type="text" 
+                 placeholder="123456789"
+                 class="w-full bg-white/90 border-2 border-white/50 text-gray-900 rounded-xl p-3 font-mono text-sm">
+          <p class="text-white/70 text-xs mt-1">من view-telegram-users.html</p>
+        </div>
+        
+        <!-- Test Message -->
+        <div>
+          <label class="block text-white font-bold mb-2">📝 رسالة الاختبار:</label>
+          <textarea id="test-message" 
+                    rows="3"
+                    class="w-full bg-white/90 border-2 border-white/50 text-gray-900 rounded-xl p-3"
+                    placeholder="اكتب رسالة للاختبار...">🧪 رسالة اختبار من النظام
+
+هذه رسالة اختبار للتأكد من عمل البوت بشكل صحيح.</textarea>
+        </div>
+        
+        <!-- Send Button -->
+        <button onclick="testSend()" 
+                id="send-btn"
+                class="w-full bg-green-500/80 hover:bg-green-600/80 text-white font-black py-4 rounded-xl transition transform hover:scale-105 text-lg">
+          📤 إرسال رسالة اختبار
+        </button>
+        
+        <!-- Result -->
+        <div id="result" class="hidden bg-white/20 rounded-xl p-4 border border-white/30">
+          <p id="result-text" class="text-white font-semibold"></p>
+        </div>
+        
+        <!-- Console Log -->
+        <div class="bg-black/40 rounded-xl p-4 max-h-96 overflow-y-auto">
+          <p class="text-white font-bold mb-2">📋 Console Log:</p>
+          <pre id="console-log" class="text-green-300 text-xs font-mono whitespace-pre-wrap"></pre>
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+    const consoleLog = document.getElementById('console-log');
+    
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString('ar-SA');
+      const emoji = type === 'error' ? '❌' : type === 'success' ? '✅' : '📝';
+      const color = type === 'error' ? 'text-red-300' : type === 'success' ? 'text-green-300' : 'text-white';
+      
+      const line = `[${timestamp}] ${emoji} ${message}\n`;
+      consoleLog.innerHTML += line;
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+      
+      console.log(message);
+    }
+    
+    async function testSend() {
+      const botToken = document.getElementById('bot-token').value.trim();
+      const chatId = document.getElementById('chat-id').value.trim();
+      const message = document.getElementById('test-message').value.trim();
+      const sendBtn = document.getElementById('send-btn');
+      const result = document.getElementById('result');
+      const resultText = document.getElementById('result-text');
+      
+      // Clear log
+      consoleLog.innerHTML = '';
+      result.classList.add('hidden');
+      
+      // Validate
+      if (!botToken) {
+        log('⚠️ الرجاء إدخال Bot Token', 'error');
+        return;
+      }
+      
+      if (!chatId) {
+        log('⚠️ الرجاء إدخال Chat ID', 'error');
+        return;
+      }
+      
+      if (!message) {
+        log('⚠️ الرجاء إدخال رسالة', 'error');
+        return;
+      }
+      
+      sendBtn.disabled = true;
+      sendBtn.textContent = '⏳ جاري الإرسال...';
+      
+      log('🚀 بدء عملية الإرسال...');
+      log(`📝 Bot Token: ${botToken.substring(0, 10)}...`);
+      log(`💬 Chat ID: ${chatId}`);
+      log(`📨 الرسالة: ${message.substring(0, 50)}...`);
+      
+      try {
+        const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        
+        log('🔗 API URL: ' + apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message
+          })
+        });
+        
+        log('📥 تم استلام الرد من API...');
+        
+        const data = await response.json();
+        
+        log('📊 محتوى الرد: ' + JSON.stringify(data, null, 2));
+        
+        if (data.ok) {
+          log('✅ تم إرسال الرسالة بنجاح!', 'success');
+          resultText.textContent = '✅ نجح الإرسال! تحقق من حسابك في التليجرام.';
+          resultText.className = 'text-green-300 font-semibold';
+          result.classList.remove('hidden');
+        } else {
+          log('❌ فشل الإرسال: ' + data.description, 'error');
+          resultText.textContent = '❌ فشل: ' + data.description;
+          resultText.className = 'text-red-300 font-semibold';
+          result.classList.remove('hidden');
+          
+          // تفسير الأخطاء الشائعة
+          if (data.description.includes('bot was blocked')) {
+            log('💡 السبب: الطالب حظر البوت أو لم يبدأ محادثة معه', 'error');
+          } else if (data.description.includes('chat not found')) {
+            log('💡 السبب: Chat ID خاطئ أو الطالب لم يراسل البوت', 'error');
+          } else if (data.description.includes('Unauthorized')) {
+            log('💡 السبب: Bot Token خاطئ', 'error');
+          }
+        }
+      } catch (error) {
+        log('❌ خطأ في الاتصال: ' + error.message, 'error');
+        resultText.textContent = '❌ خطأ: ' + error.message;
+        resultText.className = 'text-red-300 font-semibold';
+        result.classList.remove('hidden');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = '📤 إرسال رسالة اختبار';
+      }
+    }
+    
+    log('🎯 جاهز للاختبار!');
+  </script>
+  
+</body>
+</html>

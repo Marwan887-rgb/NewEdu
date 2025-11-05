@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استيراد الطلاب</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animated-bg {
+      background: linear-gradient(-45deg, #a78bfa, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="animated-bg min-h-screen p-4">
+  
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="glass-card rounded-3xl p-6 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center">
+        <div class="text-5xl mb-3">📚</div>
+        <h1 class="text-3xl font-black text-white mb-2">استيراد الطلاب</h1>
+        <p class="text-white/80 font-semibold">إضافة 43 طالباً إلى قاعدة البيانات</p>
+      </div>
+    </div>
+    
+    <!-- Students Data -->
+    <div class="glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <h2 class="text-white font-black text-xl mb-4">📋 بيانات الطلاب:</h2>
+      
+      <div class="bg-white/10 rounded-xl p-4 mb-6 max-h-96 overflow-y-auto">
+        <table class="w-full text-sm">
+          <thead class="border-b-2 border-white/30 sticky top-0 bg-purple-900/80">
+            <tr>
+              <th class="text-white font-bold p-2 text-right">#</th>
+              <th class="text-white font-bold p-2 text-right">الاسم</th>
+              <th class="text-white font-bold p-2 text-right">رقم الجوال</th>
+              <th class="text-white font-bold p-2 text-center">الصف</th>
+            </tr>
+          </thead>
+          <tbody id="students-preview">
+            <!-- سيتم ملؤها بالـ JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-purple-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">صف 301</p>
+          <p id="class-301-count" class="text-white font-black text-2xl">0</p>
+        </div>
+        <div class="bg-indigo-500/30 rounded-xl p-4 text-center">
+          <p class="text-white/70 text-sm mb-1">صف 302</p>
+          <p id="class-302-count" class="text-white font-black text-2xl">0</p>
+        </div>
+      </div>
+      
+      <button onclick="importStudents()" 
+              id="import-btn"
+              class="w-full bg-white/25 hover:bg-white/35 text-white font-black py-4 rounded-xl transition transform hover:scale-105 border-2 border-white/40 text-lg">
+        <span class="flex items-center justify-center gap-2">
+          <span>⬆️</span>
+          <span>استيراد جميع الطلاب</span>
+        </span>
+      </button>
+    </div>
+    
+    <!-- Progress -->
+    <div id="progress" class="hidden glass-card rounded-3xl p-8 shadow-2xl mb-6" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center mb-4">
+        <div class="text-5xl mb-3">⏳</div>
+        <p class="text-white font-bold text-lg">جاري الاستيراد...</p>
+      </div>
+      
+      <div class="bg-white/20 rounded-full h-4 overflow-hidden">
+        <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      
+      <p id="progress-text" class="text-white text-center mt-3 font-semibold">0 / 43</p>
+    </div>
+    
+    <!-- Results -->
+    <div id="results" class="hidden glass-card rounded-3xl p-8 shadow-2xl" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="text-center">
+        <div class="text-6xl mb-4">✅</div>
+        <h2 class="text-white font-black text-2xl mb-4">تم الاستيراد بنجاح!</h2>
+        
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-green-500/30 rounded-xl p-4">
+            <p class="text-white/70 text-sm mb-1">نجح</p>
+            <p id="success-count" class="text-white font-black text-3xl">0</p>
+          </div>
+          <div class="bg-red-500/30 rounded-xl p-4">
+            <p class="text-white/70 text-sm mb-1">فشل</p>
+            <p id="failed-count" class="text-white font-black text-3xl">0</p>
+          </div>
+          <div class="bg-blue-500/30 rounded-xl p-4">
+            <p class="text-white/70 text-sm mb-1">موجود مسبقاً</p>
+            <p id="existing-count" class="text-white font-black text-3xl">0</p>
+          </div>
+        </div>
+        
+        <div id="error-list" class="hidden bg-red-500/20 rounded-xl p-4 text-right">
+          <p class="text-white font-bold mb-2">⚠️ الأخطاء:</p>
+          <ul id="errors" class="text-white/90 text-sm space-y-1"></ul>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://kzbbjtchszrngeaopcif.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6YmJqdGNoc3pybmdlYW9wY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAyMDQwNDUsImV4cCI6MjA0NTc4MDA0NX0.7uDUHkk_bD6cgCVx0Ig0K_Sko1NbMfFgZIe8zE1oEMY';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Students Data
+    const students = [
+      { name: "زياد مروان المورعي", mobile: "966566403439", class: "302" },
+      { name: "مروان", mobile: "966545578855", class: "302" },
+      { name: "اشواق", mobile: "966566997366", class: "301" },
+      { name: "عدي حاتم كرعلي", mobile: "966580568189", class: "302" },
+      { name: "ياسر ماجد الحربي", mobile: "966545294720", class: "302" },
+      { name: "حمزه خالد الفريدي", mobile: "966568770913", class: "302" },
+      { name: "عبدالله محمد المطيري", mobile: "966582089536", class: "302" },
+      { name: "عمر سليمان العبدلي", mobile: "966550943475", class: "302" },
+      { name: "ايمن ناهض الجابري", mobile: "966591317212", class: "302" },
+      { name: "حاتم نادر الحربي", mobile: "966567225805", class: "302" },
+      { name: "حازم بن عبدالحميد بن الجابري", mobile: "966554928584", class: "302" },
+      { name: "عبدالرحيم معيض الحسيني", mobile: "966533790093", class: "302" },
+      { name: "عبدالعزيز محمد السحيمي", mobile: "966530661060", class: "302" },
+      { name: "عبدالله بن عيسى بن العوفي", mobile: "966550540154", class: "302" },
+      { name: "محمد لافي الحربي", mobile: "966593434286", class: "302" },
+      { name: "مصعب حسن", mobile: "966509619686", class: "302" },
+      { name: "هاشم عبدالصمد الجابري", mobile: "966595811476", class: "302" },
+      { name: "وليد عصام النفيعي", mobile: "966560567029", class: "302" },
+      { name: "يزن زهير كمل", mobile: "966547787536", class: "302" },
+      { name: "يزيد فهد المطيري", mobile: "966554724746", class: "302" },
+      { name: "عبدالله عبيدالله الحربي", mobile: "966560456534", class: "302" },
+      { name: "اسامة", mobile: "966561459322", class: "302" },
+      { name: "عماد عائض الحربي", mobile: "966557311820", class: "302" },
+      { name: "ياسر رابح الحربي", mobile: "966552293823", class: "302" },
+      { name: "عمار عادل الحربي", mobile: "966541149047", class: "302" },
+      { name: "حسام فهد الحربي", mobile: "966557539744", class: "301" },
+      { name: "عامر عبدالرحمن العمري", mobile: "966557369209", class: "301" },
+      { name: "عبدالله مشعل الحربي", mobile: "966539465084", class: "301" },
+      { name: "معتز عبدالحميد الحربي", mobile: "966501089805", class: "301" },
+      { name: "عصام محمود الضاني", mobile: "966508259941", class: "301" },
+      { name: "سلطان تحسين محمد", mobile: "966542759414", class: "301" },
+      { name: "عناد عامر الجابري", mobile: "966569786714", class: "301" },
+      { name: "مهند حسان المصعبي", mobile: "966578017401", class: "301" },
+      { name: "باسل عواض المطيري", mobile: "966559059606", class: "301" },
+      { name: "مؤيد عبدالله شقرون", mobile: "966546594418", class: "301" },
+      { name: "وليد فايز الصيعري", mobile: "966510096530", class: "301" },
+      { name: "عبدالملك ماجد اللهيبي", mobile: "966538956068", class: "301" },
+      { name: "عبدالله ممدوح البلوي", mobile: "966553573073", class: "301" },
+      { name: "عبدالرحمن البلوي", mobile: "966550753772", class: "301" },
+      { name: "علي عبدالفتاح الحسيني", mobile: "966563155356", class: "301" },
+      { name: "يزن تركي البلادي", mobile: "966538842856", class: "301" }
+    ];
+    
+    // Display preview
+    function displayPreview() {
+      const tbody = document.getElementById('students-preview');
+      let class301 = 0;
+      let class302 = 0;
+      
+      students.forEach((student, index) => {
+        if (student.class === "301") class301++;
+        if (student.class === "302") class302++;
+        
+        const row = `
+          <tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="text-white/90 p-2">${index + 1}</td>
+            <td class="text-white font-semibold p-2">${student.name}</td>
+            <td class="text-purple-200 font-mono p-2">${student.mobile}</td>
+            <td class="text-white text-center p-2">
+              <span class="px-2 py-1 rounded-lg ${student.class === '301' ? 'bg-purple-500/50' : 'bg-indigo-500/50'}">${student.class}</span>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+      
+      document.getElementById('class-301-count').textContent = class301;
+      document.getElementById('class-302-count').textContent = class302;
+    }
+    
+    // Import students
+    async function importStudents() {
+      if (!confirm(`هل أنت متأكد من استيراد ${students.length} طالب؟`)) {
+        return;
+      }
+      
+      // Hide button, show progress
+      document.getElementById('import-btn').disabled = true;
+      document.getElementById('progress').classList.remove('hidden');
+      document.getElementById('results').classList.add('hidden');
+      
+      let successCount = 0;
+      let failedCount = 0;
+      let existingCount = 0;
+      const errors = [];
+      
+      for (let i = 0; i < students.length; i++) {
+        const student = students[i];
+        
+        try {
+          // Check if exists
+          const { data: existing } = await supabase
+            .from('students')
+            .select('mobile')
+            .eq('mobile', student.mobile)
+            .single();
+          
+          if (existing) {
+            existingCount++;
+          } else {
+            // Insert
+            const { error } = await supabase
+              .from('students')
+              .insert([{
+                name: student.name,
+                mobile: student.mobile,
+                class: student.class
+              }]);
+            
+            if (error) {
+              failedCount++;
+              errors.push(`${student.name}: ${error.message}`);
+            } else {
+              successCount++;
+            }
+          }
+        } catch (error) {
+          failedCount++;
+          errors.push(`${student.name}: ${error.message}`);
+        }
+        
+        // Update progress
+        const progress = Math.round(((i + 1) / students.length) * 100);
+        document.getElementById('progress-bar').style.width = progress + '%';
+        document.getElementById('progress-text').textContent = `${i + 1} / ${students.length}`;
+      }
+      
+      // Show results
+      document.getElementById('progress').classList.add('hidden');
+      document.getElementById('results').classList.remove('hidden');
+      
+      document.getElementById('success-count').textContent = successCount;
+      document.getElementById('failed-count').textContent = failedCount;
+      document.getElementById('existing-count').textContent = existingCount;
+      
+      if (errors.length > 0) {
+        document.getElementById('error-list').classList.remove('hidden');
+        const errorList = document.getElementById('errors');
+        errors.forEach(err => {
+          errorList.innerHTML += `<li>• ${err}</li>`;
+        });
+      }
+    }
+    
+    // Initialize
+    displayPreview();
+  </script>
+  
+</body>
+</html>

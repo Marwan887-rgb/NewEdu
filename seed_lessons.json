@@ -1,0 +1,13 @@
+{
+  "lessons": [
+    { "id": 1, "unit": "الوحدة الأولى", "title": "اساسيات تخطيط المشروع", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vTfI83cMUy1RB9RDxvkRAdmjF37gdJ1RP7Uh6hiaWgvXSMWTPqCYz4g4F4JeXkpwg/pubembed?start=true&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 2, "unit": "الوحدة الأولى", "title": "بناء وأتمتة خطة المشروع", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vRuPNDqeLlEog2UYbVJE795OYlb0o8OIQYcC09PDKi2Bp4iu7janPvjDcfsjSwSousEsI-FFxT6az01/pubembed?start=false&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 3, "unit": "الوحدة الأولى", "title": "إدارة المهام", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vQUR1VvkdxLeEQJGIrWBhSfe83G6s8T2Zc6JBz8LFK8N2MaOA3Ox4cwxQHuUfiWaQ/pubembed?start=false&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 4, "unit": "الوحدة الثانية", "title": "دورة حياة النظام", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vS5FfHdry5do-Zxdzw_3eIPy9sEsqgBjcna7vm1eH2Snzit0GeuaDUwrl28X-yJMw/pubembed?start=false&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 5, "unit": "الوحدة الثانية", "title": "إنشاء المخطط", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vRS8ZaQ5PUcPGwPqV1DcmQEe-wD9b1dg7CKSx2gbDPSoBhTkg9qmrg9l2UqfRoK5A/pubembed?start=false&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 6, "unit": "الوحدة الثانية", "title": "الأمن السيبراني", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vTsH4rkSfmXi5yWHbzX5tzkaYgPWUrMfxHqzRMaWSBWQssA80MiDnICvPjwkJDLpQ/pubembed?start=true&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 7, "unit": "الوحدة الثالثة", "title": "مقدمة عن تطبيقات الهواتف الذكية", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vRyn0Dshqs8z-pzA32KcfZuTmhBAr1Cu75eX-fyLkcX7N8-ifho8QYeGhnltKJpwg/pubembed?start=true&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 8, "unit": "الوحدة الثالثة", "title": "بناء تطبيقات الهاتف الذكي", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vRgRw4J9Z3MQ13Y1XDVF7oCkmUOul9GLiIjwazSswFZNyNqsPrTMJLNKVAosrSvJQ/pubembed?start=true&loop=false&delayms=3000", "videoLink": "" },
+    { "id": 9, "unit": "الوحدة الثالثة", "title": "برمجة التطبيق", "powerpointLink": "https://docs.google.com/presentation/d/e/2PACX-1vRWzdAPF4p1HVuXxIKinaEkiQOmrBRFMr9n5DRlKEB3-CuYae2YauNSNCbyc0kksQ/pubembed?start=true&loop=false&delayms=3000", "videoLink": "" }
+  ]
+}

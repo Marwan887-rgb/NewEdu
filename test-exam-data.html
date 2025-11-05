@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار بيانات التقويم</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="padding: 20px; font-family: Arial;">
+  <h1>🔍 فحص بيانات التقويم النهائي</h1>
+  <button onclick="checkData()" style="padding: 10px 20px; font-size: 16px;">فحص البيانات</button>
+  <pre id="output" style="background: #f5f5f5; padding: 20px; margin-top: 20px; border: 1px solid #ddd; white-space: pre-wrap; word-wrap: break-word;"></pre>
+
+  <script>
+    const SUPABASE_URL = 'https://vtvewxxokrrwrwlubpkr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dmV3eHhva3Jyd3J3bHVicGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDMxNDUsImV4cCI6MjA3Njg3OTE0NX0.rp9ip1WjNK70Bc0eN218Yo_goSlcxWerTQFBnV0iRFQ';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function checkData() {
+      const output = document.getElementById('output');
+      output.textContent = '⏳ جاري الفحص...';
+
+      try {
+        // جلب بيانات التقويم للدرس 1
+        const { data: exam, error } = await supabase
+          .from('final_exams')
+          .select('*')
+          .eq('lesson_id', 1)
+          .single();
+
+        if (error) {
+          output.textContent = '❌ خطأ: ' + error.message;
+          return;
+        }
+
+        if (!exam) {
+          output.textContent = '⚠️ لا توجد بيانات للدرس 1';
+          return;
+        }
+
+        let result = '✅ تم جلب البيانات بنجاح!\n\n';
+        result += '═══════════════════════════════════\n';
+        result += 'معلومات التقويم:\n';
+        result += '═══════════════════════════════════\n\n';
+        result += `Lesson ID: ${exam.lesson_id}\n`;
+        result += `Total Questions: ${exam.total_questions}\n`;
+        result += `Total Marks: ${exam.total_marks}\n\n`;
+        
+        result += '═══════════════════════════════════\n';
+        result += 'نوع البيانات:\n';
+        result += '═══════════════════════════════════\n\n';
+        result += `typeof questions: ${typeof exam.questions}\n`;
+        result += `Array.isArray(questions): ${Array.isArray(exam.questions)}\n\n`;
+
+        result += '═══════════════════════════════════\n';
+        result += 'محتوى الأسئلة (JSON):\n';
+        result += '═══════════════════════════════════\n\n';
+        result += JSON.stringify(exam.questions, null, 2);
+        result += '\n\n';
+
+        if (Array.isArray(exam.questions)) {
+          result += '═══════════════════════════════════\n';
+          result += 'تحليل الأسئلة:\n';
+          result += '═══════════════════════════════════\n\n';
+          result += `إجمالي الأسئلة: ${exam.questions.length}\n\n`;
+
+          const types = {};
+          exam.questions.forEach(q => {
+            types[q.type] = (types[q.type] || 0) + 1;
+          });
+
+          result += 'الأنواع:\n';
+          for (const [type, count] of Object.entries(types)) {
+            result += `  - ${type}: ${count}\n`;
+          }
+
+          result += '\n';
+          result += 'نماذج من الأسئلة:\n';
+          exam.questions.slice(0, 3).forEach((q, idx) => {
+            result += `\nسؤال ${idx + 1}:\n`;
+            result += `  type: ${q.type}\n`;
+            result += `  question: ${q.question.substring(0, 50)}...\n`;
+            if (q.answer !== undefined) result += `  answer: ${q.answer}\n`;
+            if (q.options) result += `  options: ${q.options.length} خيارات\n`;
+          });
+        }
+
+        output.textContent = result;
+
+      } catch (err) {
+        output.textContent = '❌ خطأ في التنفيذ: ' + err.message + '\n\n' + err.stack;
+      }
+    }
+  </script>
+</body>
+</html>

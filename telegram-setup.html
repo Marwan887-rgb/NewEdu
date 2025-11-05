@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إعدادات بوت التلجرام</title>
+  <script src="config-telegram.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      color: #333;
+      font-size: 18px;
+      margin: 0 0 15px 0;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+      font-family: 'Courier New', monospace;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.secondary {
+      background: #6c757d;
+    }
+    button.secondary:hover {
+      background: #5a6268;
+    }
+    button.danger {
+      background: #dc3545;
+    }
+    button.danger:hover {
+      background: #c82333;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      text-align: center;
+      font-weight: 600;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+    .bot-info {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid #667eea;
+      margin-top: 15px;
+    }
+    .bot-info h3 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-size: 16px;
+    }
+    .bot-info p {
+      margin: 5px 0;
+      color: #333;
+      font-size: 14px;
+    }
+    .instructions {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .instructions h3 {
+      margin: 0 0 10px 0;
+      color: #856404;
+      font-size: 16px;
+    }
+    .instructions ol {
+      margin: 0;
+      padding-right: 20px;
+      color: #856404;
+    }
+    .instructions li {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+    .instructions code {
+      background: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #d63384;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 إعدادات بوت التلجرام</h1>
+    <p class="subtitle">قم بإعداد توكن البوت لإرسال رموز التحقق عبر تلجرام</p>
+    
+    <div class="instructions">
+      <h3>📋 خطوات الحصول على التوكن:</h3>
+      <ol>
+        <li>افتح تطبيق <strong>Telegram</strong></li>
+        <li>ابحث عن: <code>@BotFather</code></li>
+        <li>أرسل: <code>/newbot</code> (أو استخدم بوت موجود)</li>
+        <li>اتبع التعليمات لإنشاء البوت</li>
+        <li>انسخ <strong>التوكن</strong> وألصقه أدناه</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>1️⃣ إدخال توكن البوت</h2>
+      
+      <label for="bot-token">🔐 Telegram Bot Token:</label>
+      <input type="password" 
+             id="bot-token" 
+             placeholder="مثال: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"
+             autocomplete="off">
+      
+      <button onclick="saveToken()">💾 حفظ التوكن</button>
+      <button onclick="toggleTokenVisibility()" class="secondary">👁️ إظهار/إخفاء التوكن</button>
+      
+      <div id="save-status" class="status"></div>
+    </div>
+
+    <div class="section">
+      <h2>2️⃣ اختبار البوت</h2>
+      
+      <button onclick="testToken()">🧪 اختبار التوكن</button>
+      
+      <div id="test-status" class="status"></div>
+      <div id="bot-info" style="display: none;"></div>
+    </div>
+
+    <div class="section">
+      <h2>3️⃣ الحالة الحالية</h2>
+      
+      <div id="current-status"></div>
+      
+      <button onclick="clearToken()" class="danger">🗑️ حذف التوكن</button>
+    </div>
+
+    <div class="section">
+      <h2>4️⃣ الخطوة التالية</h2>
+      <p style="color: #666; font-size: 14px; line-height: 1.6;">
+        بعد حفظ التوكن بنجاح، قم بـ:
+      </p>
+      <ol style="color: #666; font-size: 14px; line-height: 1.6;">
+        <li>التأكد من أن كل طالب أرسل <code>/start</code> للبوت</li>
+        <li>جمع <code>chat_id</code> لكل طالب</li>
+        <li>حفظ <code>chat_id</code> في قاعدة البيانات</li>
+      </ol>
+      
+      <button onclick="window.location.href='collect-telegram-ids.html'" class="secondary">
+        📱 جمع معرفات الطلاب
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // عرض الحالة الحالية عند التحميل
+    window.addEventListener('load', () => {
+      updateCurrentStatus();
+    });
+
+    function updateCurrentStatus() {
+      const statusDiv = document.getElementById('current-status');
+      
+      if (hasTelegramToken()) {
+        statusDiv.innerHTML = `
+          <div class="status success">
+            ✅ التوكن محفوظ ونشط<br>
+            <small>استخدم زر "اختبار التوكن" للتحقق من صحته</small>
+          </div>
+        `;
+      } else {
+        statusDiv.innerHTML = `
+          <div class="status info">
+            ℹ️ لم يتم حفظ أي توكن بعد<br>
+            <small>قم بإدخال التوكن أعلاه</small>
+          </div>
+        `;
+      }
+    }
+
+    function toggleTokenVisibility() {
+      const input = document.getElementById('bot-token');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function saveToken() {
+      const token = document.getElementById('bot-token').value.trim();
+      const statusDiv = document.getElementById('save-status');
+      
+      if (!token) {
+        statusDiv.className = 'status error';
+        statusDiv.textContent = '❌ يرجى إدخال التوكن';
+        return;
+      }
+      
+      // التحقق من صيغة التوكن الأساسية
+      if (!token.includes(':')) {
+        statusDiv.className = 'status error';
+        statusDiv.textContent = '❌ صيغة التوكن غير صحيحة. يجب أن يحتوي على :';
+        return;
+      }
+      
+      const success = setTelegramToken(token);
+      
+      if (success) {
+        statusDiv.className = 'status success';
+        statusDiv.textContent = '✅ تم حفظ التوكن بنجاح!';
+        document.getElementById('bot-token').value = '';
+        updateCurrentStatus();
+      } else {
+        statusDiv.className = 'status error';
+        statusDiv.textContent = '❌ فشل حفظ التوكن';
+      }
+    }
+
+    async function testToken() {
+      const statusDiv = document.getElementById('test-status');
+      const botInfoDiv = document.getElementById('bot-info');
+      
+      statusDiv.className = 'status info';
+      statusDiv.textContent = '⏳ جاري الاختبار...';
+      botInfoDiv.style.display = 'none';
+      
+      try {
+        const result = await validateTelegramToken();
+        
+        if (result.valid) {
+          statusDiv.className = 'status success';
+          statusDiv.textContent = result.message;
+          
+          // عرض معلومات البوت
+          botInfoDiv.className = 'bot-info';
+          botInfoDiv.innerHTML = `
+            <h3>📊 معلومات البوت:</h3>
+            <p><strong>الاسم:</strong> ${result.botInfo.first_name}</p>
+            <p><strong>Username:</strong> @${result.botInfo.username}</p>
+            <p><strong>Bot ID:</strong> ${result.botInfo.id}</p>
+          `;
+          botInfoDiv.style.display = 'block';
+        } else {
+          statusDiv.className = 'status error';
+          statusDiv.textContent = '❌ ' + result.error;
+          botInfoDiv.style.display = 'none';
+        }
+      } catch (error) {
+        statusDiv.className = 'status error';
+        statusDiv.textContent = '❌ خطأ: ' + error.message;
+        botInfoDiv.style.display = 'none';
+      }
+    }
+
+    function clearToken() {
+      if (confirm('هل أنت متأكد من حذف التوكن؟')) {
+        clearTelegramToken();
+        updateCurrentStatus();
+        document.getElementById('save-status').style.display = 'none';
+        document.getElementById('test-status').style.display = 'none';
+        document.getElementById('bot-info').style.display = 'none';
+        
+        alert('✅ تم حذف التوكن بنجاح');
+      }
+    }
+  </script>
+</body>
+</html>
