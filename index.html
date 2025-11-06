@@ -308,14 +308,14 @@
     .flip-card-container {
       position: relative;
       width: 100%;
-      min-height: 580px;
+      min-height: 540px;
       perspective: 1500px;
     }
     
     .flip-card-inner {
       position: relative;
       width: 100%;
-      min-height: 580px;
+      min-height: 540px;
       transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -356,10 +356,10 @@
       backdrop-filter: blur(10px);
       border: 2px solid rgba(196, 181, 253, 0.6);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px;
       cursor: pointer;
       transition: all 0.3s ease;
-      height: 165px;
+      height: 150px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -376,13 +376,13 @@
     .unit-card-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     
     .unit-icon-box {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       background: linear-gradient(135deg, #8b5cf6, #7c3aed);
       border-radius: 8px;
       display: flex;
@@ -393,8 +393,8 @@
     }
     
     .unit-icon-box svg {
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       color: white;
     }
     
@@ -410,15 +410,15 @@
     .unit-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 6px;
+      margin-bottom: 10px;
       flex: 1;
     }
     
     .unit-stat-item {
       background: rgba(255, 255, 255, 0.7);
       border-radius: 8px;
-      padding: 8px 4px;
+      padding: 6px 4px;
       text-align: center;
       display: flex;
       flex-direction: column;
@@ -428,7 +428,7 @@
     }
     
     .stat-value {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 900;
       line-height: 1;
     }
@@ -472,11 +472,11 @@
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
-        min-height: 620px;
+        min-height: 580px;
       }
       
       .flip-card-inner {
-        min-height: 620px;
+        min-height: 580px;
       }
       
       /* تحسين عرض الوحدات على الجوال */
@@ -493,8 +493,8 @@
       }
       
       .unit-card-wrapper {
-        height: 155px !important;
-        padding: 14px !important;
+        height: 140px !important;
+        padding: 12px !important;
       }
       
       .unit-icon-box {
@@ -512,7 +512,7 @@
       }
       
       .stat-value {
-        font-size: 16px !important;
+        font-size: 15px !important;
       }
       
       .stat-label {
