@@ -2478,19 +2478,21 @@
       
       // تجميع حسب الوحدة
       const grouped = {};
-      if (lessonsData && lessonsData.length > 0) {
-        lessonsData.forEach(lesson => {
-          const unit = lesson.unit || 'بدون وحدة';
-          if (!grouped[unit]) grouped[unit] = [];
-          grouped[unit].push(lesson);
-        });
+      if (!lessonsData || lessonsData.length === 0) {
+        unitsContent.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد بيانات دروس</p></div>';
+        return;
       }
       
-      // عرض بطاقات الوحدات - البطاقات الثلاث متساوية ومصغرة
+      lessonsData.forEach(lesson => {
+        const unit = lesson.unit || 'بدون وحدة';
+        if (!grouped[unit]) grouped[unit] = [];
+        grouped[unit].push(lesson);
+      });
+      
       const unitsArray = Object.keys(grouped);
       
       if (unitsArray.length === 0) {
-        unitsContent.innerHTML = '<div class="w-full text-center p-4"><p class="text-gray-600">لا توجد وحدات متاحة</p></div>';
+        unitsContent.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد وحدات متاحة</p></div>';
         return;
       }
       
@@ -2503,12 +2505,11 @@
         const activitiesCount = unitLessons.filter(l => l.type === 'activity' || l.type === 'project').length;
         const totalCount = unitLessons.length;
         
-        // نفس حجم بطاقات الفترات (w-full sm:w-64)
         html += `
           <div class="w-full sm:w-64">
-            <div onclick="event.stopPropagation(); showUnitLessons('${unitName.replace(/'/g, "\\'")}')" 
-                 class="rounded-2xl p-3 sm:p-4 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl float-animation glow-border h-full"
-                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(196, 181, 253, 0.5); animation-delay: ${index * 0.2}s;">
+            <div onclick="showUnitLessons('${unitName.replace(/'/g, "\\'")}')" 
+                 class="rounded-2xl p-3 sm:p-4 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl h-full"
+                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5);">
               <div class="text-center">
                 <div class="flex items-center justify-center gap-2 mb-2 whitespace-nowrap">
                   <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-1.5 sm:p-2 shadow-lg flex-shrink-0">
@@ -2546,10 +2547,7 @@
           </div>`;
       });
       
-      // عرض في قسم الوحدات
-      if (unitsContent) {
-        unitsContent.innerHTML = html;
-      }
+      unitsContent.innerHTML = html;
     }
     
     // عرض الوحدات في مساحة العمل
@@ -2560,35 +2558,36 @@
       const curriculumBtn = document.getElementById('curriculum-icon-btn');
       const backBtn = document.getElementById('back-to-terms-btn');
       
-      // إخفاء بطاقات الفترات
-      if (termsView) termsView.classList.add('hidden');
-      // إخفاء دروس الوحدة
-      if (unitLessonsContent) unitLessonsContent.classList.add('hidden');
-      // إظهار الوحدات
-      if (unitsContent) {
-        unitsContent.classList.remove('hidden');
-        unitsContent.style.display = 'flex';
-        // التأكد من أن lessonsData محملة قبل عرض الوحدات
-        if (lessonsData && lessonsData.length > 0) {
-          renderUnits();
-        } else {
-          console.warn('lessonsData غير محملة بعد');
-          // محاولة إعادة المحاولة بعد قليل
-          setTimeout(() => {
-            if (lessonsData && lessonsData.length > 0) {
-              renderUnits();
-            } else {
-              unitsContent.innerHTML = '<div class="w-full text-center p-4"><p class="text-gray-600">جاري تحميل البيانات...</p></div>';
-            }
-          }, 500);
-        }
-      } else {
-        console.error('units-content غير موجود');
+      if (!termsView || !unitsContent) {
+        console.error('عناصر DOM غير موجودة');
+        return;
       }
+      
+      // إخفاء بطاقات الفترات
+      termsView.classList.add('hidden');
+      termsView.style.display = 'none';
+      
+      // إخفاء دروس الوحدة إن كانت ظاهرة
+      if (unitLessonsContent) {
+        unitLessonsContent.classList.add('hidden');
+        unitLessonsContent.style.display = 'none';
+      }
+      
+      // إظهار الوحدات
+      unitsContent.classList.remove('hidden');
+      unitsContent.style.display = 'flex';
+      
+      // عرض الوحدات
+      renderUnits();
+      
       // إخفاء أيقونة الكتاب
       if (curriculumBtn) curriculumBtn.classList.add('hidden');
+      
       // إظهار زر العودة
-      if (backBtn) backBtn.classList.remove('hidden');
+      if (backBtn) {
+        backBtn.classList.remove('hidden');
+        backBtn.style.display = 'block';
+      }
     }
     
     // العودة للفترات من الوحدات
