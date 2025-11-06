@@ -306,17 +306,17 @@
        Flip Card - تأثير قلب البطاقة
        ════════════════════════════════════════════════════════════ */
     .flip-card-container {
-      perspective: 1500px;
-      width: 100%;
-      min-height: 350px;
       position: relative;
+      width: 100%;
+      min-height: 400px;
+      perspective: 1500px;
     }
     
     .flip-card-inner {
       position: relative;
       width: 100%;
-      min-height: 350px;
-      transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+      min-height: 400px;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
     
@@ -357,37 +357,26 @@
       }
       
       /* تحسين عرض الوحدات على الجوال */
+      #units-content-flip {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+      }
+      
       #units-content-flip > div {
         width: 100% !important;
         max-width: 100% !important;
       }
       
-      #units-content-flip {
-        gap: 0.5rem !important;
-      }
-      
-      /* تصغير الوحدات أكثر على الجوال */
-      #units-content-flip .rounded-lg {
-        padding: 0.75rem !important;
-        min-height: 60px !important;
-      }
-      
-      #units-content-flip h3 {
-        font-size: 10px !important;
-      }
-      
-      #units-content-flip .text-\[9px\] {
-        font-size: 8px !important;
-      }
-      
-      /* التأكد من سهولة النقر */
-      #units-content-flip > div > div {
-        min-height: 60px !important;
-      }
-      
       /* تقليل padding على الجوال */
       #workspace-content {
         padding: 0.5rem !important;
+      }
+      
+      /* تحسين البطاقات على الجوال */
+      .terms-cards-container {
+        flex-direction: column !important;
+        gap: 1rem !important;
       }
     }
     
@@ -1359,12 +1348,6 @@
         <!-- مساحة العمل -->
         <div class="mb-6">
           <div id="workspace-card" class="rounded-2xl relative" style="background: linear-gradient(-45deg, rgba(191, 219, 254, 0.3), rgba(147, 197, 253, 0.3), rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3)); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.5); min-height: calc(100vh - 200px); max-height: calc(100vh - 200px); overflow-y: auto;">
-            <!-- أيقونة الكتاب (عند عرض الفترات فقط) -->
-            <button id="curriculum-icon-btn" onclick="showUnitsInWorkspace()" class="absolute top-3 left-3 z-10 bg-white/80 hover:bg-white backdrop-blur-sm rounded-lg p-2 shadow-lg hover:shadow-xl transition-all transform hover:scale-110" style="display: block;">
-              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-              </svg>
-            </button>
             
             <!-- زر العودة للفترات (بسيط جداً) -->
             <button id="back-to-terms-btn" onclick="backToTermsFromUnits()" class="absolute top-3 right-3 z-10 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 hidden">
@@ -1388,10 +1371,10 @@
                        الوجه الأمامي: الفترات
                        ════════════════════════════════════════════════════════════ -->
                   <div class="flip-card-front">
-                    <div id="terms-cards-view" class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 terms-cards-container">
+                    <div id="terms-cards-view" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-2 sm:gap-3 terms-cards-container p-2">
             
             <!-- بطاقة الفترة الأولى -->
-            <div class="w-full sm:w-64 term-card-mobile">
+            <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile">
               <!-- البطاقة الرئيسية -->
               <div class="rounded-2xl glow-border h-full flex flex-col sm:flex-row items-center justify-center gap-3" style="background: rgba(219, 234, 254, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(191, 219, 254, 0.7);">
                 
@@ -1450,7 +1433,7 @@
             </div>
             
             <!-- بطاقة الفترة الثانية -->
-            <div class="w-full sm:w-64 term-card-mobile">
+            <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile">
               <!-- البطاقة الرئيسية -->
               <div class="rounded-2xl glow-border h-full flex flex-col sm:flex-row items-center justify-center gap-3" style="background: rgba(209, 250, 229, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(167, 243, 208, 0.7);">
                 
@@ -1509,7 +1492,7 @@
             </div>
 
             <!-- بطاقة المهام المكتملة -->
-            <div class="w-full sm:w-64 term-card-mobile">
+            <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile">
               <!-- البطاقة الرئيسية -->
               <div class="rounded-2xl glow-border h-full flex flex-col sm:flex-row items-center justify-center gap-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(221, 214, 254, 0.7);">
                 
@@ -1568,7 +1551,7 @@
             </div>
 
             <!-- بطاقة نسبة الإنجاز -->
-            <div class="w-full sm:flex-1 sm:px-3 term-card-mobile">
+            <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile">
               <!-- البطاقة الرئيسية -->
               <div class="rounded-2xl glow-border h-full flex flex-col sm:flex-row items-center justify-center gap-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(221, 214, 254, 0.7); animation-delay: 1s;">
                 
@@ -1609,7 +1592,7 @@
             </div>
             
             <!-- زر عرض الدروس - بطاقة جديدة -->
-            <div class="w-full sm:w-64 term-card-mobile">
+            <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile">
               <div onclick="toggleFlipCard()" class="rounded-2xl glow-border h-full flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95)); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(139, 92, 246, 0.7); min-height: 80px;">
                 <div class="text-center p-3 sm:p-4">
                   <div class="flex items-center justify-center gap-2 mb-1">
@@ -1632,9 +1615,9 @@
                        الوجه الخلفي: الوحدات
                        ════════════════════════════════════════════════════════════ -->
                   <div class="flip-card-back">
-                    <div class="h-full flex items-center justify-center p-2">
+                    <div class="h-full flex items-center justify-center p-3">
                       <!-- الوحدات -->
-                      <div id="units-content-flip" class="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 w-full">
+                      <div id="units-content-flip" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-3 sm:gap-4 w-full">
                         <!-- سيتم ملؤها ديناميكياً من renderUnits() -->
                       </div>
                     </div>
@@ -2642,28 +2625,35 @@
         const totalCount = unitLessons.length;
         
         html += `
-          <div class="w-full sm:w-44">
+          <div class="w-full sm:flex-1 sm:min-w-[200px] sm:max-w-[280px]">
             <div onclick="showUnitLessonsFromFlip('${unitName.replace(/'/g, "\\'")}')" 
-                 class="rounded-lg p-1.5 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-md h-full"
-                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 1.5px solid rgba(196, 181, 253, 0.5);">
+                 class="rounded-xl p-4 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl h-full"
+                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5);">
               <div class="text-center">
-                <div class="flex items-center justify-center gap-1 mb-1">
-                  <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded p-0.5 shadow-sm flex-shrink-0">
-                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                  <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-2 shadow-lg flex-shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <h3 class="text-[11px] font-black text-purple-900 drop-shadow-sm truncate">${sanitize(unitName)}</h3>
+                  <h3 class="text-sm font-black text-purple-900 drop-shadow-sm">${sanitize(unitName)}</h3>
                 </div>
-                <div class="bg-white/50 rounded p-1 mb-1 space-y-0.5">
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-700 font-semibold text-[9px]">📖 ${lessonsCount}</span>
-                    <span class="text-gray-700 font-semibold text-[9px]">🎯 ${examsCount}</span>
-                    <span class="text-gray-700 font-semibold text-[9px]">⚡ ${activitiesCount}</span>
+                <div class="bg-white/60 rounded-lg p-3 mb-3 space-y-2">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-700 font-semibold">📖 الدروس</span>
+                    <span class="text-blue-700 font-black text-lg">${lessonsCount}</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-700 font-semibold">🎯 الاختبارات</span>
+                    <span class="text-purple-700 font-black text-lg">${examsCount}</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-700 font-semibold">⚡ الأنشطة</span>
+                    <span class="text-green-700 font-black text-lg">${activitiesCount}</span>
                   </div>
                 </div>
-                <div class="bg-purple-500 hover:bg-purple-600 text-white px-2 py-0.5 rounded font-bold text-[9px] transition-all inline-block shadow-sm">
-                  ✨ عرض
+                <div class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all inline-block shadow-lg hover:shadow-xl">
+                  ✨ عرض المحتوى
                 </div>
               </div>
             </div>
