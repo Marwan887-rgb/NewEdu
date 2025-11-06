@@ -308,14 +308,16 @@
     .flip-card-container {
       position: relative;
       width: 100%;
-      min-height: 450px;
+      min-height: 500px;
+      max-height: 600px;
       perspective: 1500px;
     }
     
     .flip-card-inner {
       position: relative;
       width: 100%;
-      min-height: 450px;
+      min-height: 500px;
+      max-height: 600px;
       transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -351,24 +353,29 @@
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
-        min-height: auto;
-        max-height: calc(100vh - 150px);
+        min-height: 550px;
+        max-height: calc(100vh - 120px);
       }
       
       .flip-card-inner {
-        min-height: auto;
+        min-height: 550px;
       }
       
       /* تحسين عرض الوحدات على الجوال */
       #units-content-flip {
         flex-direction: column !important;
-        gap: 1rem !important;
+        gap: 0.75rem !important;
+        padding: 0.5rem !important;
       }
       
       #units-content-flip > div {
         width: 100% !important;
         max-width: 100% !important;
         flex: none !important;
+      }
+      
+      #units-content-flip > div > div {
+        height: 145px !important;
       }
       
       /* تقليل padding على الجوال */
@@ -384,7 +391,6 @@
       
       .flip-card-back {
         overflow-y: auto !important;
-        max-height: calc(100vh - 150px) !important;
       }
     }
     
@@ -2644,34 +2650,34 @@
         html += `
           <div class="w-full sm:w-[30%] sm:min-w-[240px] flex-shrink-0">
             <div onclick="showUnitLessonsFromFlip('${unitName.replace(/'/g, "\\'")}')" 
-                 class="rounded-xl p-4 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl"
-                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5); min-height: 200px;">
+                 class="rounded-xl p-3 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl"
+                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5); height: 160px;">
               <div class="text-center h-full flex flex-col justify-between">
                 <div>
-                  <div class="flex items-center justify-center gap-2 mb-3">
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-2 shadow-lg flex-shrink-0">
-                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                  <div class="flex items-center justify-center gap-2 mb-2">
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-1.5 shadow-lg flex-shrink-0">
+                      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <h3 class="text-sm font-black text-purple-900 drop-shadow-sm">${sanitize(unitName)}</h3>
+                    <h3 class="text-xs font-black text-purple-900 drop-shadow-sm">${sanitize(unitName)}</h3>
                   </div>
-                  <div class="bg-white/60 rounded-lg p-3 mb-3 space-y-2">
-                    <div class="flex items-center justify-between text-sm">
+                  <div class="bg-white/60 rounded-lg p-2 mb-2 space-y-1">
+                    <div class="flex items-center justify-between text-xs">
                       <span class="text-gray-700 font-semibold">📖 الدروس</span>
-                      <span class="text-blue-700 font-black text-lg">${lessonsCount}</span>
+                      <span class="text-blue-700 font-black text-base">${lessonsCount}</span>
                     </div>
-                    <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center justify-between text-xs">
                       <span class="text-gray-700 font-semibold">🎯 الاختبارات</span>
-                      <span class="text-purple-700 font-black text-lg">${examsCount}</span>
+                      <span class="text-purple-700 font-black text-base">${examsCount}</span>
                     </div>
-                    <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center justify-between text-xs">
                       <span class="text-gray-700 font-semibold">⚡ الأنشطة</span>
-                      <span class="text-green-700 font-black text-lg">${activitiesCount}</span>
+                      <span class="text-green-700 font-black text-base">${activitiesCount}</span>
                     </div>
                   </div>
                 </div>
-                <div class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all inline-block shadow-lg hover:shadow-xl">
+                <div class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition-all inline-block shadow-lg hover:shadow-xl">
                   ✨ عرض المحتوى
                 </div>
               </div>
