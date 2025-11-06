@@ -348,6 +348,127 @@
       flex-direction: column;
     }
     
+    /* ════════════════════════════════════════════════════════════
+       Unit Cards - بطاقات الوحدات (احترافية ومنظمة)
+       ════════════════════════════════════════════════════════════ */
+    .unit-card-wrapper {
+      background: rgba(243, 232, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(196, 181, 253, 0.6);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: 165px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    }
+    
+    .unit-card-wrapper:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+      border-color: rgba(147, 51, 234, 0.7);
+    }
+    
+    /* رأس البطاقة */
+    .unit-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .unit-icon-box {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+    }
+    
+    .unit-icon-box svg {
+      width: 18px;
+      height: 18px;
+      color: white;
+    }
+    
+    .unit-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #581c87;
+      line-height: 1.2;
+      margin: 0;
+    }
+    
+    /* شبكة الإحصائيات */
+    .unit-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+      flex: 1;
+    }
+    
+    .unit-stat-item {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      padding: 8px 4px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    
+    .stat-value {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    
+    .stat-blue { color: #2563eb; }
+    .stat-purple { color: #7c3aed; }
+    .stat-green { color: #059669; }
+    
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6b7280;
+      line-height: 1;
+    }
+    
+    /* زر العرض */
+    .unit-view-btn {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+    }
+    
+    .unit-card-wrapper:hover .unit-view-btn {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+    
+    .unit-view-btn svg {
+      flex-shrink: 0;
+    }
+    
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
@@ -371,8 +492,36 @@
         flex: none !important;
       }
       
-      #units-content-flip > div > div {
-        height: 170px !important;
+      .unit-card-wrapper {
+        height: 155px !important;
+        padding: 14px !important;
+      }
+      
+      .unit-icon-box {
+        width: 28px !important;
+        height: 28px !important;
+      }
+      
+      .unit-icon-box svg {
+        width: 16px !important;
+        height: 16px !important;
+      }
+      
+      .unit-title {
+        font-size: 12px !important;
+      }
+      
+      .stat-value {
+        font-size: 16px !important;
+      }
+      
+      .stat-label {
+        font-size: 9px !important;
+      }
+      
+      .unit-view-btn {
+        padding: 7px 12px !important;
+        font-size: 10px !important;
       }
       
       /* زيادة ارتفاع بطاقات الوجه الأول */
@@ -2660,42 +2809,45 @@
         const totalCount = unitLessons.length;
         
         html += `
-          <div class="w-full sm:w-[30%] sm:min-w-[240px] flex-shrink-0">
+          <div class="w-full sm:w-[31%] sm:min-w-[220px] sm:max-w-[260px] flex-shrink-0">
             <div onclick="showUnitLessonsFromFlip('${unitName.replace(/'/g, "\\'")}')" 
-                 class="rounded-xl p-3 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl"
-                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5); height: 180px; display: flex; flex-direction: column;">
-              <div class="text-center flex-1 flex flex-col">
-                <!-- العنوان -->
-                <div class="flex items-center justify-center gap-2 mb-2">
-                  <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-1.5 shadow-lg flex-shrink-0">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <h3 class="text-sm font-black text-purple-900 drop-shadow-sm leading-tight">${sanitize(unitName)}</h3>
+                 class="unit-card-wrapper">
+              
+              <!-- رأس البطاقة -->
+              <div class="unit-card-header">
+                <div class="unit-icon-box">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
                 </div>
-                
-                <!-- الإحصائيات -->
-                <div class="bg-white/60 rounded-lg p-2 mb-2 flex-1 flex flex-col justify-center">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs text-gray-700 font-semibold">📖 الدروس</span>
-                    <span class="text-blue-700 font-black text-base">${lessonsCount}</span>
-                  </div>
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs text-gray-700 font-semibold">🎯 الاختبارات</span>
-                    <span class="text-purple-700 font-black text-base">${examsCount}</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-xs text-gray-700 font-semibold">⚡ الأنشطة</span>
-                    <span class="text-green-700 font-black text-base">${activitiesCount}</span>
-                  </div>
+                <h3 class="unit-title">${sanitize(unitName)}</h3>
+              </div>
+              
+              <!-- الإحصائيات -->
+              <div class="unit-stats-grid">
+                <div class="unit-stat-item">
+                  <div class="stat-value stat-blue">${lessonsCount}</div>
+                  <div class="stat-label">درس</div>
                 </div>
-                
-                <!-- زر عرض المحتوى -->
-                <div class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs transition-all shadow-lg hover:shadow-xl">
-                  ✨ عرض المحتوى
+                <div class="unit-stat-item">
+                  <div class="stat-value stat-purple">${examsCount}</div>
+                  <div class="stat-label">اختبار</div>
+                </div>
+                <div class="unit-stat-item">
+                  <div class="stat-value stat-green">${activitiesCount}</div>
+                  <div class="stat-label">نشاط</div>
                 </div>
               </div>
+              
+              <!-- زر العرض -->
+              <div class="unit-view-btn">
+                <span>عرض المحتوى</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+              
             </div>
           </div>`;
       });
