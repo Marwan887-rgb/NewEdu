@@ -346,71 +346,6 @@
       box-shadow: 0 10px 40px rgba(139, 92, 246, 0.2);
     }
     
-    /* زر القلب */
-    .flip-toggle-btn {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(139, 92, 246, 0.3);
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-      transition: all 0.3s ease;
-      animation: pulse-flip 2s ease-in-out infinite;
-      position: relative;
-    }
-    
-    .flip-toggle-btn::after {
-      content: attr(title);
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%) translateY(0.5rem);
-      background: rgba(139, 92, 246, 0.95);
-      color: white;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-    }
-    
-    .flip-toggle-btn:hover::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0.25rem);
-    }
-    
-    .flip-toggle-btn:hover {
-      transform: scale(1.1) rotate(180deg);
-      box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5);
-      background: rgba(139, 92, 246, 0.1);
-    }
-    
-    .flip-toggle-btn:active {
-      transform: scale(0.95);
-    }
-    
-    @keyframes pulse-flip {
-      0%, 100% {
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-      }
-      50% {
-        box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5);
-      }
-    }
-    
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
@@ -419,18 +354,6 @@
       
       .flip-card-inner {
         min-height: 280px;
-      }
-      
-      .flip-toggle-btn {
-        width: 44px;
-        height: 44px;
-        top: 0.75rem;
-        left: 0.75rem;
-      }
-      
-      /* إخفاء tooltip على الجوال */
-      .flip-toggle-btn::after {
-        display: none;
       }
       
       /* تحسين عرض الوحدات على الجوال */
@@ -1458,13 +1381,6 @@
                    ════════════════════════════════════════════════════════════ -->
               <div class="flip-card-container" id="main-flip-card">
                 
-                <!-- زر قلب البطاقة -->
-                <button onclick="toggleFlipCard()" class="flip-toggle-btn" title="🔄 قلب البطاقة">
-                  <svg id="flip-icon" class="w-6 h-6 text-purple-600 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
-                
                 <!-- البطاقة الداخلية -->
                 <div class="flip-card-inner">
                   
@@ -1691,6 +1607,21 @@
                 </div>
               </div>
             </div>
+            
+            <!-- زر عرض الدروس - بطاقة جديدة -->
+            <div class="w-full sm:w-64 term-card-mobile">
+              <div onclick="toggleFlipCard()" class="rounded-2xl glow-border h-full flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95)); backdrop-filter: blur(10px); border-width: 2px; border-color: rgba(139, 92, 246, 0.7); min-height: 80px;">
+                <div class="text-center p-3 sm:p-4">
+                  <div class="flex items-center justify-center gap-2 mb-1">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <h3 class="text-base sm:text-lg font-black text-white drop-shadow-lg">📚 عرض الدروس</h3>
+                  </div>
+                  <p class="text-[10px] sm:text-xs text-white/90 font-semibold">اختر الوحدة المطلوبة</p>
+                </div>
+              </div>
+            </div>
 
                     </div>
                     <!-- نهاية terms-cards-view -->
@@ -1778,7 +1709,8 @@
         
       </div>
       
-      <div id="lessons-list" class="space-y-6"></div>
+      <!-- إخفاء قائمة الدروس - لن تستخدم بعد الآن -->
+      <div id="lessons-list" class="space-y-6 hidden" style="display: none !important;"></div>
     </div>
   </div>
 
@@ -2659,20 +2591,19 @@
     // ════════════════════════════════════════════════════════════
     function toggleFlipCard() {
       const flipCard = document.getElementById('main-flip-card');
-      const flipIcon = document.getElementById('flip-icon');
       
       if (!flipCard) return;
       
       // قلب البطاقة
-      flipCard.classList.toggle('flipped');
+      const isCurrentlyFlipped = flipCard.classList.contains('flipped');
       
-      // تدوير أيقونة الزر
-      if (flipCard.classList.contains('flipped')) {
-        flipIcon.style.transform = 'rotate(180deg)';
-        // ملء الوحدات في الوجه الخلفي
-        renderUnitsInFlip();
+      if (isCurrentlyFlipped) {
+        // إذا كانت مقلوبة، ارجعها للأمام
+        flipCard.classList.remove('flipped');
       } else {
-        flipIcon.style.transform = 'rotate(0deg)';
+        // إذا لم تكن مقلوبة، اقلبها للخلف وعرض الوحدات
+        flipCard.classList.add('flipped');
+        renderUnitsInFlip();
       }
     }
     
@@ -2744,18 +2675,14 @@
     
     // عرض دروس الوحدة من flip card
     function showUnitLessonsFromFlip(unitName) {
-      // قلب البطاقة للأمام أولاً
+      // إخفاء flip card بالكامل
       const flipCard = document.getElementById('main-flip-card');
-      const flipIcon = document.getElementById('flip-icon');
-      if (flipCard && flipCard.classList.contains('flipped')) {
-        flipCard.classList.remove('flipped');
-        if (flipIcon) flipIcon.style.transform = 'rotate(0deg)';
+      if (flipCard) {
+        flipCard.style.display = 'none';
       }
       
-      // ثم عرض دروس الوحدة
-      setTimeout(() => {
-        showUnitLessons(unitName);
-      }, 400);
+      // عرض دروس الوحدة مباشرة
+      showUnitLessons(unitName);
     }
     
     // عرض بطاقات الوحدات
@@ -2889,6 +2816,14 @@
       const unitLessonsContent = document.getElementById('unit-lessons-content');
       const curriculumBtn = document.getElementById('curriculum-icon-btn');
       const backBtn = document.getElementById('back-to-terms-btn');
+      const flipCard = document.getElementById('main-flip-card');
+      
+      // إعادة إظهار flip card
+      if (flipCard) {
+        flipCard.style.display = 'block';
+        // إعادتها للوجه الأمامي
+        flipCard.classList.remove('flipped');
+      }
       
       // إظهار بطاقات الفترات
       if (termsView) {
