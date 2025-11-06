@@ -308,16 +308,14 @@
     .flip-card-container {
       position: relative;
       width: 100%;
-      min-height: 500px;
-      max-height: 600px;
+      min-height: 580px;
       perspective: 1500px;
     }
     
     .flip-card-inner {
       position: relative;
       width: 100%;
-      min-height: 500px;
-      max-height: 600px;
+      min-height: 580px;
       transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -353,12 +351,11 @@
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
-        min-height: 550px;
-        max-height: calc(100vh - 120px);
+        min-height: 620px;
       }
       
       .flip-card-inner {
-        min-height: 550px;
+        min-height: 620px;
       }
       
       /* تحسين عرض الوحدات على الجوال */
@@ -375,7 +372,12 @@
       }
       
       #units-content-flip > div > div {
-        height: 145px !important;
+        height: 170px !important;
+      }
+      
+      /* زيادة ارتفاع بطاقات الوجه الأول */
+      .term-card-mobile {
+        min-height: 100px !important;
       }
       
       /* تقليل padding على الجوال */
@@ -1630,8 +1632,18 @@
                        ════════════════════════════════════════════════════════════ -->
                   <div class="flip-card-back">
                     <div class="w-full flex-1 p-4 overflow-y-auto">
+                      <!-- زر العودة للوجه الأول -->
+                      <div class="flex justify-center mb-3">
+                        <button onclick="toggleFlipCard()" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                          </svg>
+                          العودة للإحصائيات
+                        </button>
+                      </div>
+                      
                       <!-- الوحدات -->
-                      <div id="units-content-flip" class="flex flex-col sm:flex-row flex-wrap items-start justify-center gap-3 sm:gap-4 w-full h-full">
+                      <div id="units-content-flip" class="flex flex-col sm:flex-row flex-wrap items-start justify-center gap-3 sm:gap-4 w-full">
                         <div class="w-full text-center p-8">
                           <div class="loader mx-auto mb-3"></div>
                           <p class="text-purple-700 text-lg font-semibold">جاري تحميل الوحدات...</p>
@@ -2650,37 +2662,37 @@
         html += `
           <div class="w-full sm:w-[30%] sm:min-w-[240px] flex-shrink-0">
             <div onclick="showUnitLessonsFromFlip('${unitName.replace(/'/g, "\\'")}')" 
-                 class="rounded-xl p-2.5 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl"
-                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5); height: 160px; display: flex; flex-direction: column;">
+                 class="rounded-xl p-3 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl"
+                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5); height: 180px; display: flex; flex-direction: column;">
               <div class="text-center flex-1 flex flex-col">
                 <!-- العنوان -->
-                <div class="flex items-center justify-center gap-1.5 mb-1.5">
-                  <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-1 shadow-lg flex-shrink-0">
-                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                  <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-1.5 shadow-lg flex-shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <h3 class="text-xs font-black text-purple-900 drop-shadow-sm leading-tight">${sanitize(unitName)}</h3>
+                  <h3 class="text-sm font-black text-purple-900 drop-shadow-sm leading-tight">${sanitize(unitName)}</h3>
                 </div>
                 
                 <!-- الإحصائيات -->
-                <div class="bg-white/60 rounded-lg p-1.5 mb-1.5 flex-1 flex flex-col justify-center">
-                  <div class="flex items-center justify-between mb-0.5">
-                    <span class="text-[10px] text-gray-700 font-semibold">📖 دروس</span>
-                    <span class="text-blue-700 font-black text-sm">${lessonsCount}</span>
+                <div class="bg-white/60 rounded-lg p-2 mb-2 flex-1 flex flex-col justify-center">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-gray-700 font-semibold">📖 الدروس</span>
+                    <span class="text-blue-700 font-black text-base">${lessonsCount}</span>
                   </div>
-                  <div class="flex items-center justify-between mb-0.5">
-                    <span class="text-[10px] text-gray-700 font-semibold">🎯 اختبارات</span>
-                    <span class="text-purple-700 font-black text-sm">${examsCount}</span>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-gray-700 font-semibold">🎯 الاختبارات</span>
+                    <span class="text-purple-700 font-black text-base">${examsCount}</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[10px] text-gray-700 font-semibold">⚡ أنشطة</span>
-                    <span class="text-green-700 font-black text-sm">${activitiesCount}</span>
+                    <span class="text-xs text-gray-700 font-semibold">⚡ الأنشطة</span>
+                    <span class="text-green-700 font-black text-base">${activitiesCount}</span>
                   </div>
                 </div>
                 
                 <!-- زر عرض المحتوى -->
-                <div class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-lg font-bold text-[10px] transition-all shadow-lg hover:shadow-xl">
+                <div class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs transition-all shadow-lg hover:shadow-xl">
                   ✨ عرض المحتوى
                 </div>
               </div>
