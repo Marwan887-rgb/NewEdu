@@ -2569,7 +2569,10 @@
           endDateHijri: lesson.end_date_hijri
         }));
         
-        renderUnits(); // عرض الوحدات أولاً
+        console.log('✅ تم تحميل الدروس بنجاح، عدد الدروس:', lessonsData.length);
+        
+        renderUnits(); // عرض الوحدات في المكان القديم (للتوافق)
+        renderUnitsInFlip(); // عرض الوحدات في الوجه الخلفي للبطاقة
       } else {
         list.innerHTML = `<p class="text-red-500 text-center">${sanitize(response.message || 'لم يتم العثور على دروس.')}</p>`;
       }
@@ -2672,6 +2675,7 @@
       });
       
       unitsContentFlip.innerHTML = html;
+      console.log('✅ تم إضافة الوحدات للوجه الخلفي، عدد الوحدات:', unitsArray.length);
     }
     
     // عرض دروس الوحدة من flip card
