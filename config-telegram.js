@@ -7,6 +7,7 @@
 
 const TELEGRAM_CONFIG = {
   // ضع توكن البوت الجديد هنا
+  // سيتم تحميله من localStorage أو من API
   BOT_TOKEN: localStorage.getItem('telegram_bot_token') || '',
   
   // رسائل النظام
@@ -138,6 +139,38 @@ if (typeof module !== 'undefined' && module.exports) {
     sendTelegramOTP,
     validateTelegramToken
   };
+}
+
+// دالة لتحميل التوكن من API (Vercel Environment Variables)
+async function loadTelegramTokenFromAPI() {
+  // إذا كان التوكن موجود في localStorage، استخدمه
+  if (hasTelegramToken()) {
+    console.log('✅ تم تحميل التوكن من localStorage');
+    return TELEGRAM_CONFIG.BOT_TOKEN;
+  }
+  
+  try {
+    // محاولة تحميل التوكن من API
+    const response = await fetch('/api/get-telegram-config');
+    const data = await response.json();
+    
+    if (data.success && data.hasToken) {
+      TELEGRAM_CONFIG.BOT_TOKEN = data.botToken;
+      console.log('✅ تم تحميل التوكن من Vercel Environment Variables');
+      return data.botToken;
+    } else {
+      console.warn('⚠️ لم يتم العثور على توكن في Environment Variables');
+    }
+  } catch (error) {
+    console.warn('⚠️ لم يتم العثور على API endpoint. استخدم telegram-setup.html لإعداد التوكن');
+  }
+  
+  return '';
+}
+
+// تحميل التوكن تلقائياً عند بدء الصفحة
+if (typeof window !== 'undefined') {
+  loadTelegramTokenFromAPI();
 }
 
 // عرض معلومات عند التحميل
