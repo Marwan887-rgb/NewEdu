@@ -1267,10 +1267,27 @@
       </div>
         
         <!-- بطاقات الفترات / الوحدات -->
+        <!-- مساحة العمل -->
         <div class="mb-6">
-          <!-- الوجه الأول: بطاقات الفترات -->
-          <div id="terms-cards-view" class="rounded-2xl p-2" style="background: linear-gradient(-45deg, rgba(191, 219, 254, 0.3), rgba(147, 197, 253, 0.3), rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3)); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.5);">
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 terms-cards-container">
+          <div id="workspace-card" class="rounded-2xl relative" style="background: linear-gradient(-45deg, rgba(191, 219, 254, 0.3), rgba(147, 197, 253, 0.3), rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3)); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.5); min-height: calc(100vh - 200px); max-height: calc(100vh - 200px); overflow-y: auto;">
+            <!-- أيقونة الكتاب (عند عرض الفترات فقط) -->
+            <button id="curriculum-icon-btn" onclick="showUnitsInWorkspace()" class="absolute top-3 left-3 z-10 bg-white/80 hover:bg-white backdrop-blur-sm rounded-lg p-2 shadow-lg hover:shadow-xl transition-all transform hover:scale-110" style="display: block;">
+              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </button>
+            
+            <!-- زر العودة للفترات (بسيط جداً) -->
+            <button id="back-to-terms-btn" onclick="backToTermsFromUnits()" class="absolute top-3 right-3 z-10 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 hidden">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+            </button>
+            
+            <!-- مساحة المحتوى -->
+            <div id="workspace-content" class="p-4">
+              <!-- الافتراضي: بطاقات الفترات -->
+              <div id="terms-cards-view" class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 terms-cards-container">
             
             <!-- بطاقة الفترة الأولى -->
             <div class="w-full sm:w-64 term-card-mobile">
@@ -1508,28 +1525,17 @@
                 </div>
               </div>
             </div>
-            
-            <!-- زر التبديل -->
-            <div class="w-full mt-3 flex justify-center">
-              <button onclick="toggleTermsUnitsView()" id="toggle-view-btn" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
-                <span id="toggle-view-icon">📚</span>
-                <span id="toggle-view-text">عرض الوحدات</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- الوجه الثاني: الوحدات -->
-          <div id="units-cards-view" class="hidden rounded-2xl p-2" style="background: linear-gradient(-45deg, rgba(191, 219, 254, 0.3), rgba(147, 197, 253, 0.3), rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3)); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.5);">
-            <div id="units-content" class="flex flex-col sm:flex-row items-start justify-center gap-2 sm:gap-3">
-              <!-- سيتم ملؤها ديناميكياً من renderUnits() -->
-            </div>
-            
-            <!-- زر التبديل -->
-            <div class="w-full mt-3 flex justify-center">
-              <button onclick="toggleTermsUnitsView()" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
-                <span>📊</span>
-                <span>العودة للفترات</span>
-              </button>
+              </div>
+              
+              <!-- الوحدات (مخفي افتراضياً) -->
+              <div id="units-content" class="hidden flex flex-col sm:flex-row items-start justify-center gap-2 sm:gap-3">
+                <!-- سيتم ملؤها ديناميكياً من renderUnits() -->
+              </div>
+              
+              <!-- دروس الوحدة (مخفي افتراضياً) -->
+              <div id="unit-lessons-content" class="hidden">
+                <!-- سيتم ملؤها ديناميكياً من renderLessons() -->
+              </div>
             </div>
           </div>
         </div>
@@ -2462,7 +2468,6 @@
     
     // عرض بطاقات الوحدات
     function renderUnits() {
-      const list = document.getElementById('lessons-list');
       const unitsContent = document.getElementById('units-content');
       currentUnit = null;
       
@@ -2533,35 +2538,84 @@
       if (unitsContent) {
         unitsContent.innerHTML = html;
       }
+    }
+    
+    // عرض الوحدات في مساحة العمل
+    function showUnitsInWorkspace() {
+      const termsView = document.getElementById('terms-cards-view');
+      const unitsContent = document.getElementById('units-content');
+      const unitLessonsContent = document.getElementById('unit-lessons-content');
+      const curriculumBtn = document.getElementById('curriculum-icon-btn');
+      const backBtn = document.getElementById('back-to-terms-btn');
       
-      // عرض في lessons-list أيضاً (للعودة)
-      if (list) {
-        list.innerHTML = html;
+      // إخفاء بطاقات الفترات
+      if (termsView) termsView.classList.add('hidden');
+      // إخفاء دروس الوحدة
+      if (unitLessonsContent) unitLessonsContent.classList.add('hidden');
+      // إظهار الوحدات
+      if (unitsContent) {
+        unitsContent.classList.remove('hidden');
+        renderUnits();
       }
+      // إخفاء أيقونة الكتاب
+      if (curriculumBtn) curriculumBtn.classList.add('hidden');
+      // إظهار زر العودة
+      if (backBtn) backBtn.classList.remove('hidden');
+    }
+    
+    // العودة للفترات من الوحدات
+    function backToTermsFromUnits() {
+      const termsView = document.getElementById('terms-cards-view');
+      const unitsContent = document.getElementById('units-content');
+      const unitLessonsContent = document.getElementById('unit-lessons-content');
+      const curriculumBtn = document.getElementById('curriculum-icon-btn');
+      const backBtn = document.getElementById('back-to-terms-btn');
+      
+      // إظهار بطاقات الفترات
+      if (termsView) termsView.classList.remove('hidden');
+      // إخفاء الوحدات
+      if (unitsContent) unitsContent.classList.add('hidden');
+      // إخفاء دروس الوحدة
+      if (unitLessonsContent) unitLessonsContent.classList.add('hidden');
+      // إظهار أيقونة الكتاب
+      if (curriculumBtn) curriculumBtn.classList.remove('hidden');
+      // إخفاء زر العودة
+      if (backBtn) backBtn.classList.add('hidden');
     }
     
     // عرض دروس وحدة معينة
     function showUnitLessons(unitName) {
       currentUnit = unitName;
-      // إرجاع إلى بطاقات الفترات
       const termsView = document.getElementById('terms-cards-view');
-      const unitsView = document.getElementById('units-cards-view');
-      if (termsView && unitsView) {
-        termsView.classList.remove('hidden');
-        unitsView.classList.add('hidden');
+      const unitsContent = document.getElementById('units-content');
+      const unitLessonsContent = document.getElementById('unit-lessons-content');
+      const curriculumBtn = document.getElementById('curriculum-icon-btn');
+      const backBtn = document.getElementById('back-to-terms-btn');
+      
+      // إخفاء بطاقات الفترات
+      if (termsView) termsView.classList.add('hidden');
+      // إخفاء الوحدات
+      if (unitsContent) unitsContent.classList.add('hidden');
+      // إظهار دروس الوحدة
+      if (unitLessonsContent) {
+        unitLessonsContent.classList.remove('hidden');
+        renderLessonsInWorkspace();
       }
-      renderLessons();
+      // إخفاء أيقونة الكتاب
+      if (curriculumBtn) curriculumBtn.classList.add('hidden');
+      // إظهار زر العودة
+      if (backBtn) backBtn.classList.remove('hidden');
     }
     
     // العودة لعرض الوحدات
     function backToUnits() {
-      renderUnits();
+      showUnitsInWorkspace();
     }
     
-    // رسم الدروس
-    function renderLessons() {
-      const list = document.getElementById('lessons-list');
-      list.innerHTML = '';
+    // رسم الدروس في مساحة العمل
+    function renderLessonsInWorkspace() {
+      const unitLessonsContent = document.getElementById('unit-lessons-content');
+      if (!unitLessonsContent) return;
       
       // تصفية الدروس
       let filtered = lessonsData;
@@ -2571,73 +2625,56 @@
         filtered = filtered.filter(l => l.unit === currentUnit);
       }
       
-      // تجميع حسب الوحدة
-      const grouped = {};
-      filtered.forEach((lesson, index) => {
-        const unit = lesson.unit || 'بدون وحدة';
-        if (!grouped[unit]) grouped[unit] = [];
-        grouped[unit].push({ ...lesson, originalIndex: lessonsData.indexOf(lesson) });
-      });
+      let html = '';
       
-      // زر الرجوع إذا كانت وحدة محددة
+      // زر الرجوع للوحدات
       if (currentUnit) {
-        list.innerHTML = `
-          <div class="mb-6 flex items-center gap-4">
-            <button onclick="backToUnits()" class="flex items-center gap-2 bg-white/90 hover:bg-white text-blue-600 px-8 py-4 rounded-2xl font-black transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl border-2 border-blue-300">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+        html += `
+          <div class="mb-4 flex items-center gap-3">
+            <button onclick="showUnitsInWorkspace()" class="flex items-center gap-2 bg-white/90 hover:bg-white text-blue-600 px-4 py-2 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-blue-300">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
               </svg>
               العودة للوحدات
             </button>
-            <div class="glass-card px-6 py-4 rounded-2xl border-2 border-white/30">
-              <p class="text-white font-black text-xl">${sanitize(currentUnit)}</p>
+            <div class="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-purple-300">
+              <p class="text-purple-900 font-black text-lg">${sanitize(currentUnit)}</p>
             </div>
           </div>`;
       }
       
-      // رسم كل وحدة
-      Object.keys(grouped).forEach(unit => {
-        // عنوان الوحدة (فقط إذا لم تكن هناك وحدة محددة)
-        let unitHtml = '';
-        if (!currentUnit) {
-          unitHtml = `
-            <div class="unit-header">
-              <h3 class="text-2xl font-bold">${sanitize(unit)}</h3>
-              <p class="text-white/80 mt-1">${grouped[unit].length} عنصر</p>
-            </div>`;
-        }
+      // البطاقات في صف واحد أفقي مع تمرير
+      html += `<div class="flex gap-3 overflow-x-auto pb-4">`;
+      
+      filtered.forEach((item, idx) => {
+        const typeIcons = { lesson: '📚', review: '📖', project: '🎨', exam: '🎯', activity: '✏️', unit_exam: '📝' };
+        const typeLabels = { lesson: 'درس', review: 'مراجعة', project: 'مشروع', exam: 'تقويم نهائي', activity: 'نشاط', unit_exam: 'اختبار الوحدة' };
+        const icon = typeIcons[item.type] || '📚';
+        const typeLabel = typeLabels[item.type] || 'عنصر';
+        const originalIndex = lessonsData.indexOf(item);
         
-        // البطاقات في صف واحد أفقي
-        unitHtml += `<div class="flex gap-3 overflow-x-auto pb-4">`;
-        
-        grouped[unit].forEach((item, idx) => {
-          const typeIcons = { lesson: '📚', review: '📖', project: '🎨', exam: '🎯', activity: '✏️', unit_exam: '📝' };
-          const typeLabels = { lesson: 'درس', review: 'مراجعة', project: 'مشروع', exam: 'تقويم نهائي', activity: 'نشاط', unit_exam: 'اختبار الوحدة' };
-          const icon = typeIcons[item.type] || '📚';
-          const typeLabel = typeLabels[item.type] || 'عنصر';
-          const typeClass = `type-${item.type || 'lesson'}`;
-          
-          // تحديد إذا كان مكتمل (مؤقتاً عشوائي - سنربطه بقاعدة البيانات لاحقاً)
-          const isCompleted = false; // Math.random() > 0.7;
-          const completedClass = isCompleted ? 'completed' : '';
-          
-          unitHtml += `
-            <div onclick="openLesson(${item.originalIndex})" class="flex-shrink-0 w-40 sm:w-44 cursor-pointer transform hover:scale-105 transition-all duration-300 rounded-2xl p-4 shadow-lg hover:shadow-xl" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5);">
-              <div class="text-center">
-                <div class="text-4xl mb-2">${icon}</div>
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${item.type === 'lesson' ? 'bg-purple-100 text-purple-700' : item.type === 'project' ? 'bg-violet-100 text-violet-700' : item.type === 'activity' ? 'bg-purple-100 text-purple-700' : item.type === 'review' ? 'bg-indigo-100 text-indigo-700' : item.type === 'unit_exam' ? 'bg-purple-100 text-purple-700' : 'bg-violet-100 text-violet-700'}">${typeLabel}</span>
-                <h4 class="font-black text-gray-900 text-sm mb-2 leading-tight">${sanitize(item.title || '')}</h4>
-                ${item.weekNumber ? `<p class="text-xs text-gray-600 font-semibold">الأسبوع ${item.weekNumber}</p>` : ''}
-              </div>
-            </div>`;
-        });
-        
-        unitHtml += `</div>`;
-        list.insertAdjacentHTML('beforeend', unitHtml);
+        html += `
+          <div onclick="openLesson(${originalIndex})" class="flex-shrink-0 w-40 sm:w-44 cursor-pointer transform hover:scale-105 transition-all duration-300 rounded-2xl p-4 shadow-lg hover:shadow-xl" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5);">
+            <div class="text-center">
+              <div class="text-4xl mb-2">${icon}</div>
+              <span class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${item.type === 'lesson' ? 'bg-purple-100 text-purple-700' : item.type === 'project' ? 'bg-violet-100 text-violet-700' : item.type === 'activity' ? 'bg-purple-100 text-purple-700' : item.type === 'review' ? 'bg-indigo-100 text-indigo-700' : item.type === 'unit_exam' ? 'bg-purple-100 text-purple-700' : 'bg-violet-100 text-violet-700'}">${typeLabel}</span>
+              <h4 class="font-black text-gray-900 text-sm mb-2 leading-tight">${sanitize(item.title || '')}</h4>
+              ${item.weekNumber ? `<p class="text-xs text-gray-600 font-semibold">الأسبوع ${item.weekNumber}</p>` : ''}
+            </div>
+          </div>`;
       });
       
-      // تحديث شريط التقدم
-      updateProgressBar();
+      html += `</div>`;
+      unitLessonsContent.innerHTML = html;
+    }
+    
+    // رسم الدروس (النسخة القديمة للتوافق)
+    function renderLessons() {
+      const list = document.getElementById('lessons-list');
+      if (list) {
+        list.innerHTML = '';
+      }
+      renderLessonsInWorkspace();
     }
     
     // تحديث شريط التقدم
@@ -4128,40 +4165,6 @@
     function sanitize(text) { const div = document.createElement('div'); div.textContent = String(text || ''); return div.innerHTML; }
     function sanitizeAttr(text) { return String(text || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
 
-    // التبديل بين بطاقات الفترات والوحدات
-    function toggleTermsUnitsView() {
-      const termsView = document.getElementById('terms-cards-view');
-      const unitsView = document.getElementById('units-cards-view');
-      const toggleBtn = document.getElementById('toggle-view-btn');
-      const toggleIcon = document.getElementById('toggle-view-icon');
-      const toggleText = document.getElementById('toggle-view-text');
-      
-      if (termsView && unitsView) {
-        // التبديل بين الوجهين
-        if (termsView.classList.contains('hidden')) {
-          // إظهار بطاقات الفترات
-          termsView.classList.remove('hidden');
-          unitsView.classList.add('hidden');
-          if (toggleBtn && toggleIcon && toggleText) {
-            toggleIcon.textContent = '📚';
-            toggleText.textContent = 'عرض الوحدات';
-          }
-        } else {
-          // إظهار بطاقات الوحدات
-          termsView.classList.add('hidden');
-          unitsView.classList.remove('hidden');
-          if (toggleBtn && toggleIcon && toggleText) {
-            toggleIcon.textContent = '📊';
-            toggleText.textContent = 'العودة للفترات';
-          }
-          // التأكد من عرض الوحدات
-          const unitsContent = document.getElementById('units-content');
-          if (unitsContent && unitsContent.innerHTML.trim() === '') {
-            renderUnits();
-          }
-        }
-      }
-    }
     
     // إظهار/إخفاء تفاصيل الدرجات
     function toggleScoreDetails() {
