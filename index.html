@@ -308,14 +308,14 @@
     .flip-card-container {
       position: relative;
       width: 100%;
-      min-height: 400px;
+      min-height: 450px;
       perspective: 1500px;
     }
     
     .flip-card-inner {
       position: relative;
       width: 100%;
-      min-height: 400px;
+      min-height: 450px;
       transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -349,23 +349,24 @@
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
-        min-height: 280px;
+        min-height: auto;
+        max-height: calc(100vh - 150px);
       }
       
       .flip-card-inner {
-        min-height: 280px;
+        min-height: auto;
       }
       
       /* تحسين عرض الوحدات على الجوال */
       #units-content-flip {
         flex-direction: column !important;
         gap: 1rem !important;
-        padding: 1rem !important;
       }
       
       #units-content-flip > div {
         width: 100% !important;
         max-width: 100% !important;
+        flex: none !important;
       }
       
       /* تقليل padding على الجوال */
@@ -377,6 +378,11 @@
       .terms-cards-container {
         flex-direction: column !important;
         gap: 1rem !important;
+      }
+      
+      .flip-card-back {
+        overflow-y: auto !important;
+        max-height: calc(100vh - 150px) !important;
       }
     }
     
@@ -1615,9 +1621,9 @@
                        الوجه الخلفي: الوحدات
                        ════════════════════════════════════════════════════════════ -->
                   <div class="flip-card-back">
-                    <div class="h-full flex items-center justify-center p-3">
+                    <div class="w-full h-full p-4 overflow-y-auto">
                       <!-- الوحدات -->
-                      <div id="units-content-flip" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-3 sm:gap-4 w-full">
+                      <div id="units-content-flip" class="flex flex-col sm:flex-row items-start justify-center gap-3 sm:gap-4 w-full">
                         <!-- سيتم ملؤها ديناميكياً من renderUnits() -->
                       </div>
                     </div>
@@ -2610,6 +2616,9 @@
       
       const unitsArray = Object.keys(grouped);
       
+      console.log('🔍 عدد الوحدات:', unitsArray.length);
+      console.log('📚 أسماء الوحدات:', unitsArray);
+      
       if (unitsArray.length === 0) {
         unitsContentFlip.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد وحدات متاحة</p></div>';
         return;
@@ -2625,31 +2634,33 @@
         const totalCount = unitLessons.length;
         
         html += `
-          <div class="w-full sm:flex-1 sm:min-w-[200px] sm:max-w-[280px]">
+          <div class="w-full sm:w-[30%] sm:min-w-[240px] flex-shrink-0">
             <div onclick="showUnitLessonsFromFlip('${unitName.replace(/'/g, "\\'")}')" 
-                 class="rounded-xl p-4 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl h-full"
-                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5);">
-              <div class="text-center">
-                <div class="flex items-center justify-center gap-2 mb-3">
-                  <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-2 shadow-lg flex-shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                 class="rounded-xl p-4 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl"
+                 style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.5); min-height: 200px;">
+              <div class="text-center h-full flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-center gap-2 mb-3">
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-2 shadow-lg flex-shrink-0">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-sm font-black text-purple-900 drop-shadow-sm">${sanitize(unitName)}</h3>
                   </div>
-                  <h3 class="text-sm font-black text-purple-900 drop-shadow-sm">${sanitize(unitName)}</h3>
-                </div>
-                <div class="bg-white/60 rounded-lg p-3 mb-3 space-y-2">
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-700 font-semibold">📖 الدروس</span>
-                    <span class="text-blue-700 font-black text-lg">${lessonsCount}</span>
-                  </div>
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-700 font-semibold">🎯 الاختبارات</span>
-                    <span class="text-purple-700 font-black text-lg">${examsCount}</span>
-                  </div>
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-700 font-semibold">⚡ الأنشطة</span>
-                    <span class="text-green-700 font-black text-lg">${activitiesCount}</span>
+                  <div class="bg-white/60 rounded-lg p-3 mb-3 space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-700 font-semibold">📖 الدروس</span>
+                      <span class="text-blue-700 font-black text-lg">${lessonsCount}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-700 font-semibold">🎯 الاختبارات</span>
+                      <span class="text-purple-700 font-black text-lg">${examsCount}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-700 font-semibold">⚡ الأنشطة</span>
+                      <span class="text-green-700 font-black text-lg">${activitiesCount}</span>
+                    </div>
                   </div>
                 </div>
                 <div class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all inline-block shadow-lg hover:shadow-xl">
