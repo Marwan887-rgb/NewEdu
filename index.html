@@ -308,14 +308,16 @@
     .flip-card-container {
       position: relative;
       width: 100%;
-      min-height: 540px;
+      min-height: 600px;
+      max-height: 600px;
       perspective: 1500px;
     }
     
     .flip-card-inner {
       position: relative;
       width: 100%;
-      min-height: 540px;
+      min-height: 600px;
+      max-height: 600px;
       transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -473,7 +475,7 @@
        Lessons Grid - شبكة الدروس داخل البطاقة (احترافية)
        ════════════════════════════════════════════════════════════ */
     .lessons-grid-container {
-      max-height: 420px;
+      max-height: 500px;
       overflow-y: auto;
       overflow-x: hidden;
     }
@@ -577,11 +579,13 @@
     /* تحسين للجوال */
     @media (max-width: 768px) {
       .flip-card-container {
-        min-height: 580px;
+        min-height: 650px;
+        max-height: 650px;
       }
       
       .flip-card-inner {
-        min-height: 580px;
+        min-height: 650px;
+        max-height: 650px;
       }
       
       /* تحسين عرض الوحدات على الجوال */
@@ -631,7 +635,7 @@
       
       /* شبكة الدروس على الجوال */
       .lessons-grid-container {
-        max-height: 460px !important;
+        max-height: 540px !important;
       }
       
       .lessons-grid {
@@ -1677,7 +1681,7 @@
                     <div id="terms-cards-view" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-2 terms-cards-container p-2">
             
             <!-- بطاقة الفترة الأولى -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-3 sm:p-4" style="background: rgba(219, 234, 254, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.6); min-height: 90px;">
+              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(219, 234, 254, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.6); min-height: 105px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1728,7 +1732,7 @@
               </div>
             
             <!-- بطاقة الفترة الثانية -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-3 sm:p-4" style="background: rgba(209, 250, 229, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(167, 243, 208, 0.6); min-height: 90px;">
+              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(209, 250, 229, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(167, 243, 208, 0.6); min-height: 105px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1779,7 +1783,7 @@
               </div>
 
             <!-- بطاقة المهام المكتملة -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-3 sm:p-4" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 90px;">
+              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 105px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1830,7 +1834,7 @@
               </div>
 
             <!-- بطاقة نسبة الإنجاز -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-3 sm:p-4" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); animation-delay: 1s; min-height: 90px;">
+              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); animation-delay: 1s; min-height: 105px;">
                   
                   <!-- للشاشات الكبيرة -->
                   <div class="hidden sm:flex flex-col justify-center flex-1">
@@ -1863,7 +1867,7 @@
               </div>
             
             <!-- زر عرض الدروس - بطاقة جديدة -->
-              <div onclick="toggleFlipCard()" class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl p-3 sm:p-4" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95)); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 90px;">
+              <div onclick="toggleFlipCard()" class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl p-4 sm:p-5" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95)); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 105px;">
                 <div class="text-center">
                   <div class="flex items-center justify-center gap-2 mb-1">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
