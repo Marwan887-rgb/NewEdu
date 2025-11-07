@@ -6936,7 +6936,7 @@
         const bypassBtn = document.getElementById('bypass-desktop-btn');
         
         // إذا كان عرض الشاشة أكبر من 480px (هواتف فقط)
-        if (screenWidth > 480) {
+        if (false && screenWidth > 480) { // تعطيل مؤقت للتطوير
           // التحقق من إذا المستخدم تجاوز الحظر من قبل
           const bypassDesktop = localStorage.getItem('bypass_desktop_block');
           
