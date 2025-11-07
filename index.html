@@ -527,79 +527,87 @@
     .lessons-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 16px;
     }
     
     .lesson-card-item {
-      background: rgba(255, 255, 255, 0.9);
-      border: 2px solid rgba(139, 92, 246, 0.2);
-      border-radius: 12px;
-      padding: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid rgba(139, 92, 246, 0.15);
+      border-radius: 16px;
+      padding: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      min-height: 110px;
+      gap: 12px;
+      min-height: 140px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
     
     .lesson-card-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25);
-      border-color: rgba(139, 92, 246, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.4);
     }
     
     .lesson-card-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     
     .lesson-emoji {
-      font-size: 28px;
+      font-size: 40px;
       line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
     
     .lesson-card-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 8px;
     }
     
     .lesson-type-badge {
       color: white;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
       text-align: center;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      align-self: flex-start;
     }
     
     .lesson-title {
-      font-size: 11px;
-      font-weight: 800;
-      color: #1f2937;
-      line-height: 1.3;
+      font-size: 14px;
+      font-weight: 900;
+      color: #111827;
+      line-height: 1.4;
       margin: 0;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-height: 42px;
     }
     
     .lesson-week {
-      font-size: 9px;
-      font-weight: 600;
-      color: #6b7280;
+      font-size: 11px;
+      font-weight: 700;
+      color: #7c3aed;
       margin: 0;
       margin-top: auto;
+      padding: 4px 8px;
+      background: rgba(124, 58, 237, 0.1);
+      border-radius: 6px;
+      text-align: center;
     }
     
     /* تحسين للجوال */
@@ -661,34 +669,43 @@
       
       /* شبكة الدروس على الجوال */
       .lessons-grid-container {
-        max-height: 540px !important;
+        max-height: 520px !important;
+        padding: 0 !important;
       }
       
       .lessons-grid {
         grid-template-columns: 1fr !important;
-        gap: 8px !important;
-      }
-      
-      .lesson-card-item {
-        min-height: 95px !important;
+        gap: 12px !important;
         padding: 8px !important;
       }
       
+      .lesson-card-item {
+        min-height: 130px !important;
+        padding: 14px !important;
+        border-radius: 14px !important;
+      }
+      
       .lesson-emoji {
-        font-size: 24px !important;
+        font-size: 36px !important;
       }
       
       .lesson-type-badge {
-        font-size: 8px !important;
-        padding: 2px 6px !important;
+        font-size: 9px !important;
+        padding: 4px 10px !important;
+        font-weight: 800 !important;
       }
       
       .lesson-title {
-        font-size: 10px !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        min-height: 38px !important;
       }
       
       .lesson-week {
-        font-size: 8px !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        padding: 4px 10px !important;
       }
       
       /* زيادة ارتفاع بطاقات الوجه الأول */
