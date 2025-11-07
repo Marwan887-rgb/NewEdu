@@ -1751,7 +1751,7 @@
                     <div id="terms-cards-view" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-2 terms-cards-container p-2">
             
             <!-- بطاقة الفترة الأولى -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(219, 234, 254, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.6); min-height: 105px;">
+              <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 105px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1759,31 +1759,31 @@
                       <!-- Outer Glow -->
                       <circle cx="48" cy="48" r="42" fill="none" stroke="url(#term1GlowGradient)" stroke-width="1.5" opacity="0.3" />
                       <!-- دائرة الخلفية المتقطعة -->
-                      <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(59, 130, 246, 0.2)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
+                      <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(139, 92, 246, 0.2)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
                       <!-- دائرة التقدم الملونة -->
                       <circle id="term1-circle-progress" cx="48" cy="48" r="38" fill="none" 
                               stroke="url(#term1Gradient)" stroke-width="9" 
                               stroke-dasharray="238.76" stroke-dashoffset="238.76"
                               stroke-linecap="round"
                               class="transition-all duration-1000 ease-out drop-shadow-lg"
-                              style="filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.5));" />
+                              style="filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));" />
                       <!-- التدرجات اللونية -->
                       <defs>
                         <linearGradient id="term1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-                          <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+                          <stop offset="0%" style="stop-color:#c084fc;stop-opacity:1" />
+                          <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
                         </linearGradient>
                         <linearGradient id="term1GlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#93c5fd;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
+                          <stop offset="0%" style="stop-color:#d8b4fe;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
                         </linearGradient>
                       </defs>
                       <!-- Inner Circle Shadow -->
-                      <circle cx="48" cy="48" r="31" fill="rgba(59, 130, 246, 0.1)" />
+                      <circle cx="48" cy="48" r="31" fill="rgba(139, 92, 246, 0.1)" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="term1-score" class="text-xl font-black bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent leading-none">0</p>
+                      <p id="term1-score" class="text-xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
                       <p class="text-xs text-gray-600 font-bold mt-0.5">من 100</p>
                     </div>
                   </div>
@@ -1791,12 +1791,12 @@
                   <!-- خط أفقي للجوال -->
                   <div class="flex-1 sm:hidden term-progress-bar w-full">
                     <div class="term-progress-text">
-                      <span class="text-blue-900 font-bold">📘 الفترة الأولى:</span>
-                      <span id="term1-score-mobile" class="text-blue-700 font-black">0</span>
+                      <span class="font-bold">📘 الفترة الأولى:</span>
+                      <span id="term1-score-mobile" class="font-black">0</span>
                       <span class="text-gray-600 text-xs">من 100</span>
                     </div>
                     <div class="term-progress-bar-container">
-                      <div id="term1-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600" style="width: 0%;"></div>
+                      <div id="term1-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
                     </div>
                   </div>
               </div>
