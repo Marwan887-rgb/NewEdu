@@ -1088,13 +1088,13 @@
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        gap: 0.25rem !important;
+        gap: 0.375rem !important;
         white-space: nowrap !important;
-        font-size: 0.6875rem !important;
-        font-weight: 700 !important;
+        font-size: 0.9375rem !important;
+        font-weight: 800 !important;
         width: 100% !important;
         flex-wrap: nowrap !important;
-        line-height: 1.2 !important;
+        line-height: 1.3 !important;
       }
       
       .term-progress-text span {
@@ -4548,6 +4548,20 @@
       document.getElementById('lesson-screen').classList.add('hidden');
       document.getElementById('dashboard-screen').classList.remove('hidden');
       currentLesson = null;
+      
+      // العودة إلى view-lessons إذا كان هناك وحدة مختارة
+      if (currentUnit) {
+        document.getElementById('view-terms').classList.add('hidden');
+        document.getElementById('view-units').classList.add('hidden');
+        document.getElementById('view-lessons').classList.remove('hidden');
+        console.log('🔙 [backToLessons] العودة إلى view-lessons للوحدة:', currentUnit);
+      } else {
+        // العودة إلى view-terms إذا لم يكن هناك وحدة
+        document.getElementById('view-terms').classList.remove('hidden');
+        document.getElementById('view-units').classList.add('hidden');
+        document.getElementById('view-lessons').classList.add('hidden');
+        console.log('🔙 [backToLessons] العودة إلى view-terms');
+      }
       
       // تحديث الإحصائيات عند العودة
       console.log('🔄 [backToLessons] تحديث الإحصائيات...');
