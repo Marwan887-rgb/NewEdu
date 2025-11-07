@@ -391,52 +391,8 @@
     }
     
     /* ════════════════════════════════════════════════════════════
-       Flip Card - تأثير قلب البطاقة
+       CSS للـ Flip Card القديم تم حذفه - نستخدم الآن نظام Views
        ════════════════════════════════════════════════════════════ */
-    .flip-card-container {
-      position: relative;
-      width: 100%;
-      min-height: 600px;
-      max-height: 600px;
-      perspective: 1500px;
-    }
-    
-    .flip-card-inner {
-      position: relative;
-      width: 100%;
-      min-height: 600px;
-      max-height: 600px;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      transform-style: preserve-3d;
-    }
-    
-    .flip-card-container.flipped .flip-card-inner {
-      transform: rotateY(180deg);
-    }
-    
-    .flip-card-front,
-    .flip-card-back {
-      position: absolute;
-      width: 100%;
-      min-height: 100%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    
-    .flip-card-front {
-      z-index: 2;
-      transform: rotateY(0deg);
-    }
-    
-    .flip-card-back {
-      transform: rotateY(180deg);
-      background: linear-gradient(135deg, rgba(243, 232, 255, 0.95), rgba(221, 214, 254, 0.95));
-      backdrop-filter: blur(10px);
-      border-radius: 1.5rem;
-      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.2);
-      display: flex;
-      flex-direction: column;
-    }
     
     /* ════════════════════════════════════════════════════════════
        Unit Cards - بطاقات الوحدات (متناسقة مع بطاقات الفترة)
@@ -933,20 +889,7 @@
         line-height: 1.4;
       }
       
-      /* تبسيط لوحة الدرجات على الجوال */
-      .term-card-mobile {
-        padding: 1rem;
-      }
-      
-      .term-circle-mobile {
-        width: 70px;
-        height: 70px;
-      }
-      
-      .term-circle-mobile svg {
-        width: 70px;
-        height: 70px;
-      }
+      /* CSS زائد تم حذفه */
       
       /* تحسين الهيدر */
       .unit-header {
@@ -1077,156 +1020,7 @@
           justify-content: center !important;
         }
         
-        /* تصغير عرض البطاقات على الشاشات الكبيرة لتقليل المسافات */
-        .term-card-mobile {
-          width: auto !important;
-          min-width: 200px !important;
-          max-width: 240px !important;
-        }
-      }
-      
-      .term-card-mobile {
-        width: 100% !important;
-        max-width: 100%;
-        margin: 0;
-        border-radius: 0.625rem !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      }
-      
-      /* ════════════════════════════════════════════════════════════
-         إخفاء الدوائر تماماً على الجوال
-         ════════════════════════════════════════════════════════════ */
-      .term-circle-mobile {
-        display: none !important;
-      }
-      
-      .term-circle-mobile svg {
-        display: none !important;
-      }
-      
-      /* ════════════════════════════════════════════════════════════
-         تصميم أفقي مبسط - مضغوط للجوال - توفير مساحة
-         ════════════════════════════════════════════════════════════ */
-      .term-card-mobile > div:first-child {
-        flex-direction: row !important;
-        padding: 16px !important;
-        gap: 0.75rem !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        min-height: 110px !important;
-        height: auto !important;
-        background: rgba(243, 232, 255, 0.98) !important;
-        backdrop-filter: blur(10px) !important;
-        border: 2px solid rgba(139, 92, 246, 0.4) !important;
-        border-radius: 16px !important;
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2) !important;
-        transition: all 0.3s ease !important;
-        cursor: pointer !important;
-      }
-      
-      /* تأثير الـ hover على بطاقات الفترات */
-      .term-card-mobile > div:first-child:hover {
-        transform: translateY(-4px) !important;
-        box-shadow: 0 8px 28px rgba(139, 92, 246, 0.3) !important;
-        border-color: rgba(139, 92, 246, 0.6) !important;
-      }
-      
-      /* النص على سطر واحد - مضغوط */
-      .term-card-mobile > div:first-child > div {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 0.25rem !important;
-        flex: 1 !important;
-        min-width: 0 !important;
-        width: 100% !important;
-      }
-      
-      /* العنوان والدرجة على سطر واحد */
-      .term-card-mobile > div:first-child p {
-        display: inline !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-      }
-      
-      /* تحسين الأزرار - مضغوط للجوال */
-      .term-card-mobile button {
-        flex-shrink: 0 !important;
-        min-height: 24px !important;
-        height: 24px !important;
-        font-size: 0.5625rem !important;
-        padding: 0.25rem 0.375rem !important;
-        white-space: nowrap !important;
-        line-height: 1 !important;
-      }
-      
-      /* ════════════════════════════════════════════════════════════
-         شريط التقدم الأفقي - مضغوط للجوال
-         ════════════════════════════════════════════════════════════ */
-      .term-card-mobile .term-progress-bar {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 0.25rem !important;
-        flex: 1 !important;
-        min-width: 0 !important;
-        width: 100% !important;
-      }
-      
-      .term-progress-text {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 0.5rem !important;
-        white-space: nowrap !important;
-        font-size: 1.375rem !important; /* 22px - أكبر وأوضح */
-        font-weight: 900 !important;
-        color: #581c87 !important; /* نفس لون الخط في بطاقات الوحدات */
-        width: 100% !important;
-        flex-wrap: nowrap !important;
-        line-height: 1.4 !important;
-        padding: 0.25rem 0 !important;
-        font-family: 'Cairo', 'Tajawal', -apple-system, sans-serif !important;
-        letter-spacing: -0.5px !important;
-      }
-      
-      .term-progress-text span {
-        flex-shrink: 0 !important;
-      }
-      
-      .term-progress-bar-container {
-        width: 100% !important;
-        flex: 0 0 auto !important;
-        height: 16px !important; /* زيادة إلى 16px - أكبر وأوضح */
-        background: rgba(255, 255, 255, 0.35) !important;
-        border-radius: 9999px !important;
-        overflow: hidden !important;
-        margin-top: 0.5rem !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
-      }
-      
-      .term-progress-bar-fill {
-        height: 100% !important;
-        border-radius: 9999px !important;
-        transition: width 0.5s ease !important;
-      }
-      
-      /* تحسين شريط العنوان السفلي - مضغوط */
-      .term-card-mobile > div:last-child {
-        padding: 0.25rem 0.625rem !important;
-        font-size: 0.6875rem !important;
-        line-height: 1.3 !important;
-      }
-      
-      /* منع الخط من الخروج من البطاقة */
-      .term-card-mobile .term-progress-bar {
-        max-width: 100% !important;
-        overflow: hidden !important;
-      }
-      
-      /* توحيد تخطيط جميع البطاقات */
-      .term-card-mobile > div:first-child {
-        flex-wrap: nowrap !important;
+        /* CSS زائد تم حذفه */
       }
       
       /* ════════════════════════════════════════════════════════════
@@ -1589,25 +1383,7 @@
         padding: 0.5rem !important;
       }
       
-      .term-circle-mobile {
-        width: 50px !important;
-        height: 50px !important;
-      }
-      
-      .term-circle-mobile svg {
-        width: 50px !important;
-        height: 50px !important;
-      }
-      
-      .term-card-mobile button {
-        font-size: 0.75rem !important;
-        padding: 0.5rem 0.75rem !important;
-      }
-      
-      .curriculum-card {
-        padding: 0.875rem !important;
-        min-height: 64px;
-      }
+      /* CSS زائد تم حذفه */
       
       .card-icon {
         width: 40px !important;
