@@ -35,7 +35,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
-      font-size: 16px;
+      font-size: 17px;
       line-height: 1.6;
     }
     
@@ -64,17 +64,23 @@
     
     /* Glassmorphism */
     .glass-card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), 0 2px 8px rgba(0,0,0,0.1);
     }
     
     /* Gradient Border Animation */
     @keyframes borderGlow {
-      0%, 100% { border-color: rgba(168, 85, 247, 0.6); box-shadow: 0 0 25px rgba(168, 85, 247, 0.5); }
-      50% { border-color: rgba(217, 70, 239, 0.6); box-shadow: 0 0 35px rgba(217, 70, 239, 0.5); }
+      0%, 100% { 
+        border-color: rgba(139, 92, 246, 0.6); 
+        box-shadow: 0 0 25px rgba(139, 92, 246, 0.4), 0 4px 12px rgba(0,0,0,0.1); 
+      }
+      50% { 
+        border-color: rgba(168, 85, 247, 0.7); 
+        box-shadow: 0 0 35px rgba(168, 85, 247, 0.5), 0 6px 16px rgba(0,0,0,0.12); 
+      }
     }
     
     .glow-border {
@@ -128,21 +134,22 @@
     
     /* تصميم البطاقات المحسّن */
     .curriculum-card {
-      background: rgba(243, 232, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(243, 232, 255, 0.97);
+      backdrop-filter: blur(12px);
       border-radius: 1rem;
       padding: 1.25rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(139, 92, 246, 0.12), 0 1px 3px rgba(0,0,0,0.08);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      border: 2px solid rgba(196, 181, 253, 0.5);
+      border: 2px solid rgba(139, 92, 246, 0.3);
       border-right: 5px solid;
     }
     .curriculum-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2), 0 4px 8px rgba(0,0,0,0.1);
+      border-color: rgba(139, 92, 246, 0.5);
     }
     .curriculum-card.completed::after {
       content: '✓';
@@ -177,6 +184,8 @@
       justify-content: center;
       font-size: 1.5rem;
       margin-bottom: 0.75rem;
+      transition: transform 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .type-lesson .card-icon { background: linear-gradient(135deg, #f3e8ff, #c4b5fd); }
     .type-review .card-icon { background: linear-gradient(135deg, #ede9fe, #a78bfa); }
@@ -266,18 +275,25 @@
       font-weight: 600;
       font-size: 0.9375rem;
       white-space: nowrap;
-      transition: all 0.3s;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       border: 2px solid transparent;
       background: #f3f4f6;
       color: #7c3aed;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
-    .task-btn:hover { background: #ede9fe; transform: translateY(-2px); color: #6d28d9; }
+    .task-btn:hover { 
+      background: #ede9fe; 
+      transform: translateY(-2px); 
+      color: #6d28d9; 
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2), 0 2px 4px rgba(0,0,0,0.1);
+    }
     .task-btn.active { 
       background: linear-gradient(135deg, #8b5cf6, #7c3aed);
       color: white;
       border-color: #8b5cf6;
-      box-shadow: 0 4px 20px rgba(139,92,246,0.4);
+      box-shadow: 0 4px 20px rgba(139,92,246,0.4), 0 2px 8px rgba(0,0,0,0.15);
+      transform: scale(1.02);
     }
     
     .progress-bar {
@@ -285,11 +301,13 @@
       background: #e5e7eb;
       border-radius: 9999px;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
     }
     .progress-bar-fill {
       height: 100%;
       background: linear-gradient(90deg, #10b981, #34d399);
-      transition: width 0.3s ease;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
     }
     
     /* Scroll indicators */
@@ -389,24 +407,24 @@
        Unit Cards - بطاقات الوحدات (احترافية ومنظمة)
        ════════════════════════════════════════════════════════════ */
     .unit-card-wrapper {
-      background: rgba(243, 232, 255, 0.95);
+      background: rgba(243, 232, 255, 0.98);
       backdrop-filter: blur(10px);
-      border: 2px solid rgba(196, 181, 253, 0.6);
-      border-radius: 14px;
-      padding: 14px;
+      border: 2px solid rgba(139, 92, 246, 0.4);
+      border-radius: 16px;
+      padding: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
-      height: 150px;
+      height: 160px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
     }
     
     .unit-card-wrapper:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
-      border-color: rgba(147, 51, 234, 0.7);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 28px rgba(139, 92, 246, 0.3), 0 4px 12px rgba(0,0,0,0.1);
+      border-color: rgba(139, 92, 246, 0.6);
     }
     
     /* رأس البطاقة */
@@ -436,10 +454,10 @@
     }
     
     .unit-title {
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: 900;
       color: #581c87;
-      line-height: 1.2;
+      line-height: 1.3;
       margin: 0;
     }
     
@@ -453,7 +471,7 @@
     }
     
     .unit-stat-item {
-      background: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.75);
       border-radius: 8px;
       padding: 6px 4px;
       text-align: center;
@@ -462,10 +480,12 @@
       align-items: center;
       justify-content: center;
       gap: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
     }
     
     .stat-value {
-      font-size: 17px;
+      font-size: 20px;
       font-weight: 900;
       line-height: 1;
     }
@@ -493,13 +513,14 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3), 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .unit-card-wrapper:hover .unit-view-btn {
       background: linear-gradient(135deg, #7c3aed, #6d28d9);
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5), 0 2px 6px rgba(0,0,0,0.15);
+      transform: scale(1.05);
     }
     
     .unit-view-btn svg {
@@ -541,23 +562,23 @@
     }
     
     .lesson-card-item {
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid rgba(139, 92, 246, 0.2);
-      border-radius: 12px;
-      padding: 10px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 2px solid rgba(139, 92, 246, 0.25);
+      border-radius: 14px;
+      padding: 14px;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-height: 110px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      gap: 8px;
+      min-height: 120px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
     }
     
     .lesson-card-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25);
-      border-color: rgba(139, 92, 246, 0.5);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3), 0 3px 8px rgba(0,0,0,0.1);
+      border-color: rgba(139, 92, 246, 0.6);
     }
     
     .lesson-card-icon {
@@ -568,7 +589,7 @@
     }
     
     .lesson-emoji {
-      font-size: 28px;
+      font-size: 32px;
       line-height: 1;
     }
     
@@ -594,7 +615,7 @@
     }
     
     .lesson-title {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 900;
       color: #1f2937;
       line-height: 1.4;
@@ -875,7 +896,7 @@
         line-height: 1.4;
       }
       
-      /* تبسيط لوحة الدرجات أكثر */
+      /* تبسيط لوحة الدرجات على الجوال */
       .term-card-mobile {
         padding: 1rem;
       }
@@ -1051,17 +1072,17 @@
          ════════════════════════════════════════════════════════════ */
       .term-card-mobile > div:first-child {
         flex-direction: row !important;
-        padding: 14px !important;
-        gap: 0.5rem !important;
+        padding: 16px !important;
+        gap: 0.75rem !important;
         align-items: center !important;
         justify-content: space-between !important;
-        min-height: 100px !important;
+        min-height: 110px !important;
         height: auto !important;
-        background: rgba(243, 232, 255, 0.95) !important;
+        background: rgba(243, 232, 255, 0.98) !important;
         backdrop-filter: blur(10px) !important;
-        border: 2px solid rgba(196, 181, 253, 0.6) !important;
-        border-radius: 14px !important;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15) !important;
+        border: 2px solid rgba(139, 92, 246, 0.4) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2) !important;
         transition: all 0.3s ease !important;
         cursor: pointer !important;
       }
@@ -1069,8 +1090,8 @@
       /* تأثير الـ hover على بطاقات الفترات */
       .term-card-mobile > div:first-child:hover {
         transform: translateY(-4px) !important;
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25) !important;
-        border-color: rgba(147, 51, 234, 0.7) !important;
+        box-shadow: 0 8px 28px rgba(139, 92, 246, 0.3) !important;
+        border-color: rgba(139, 92, 246, 0.6) !important;
       }
       
       /* النص على سطر واحد - مضغوط */
@@ -1121,7 +1142,7 @@
         align-items: center !important;
         gap: 0.5rem !important;
         white-space: nowrap !important;
-        font-size: 1.25rem !important; /* 20px - حجم مناسب */
+        font-size: 1.375rem !important; /* 22px - أكبر وأوضح */
         font-weight: 900 !important;
         color: #581c87 !important; /* نفس لون الخط في بطاقات الوحدات */
         width: 100% !important;
@@ -1139,11 +1160,12 @@
       .term-progress-bar-container {
         width: 100% !important;
         flex: 0 0 auto !important;
-        height: 14px !important; /* زيادة إلى 14px - أكبر وأوضح */
-        background: rgba(255, 255, 255, 0.3) !important;
+        height: 16px !important; /* زيادة إلى 16px - أكبر وأوضح */
+        background: rgba(255, 255, 255, 0.35) !important;
         border-radius: 9999px !important;
         overflow: hidden !important;
         margin-top: 0.5rem !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
       }
       
       .term-progress-bar-fill {
@@ -1197,10 +1219,10 @@
       
       /* تبسيط العنوان الرئيسي "خطة المنهج" */
       .glass-card h1 {
-        font-size: 1.125rem !important;
-        line-height: 1.2 !important;
+        font-size: 1.25rem !important;
+        line-height: 1.3 !important;
         margin: 0 !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
         letter-spacing: -0.02em !important;
       }
       
@@ -1286,20 +1308,20 @@
       }
       
       .curriculum-card {
-        padding: 1rem !important;
-        margin-bottom: 0.75rem;
-        border-radius: 1rem;
+        padding: 1.125rem !important;
+        margin-bottom: 0.875rem;
+        border-radius: 1.125rem;
         display: flex;
         align-items: center;
         gap: 1rem;
-        min-height: 72px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        min-height: 80px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
       }
       
       .card-icon {
-        width: 48px !important;
-        height: 48px !important;
-        font-size: 1.5rem !important;
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 1.625rem !important;
         flex-shrink: 0;
       }
       
@@ -1309,9 +1331,10 @@
       }
       
       .curriculum-card h3 {
-        font-size: 1rem !important;
+        font-size: 1.0625rem !important;
         margin-bottom: 0.25rem;
         line-height: 1.4;
+        font-weight: 800;
       }
       
       .curriculum-card p {
@@ -1630,7 +1653,7 @@
               <!-- سيتم إنشاء QR Code هنا -->
               <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
                 <svg class="w-32 h-32 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13-2h-2v3h-3v2h3v3h2v-3h3v-2h-3v-3zm-2 0v-3h-3V8h3V5h-3v3h-2V5h2V3h-2v2h-2v3h5v3h-3v2h5v2h-2v3h2v-3h3v-2h-3z"/>
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13-2h-2v3h-3v2h3v3h2v-3h3v-2h-3v-3zm-2 0v-3h-3V8h3V5h-3v3h-2v2h-2v3h5v3h-3v2h5v2h-2v3h2v-3h3v-2h-3z"/>
                 </svg>
               </div>
             </div>
@@ -2038,7 +2061,7 @@
               </div>
             
             <!-- زر عرض الدروس - بطاقة جديدة -->
-              <div onclick="showUnitsView()" class="lessons-view-card w-full rounded-xl glow-border flex items-center justify-center cursor-pointer transition-all duration-300 shadow-xl p-4" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(139, 92, 246, 0.95) 100%); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 75px; background-size: 200% 200%; animation: shimmer-bg 3s ease-in-out infinite;">
+              <div onclick="showUnitsView()" class="lessons-view-card w-full rounded-xl glow-border flex items-center justify-center cursor-pointer transition-all duration-300 shadow-xl p-4 hover:scale-105" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(139, 92, 246, 0.95) 100%); backdrop-filter: blur(12px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 75px; background-size: 200% 200%; animation: shimmer-bg 3s ease-in-out infinite; box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3), 0 2px 6px rgba(0,0,0,0.1);">
                 <div class="text-center">
                   <div class="flex items-center justify-center gap-2">
                     <svg class="w-6 h-6 text-purple-900 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
