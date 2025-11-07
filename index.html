@@ -34,6 +34,9 @@
       font-family: 'Cairo', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      font-size: 16px;
+      line-height: 1.6;
     }
     
     /* Animated Gradient Background */
@@ -1592,8 +1595,97 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- شاشة "مخصص للجوال فقط" - تظهر على الكمبيوتر -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div id="desktop-block-screen" class="hidden fixed inset-0 z-[9999] bg-gradient-to-br from-purple-600 via-violet-600 to-fuchsia-600">
+    <div class="min-h-screen flex items-center justify-center p-8">
+      <div class="bg-white rounded-3xl shadow-2xl p-12 max-w-2xl w-full text-center">
+        
+        <!-- أيقونة جوال كبيرة -->
+        <div class="mb-8 flex justify-center">
+          <div class="w-32 h-32 bg-gradient-to-br from-purple-100 to-violet-200 rounded-3xl flex items-center justify-center">
+            <svg class="w-20 h-20 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          </div>
+        </div>
+        
+        <!-- العنوان -->
+        <h1 class="text-4xl font-black text-gray-900 mb-4">📱 التطبيق مخصص للجوال فقط</h1>
+        <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+          للحصول على أفضل تجربة، يُرجى فتح التطبيق من جهازك المحمول
+        </p>
+        
+        <!-- خط فاصل -->
+        <div class="border-t-2 border-gray-200 my-8"></div>
+        
+        <!-- طرق الوصول -->
+        <div class="space-y-6">
+          
+          <!-- QR Code -->
+          <div class="bg-gray-50 rounded-2xl p-6">
+            <p class="text-lg font-bold text-gray-800 mb-4">📸 امسح الـ QR Code</p>
+            <div id="qr-code-container" class="bg-white p-4 rounded-xl inline-block">
+              <!-- سيتم إنشاء QR Code هنا -->
+              <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                <svg class="w-32 h-32 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13-2h-2v3h-3v2h3v3h2v-3h3v-2h-3v-3zm-2 0v-3h-3V8h3V5h-3v3h-2V5h2V3h-2v2h-2v3h5v3h-3v2h5v2h-2v3h2v-3h3v-2h-3z"/>
+                </svg>
+              </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-3">افتح كاميرا الجوال وامسح الكود</p>
+          </div>
+          
+          <!-- أو -->
+          <div class="flex items-center gap-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <span class="text-gray-500 font-semibold">أو</span>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+          
+          <!-- نسخ الرابط -->
+          <div class="bg-gray-50 rounded-2xl p-6">
+            <p class="text-lg font-bold text-gray-800 mb-4">🔗 انسخ الرابط وافتحه من الجوال</p>
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="app-url-input" 
+                readonly 
+                class="flex-1 bg-white border-2 border-gray-300 rounded-xl px-4 py-3 text-center font-mono text-sm text-gray-700"
+                value="">
+              <button 
+                onclick="copyAppUrl()" 
+                class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition flex-shrink-0">
+                📋 نسخ
+              </button>
+            </div>
+            <p class="text-sm text-gray-500 mt-3">أرسل الرابط لجوالك عبر واتساب أو تيليجرام</p>
+          </div>
+          
+        </div>
+        
+        <!-- ملاحظة -->
+        <div class="mt-8 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+          <p class="text-amber-800 text-sm font-semibold">
+            💡 <strong>ملاحظة:</strong> التطبيق مصمم خصيصاً للجوال لتوفير تجربة مستخدم مثالية
+          </p>
+        </div>
+        
+        <!-- زر تجاوز للمعلم فقط (مخفي افتراضياً) -->
+        <button 
+          id="bypass-desktop-btn" 
+          onclick="bypassDesktopBlock()" 
+          class="hidden mt-6 text-gray-400 hover:text-gray-600 text-sm underline transition">
+          🔓 تجاوز (للمعلم فقط)
+        </button>
+        
+      </div>
+    </div>
+  </div>
+
   <!-- شاشة تسجيل الدخول -->
-  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 animated-bg">
+  <div id="login-screen" class="min-h-screen flex items-start justify-center pt-8 pb-4 px-3 animated-bg">
     <!-- Animated Circles Background -->
     <div class="absolute inset-0 overflow-hidden">
       <div class="absolute w-96 h-96 bg-gradient-to-r from-purple-400 to-violet-600 rounded-full blur-3xl -top-48 -left-48 float-animation opacity-50"></div>
@@ -1603,25 +1695,25 @@
     
     <div class="w-full max-w-md relative z-10">
       <!-- Glass Card -->
-      <div class="glass-card rounded-3xl shadow-2xl p-8 sm:p-10 text-center" style="border: 2px solid rgba(255, 255, 255, 0.3);">
+      <div class="glass-card rounded-2xl shadow-2xl p-6 text-center" style="border: 2px solid rgba(255, 255, 255, 0.3);">
         <!-- Shimmer Effect -->
         <div class="absolute inset-0 shimmer pointer-events-none rounded-3xl"></div>
         
         <!-- Logo -->
-        <div class="relative mb-6">
-          <div class="w-24 h-24 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition duration-300">
-            <svg class="w-14 h-14 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative mb-4">
+          <div class="w-20 h-20 mx-auto bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+            <svg class="w-12 h-12 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
             </svg>
           </div>
         </div>
         
         <!-- Title -->
-        <h1 class="text-3xl sm:text-4xl font-black text-white mb-2 drop-shadow-lg">بوابة التعلم الذكية</h1>
-        <p class="text-white/80 text-sm sm:text-base font-semibold mb-8">التقنية الرقمية 3 • الفصل الأول 1447هـ</p>
+        <h1 class="text-2xl font-black text-white mb-1 drop-shadow-lg tracking-tight">بوابة التعلم الذكية</h1>
+        <p class="text-white/90 text-base font-bold mb-6">التقنية الرقمية 3 • الفصل الأول 1447هـ</p>
         
         <!-- Form -->
-        <form id="login-form" class="space-y-4">
+        <form id="login-form" class="space-y-3">
           <div class="relative">
             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
               <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1631,14 +1723,14 @@
             <input id="mobile-number" 
                    type="tel" 
                    placeholder="رقم الجوال (مثال: 0512345678)"
-                   class="w-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-gray-900 text-base rounded-xl focus:ring-2 focus:ring-white focus:border-white block p-4 pr-12 text-center font-semibold placeholder:text-gray-500 transition" 
-                   style="font-size: 16px;" 
+                   class="w-full bg-white/95 backdrop-blur-sm border-2 border-white/50 text-gray-900 text-lg rounded-xl focus:ring-2 focus:ring-white focus:border-white block p-3.5 pr-12 text-center font-bold placeholder:text-gray-500 transition" 
+                   style="font-size: 17px;" 
                    required />
           </div>
         </form>
         
         <!-- قسم OTP -->
-        <div id="otp-section" class="space-y-3 mt-4">
+        <div id="otp-section" class="space-y-2.5 mt-3">
           <!-- ════════════════════════════════════════════════════════════ -->
           <!-- ════════════════════════════════════════════════════════════ -->
           <!-- ✅ تم إزالة زر تخطي OTP - نظام الأمان مفعّل -->
@@ -1646,23 +1738,23 @@
           
           <div id="otp-controls">
             <button type="button" id="sendOtpBtn" 
-                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-bold transition transform hover:scale-105">
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3.5 rounded-xl font-bold text-base transition">
               📨 إرسال رمز التحقق عبر تيليجرام
             </button>
             <div class="flex items-stretch gap-2">
-              <input id="otp-input" style="font-size: 16px;" 
+              <input id="otp-input" style="font-size: 18px;" 
                      type="text" 
                      inputmode="numeric" 
                      pattern="\\d*" 
                      placeholder="رمز التحقق (6 أرقام)" 
-                     class="flex-1 bg-white/90 border-2 border-white/50 rounded-xl p-3 text-center font-bold text-lg" 
+                     class="flex-1 bg-white/95 border-2 border-white/50 rounded-xl p-3.5 text-center font-black text-xl tracking-wider" 
                      maxlength="6"/>
               <button type="button" id="verifyOtpBtn" 
-                      class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition">
+                      class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3.5 rounded-xl font-bold text-base transition">
                 ✅ تحقق
               </button>
             </div>
-            <p id="otp-status" class="text-sm text-white/90 text-center font-semibold min-h-[1.5rem]"></p>
+            <p id="otp-status" class="text-base text-white font-bold text-center min-h-[1.5rem]"></p>
           </div>
           
           <!-- ════════════════════════════════════════════════════════════ -->
@@ -1670,21 +1762,21 @@
           <!-- ════════════════════════════════════════════════════════════ -->
         </div>
         
-        <p id="login-error" class="mt-6 text-red-200 font-bold bg-red-500/30 backdrop-blur-sm rounded-lg p-3 min-h-[3rem] flex items-center justify-center border border-red-300/50"></p>
+        <p id="login-error" class="mt-4 text-red-100 font-bold text-base bg-red-500/40 backdrop-blur-sm rounded-xl p-3 min-h-[2.5rem] flex items-center justify-center border border-red-300/50"></p>
       </div>
       
       <!-- Footer -->
-      <div class="mt-6 text-center">
-        <p class="text-white/70 text-sm font-semibold drop-shadow">© 2025 جميع الحقوق محفوظة</p>
+      <div class="mt-4 text-center">
+        <p class="text-white/80 text-sm font-bold drop-shadow">© 2025 جميع الحقوق محفوظة</p>
       </div>
     </div>
   </div>
 
   <!-- شاشة قائمة الدروس -->
-  <div id="dashboard-screen" class="hidden min-h-screen p-4 sm:p-6 animated-bg">
-    <div class="max-w-7xl mx-auto">
+  <div id="dashboard-screen" class="hidden min-h-screen animated-bg">
+    <div class="w-full h-full flex flex-col">
       <!-- Header Banner السحري -->
-      <div class="glass-card relative overflow-hidden rounded-3xl shadow-2xl mb-8" style="border: 2px solid white;">
+      <div class="glass-card relative overflow-hidden shadow-xl" style="border-bottom: 2px solid rgba(255,255,255,0.3);">
         <!-- Shimmer Effect -->
         <div class="absolute inset-0 shimmer pointer-events-none"></div>
         <!-- Animated Circles Background -->
@@ -1693,19 +1785,19 @@
           <div class="absolute w-96 h-96 bg-gradient-to-r from-fuchsia-400 to-purple-600 rounded-full blur-3xl -bottom-48 -right-48 float-animation" style="animation-delay: -3s;"></div>
         </div>
         
-        <div class="relative p-4 sm:p-5">
+        <div class="relative p-3">
           <!-- Single Row -->
-          <div class="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
             <!-- Logo & Title -->
-            <div class="flex items-center gap-3">
-              <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 shadow-lg">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-2">
+              <div class="bg-white/20 backdrop-blur-sm rounded-lg p-2 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                 </svg>
               </div>
               <div class="text-white">
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight">خطة المنهج</h1>
-                <p class="text-blue-100 text-xs sm:text-sm font-semibold mt-0.5">التقنية الرقمية 3 • الفصل الأول 1447هـ</p>
+                <h1 class="text-xl font-black tracking-tight leading-tight">خطة المنهج</h1>
+                <p class="text-blue-100 text-xs font-bold">التقنية الرقمية 3 • الفصل الأول 1447هـ</p>
               </div>
             </div>
             
@@ -1724,8 +1816,8 @@
             
             <!-- Mobile Student Info & Logout -->
             <div class="sm:hidden flex items-center gap-2 w-full justify-between">
-              <p id="student-info-mobile" class="text-white text-xs font-semibold flex-1 text-center"></p>
-              <button onclick="logout()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition">
+              <p id="student-info-mobile" class="text-white text-sm font-bold flex-1 text-center"></p>
+              <button onclick="logout()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg font-bold text-sm transition">
                 خروج
               </button>
             </div>
@@ -1735,32 +1827,32 @@
         
         <!-- بطاقات الفترات / الوحدات -->
         <!-- مساحة العمل -->
-        <div class="mb-6">
-          <div id="workspace-card" class="rounded-2xl relative" style="background: linear-gradient(-45deg, rgba(191, 219, 254, 0.3), rgba(147, 197, 253, 0.3), rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3)); backdrop-filter: blur(10px); border: 2px solid rgba(191, 219, 254, 0.5); min-height: calc(100vh - 200px); max-height: calc(100vh - 200px); overflow-y: auto;">
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div id="workspace-card" class="flex-1 relative overflow-y-auto" style="background: linear-gradient(-45deg, rgba(191, 219, 254, 0.25), rgba(147, 197, 253, 0.25), rgba(96, 165, 250, 0.25), rgba(59, 130, 246, 0.25)); backdrop-filter: blur(10px);">
             
             <!-- زر العودة للفترات (بسيط جداً) -->
-            <button id="back-to-terms-btn" onclick="backToTermsFromUnits()" class="absolute top-3 right-3 z-10 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 hidden">
+            <button id="back-to-terms-btn" onclick="backToTermsFromUnits()" class="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-2 shadow-lg transition-all hidden">
               <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
             </button>
             
             <!-- مساحة المحتوى -->
-            <div id="workspace-content" class="p-3">
+            <div id="workspace-content" class="p-2">
               
               <!-- ════════════════════════════════════════════════════════════
                    Main Content Card - بطاقة المحتوى الرئيسية
                    ════════════════════════════════════════════════════════════ -->
-              <div class="main-content-card" style="background: linear-gradient(135deg, rgba(243, 232, 255, 0.05), rgba(221, 214, 254, 0.05)); border-radius: 20px; overflow: hidden;">
+              <div class="main-content-card" style="background: linear-gradient(135deg, rgba(243, 232, 255, 0.03), rgba(221, 214, 254, 0.03)); border-radius: 16px; overflow: hidden;">
                 
                   <!-- ════════════════════════════════════════════════════════════
                        View 1: الفترات والإحصائيات
                        ════════════════════════════════════════════════════════════ -->
                   <div id="view-terms">
-                    <div id="terms-cards-view" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-2 terms-cards-container p-2">
+                    <div id="terms-cards-view" class="flex flex-col items-stretch justify-center gap-2 terms-cards-container p-2">
             
             <!-- بطاقة الفترة الأولى -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 105px;">
+              <div class="w-full term-card-mobile rounded-xl glow-border flex flex-row items-center justify-between p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 90px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1792,17 +1884,17 @@
                       <circle cx="48" cy="48" r="31" fill="rgba(139, 92, 246, 0.1)" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="term1-score" class="text-xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
-                      <p class="text-xs text-gray-600 font-bold mt-0.5">من 100</p>
+                      <p id="term1-score" class="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
+                      <p class="text-xs text-gray-700 font-bold mt-1">من 100</p>
                     </div>
                   </div>
                   
                   <!-- خط أفقي للجوال -->
-                  <div class="flex-1 sm:hidden term-progress-bar w-full">
+                  <div class="flex-1 term-progress-bar w-full">
                     <div class="term-progress-text">
-                      <span class="font-bold">📘 الفترة الأولى:</span>
-                      <span id="term1-score-mobile" class="font-black">0</span>
-                      <span class="text-gray-600 text-xs">من 100</span>
+                      <span class="font-bold text-base">📘 الفترة الأولى:</span>
+                      <span id="term1-score-mobile" class="font-black text-lg">0</span>
+                      <span class="text-gray-700 text-sm font-bold">من 100</span>
                     </div>
                     <div class="term-progress-bar-container">
                       <div id="term1-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
@@ -1811,7 +1903,7 @@
               </div>
             
             <!-- بطاقة الفترة الثانية -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] term-card-mobile rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 105px;">
+              <div class="w-full term-card-mobile rounded-xl glow-border flex flex-row items-center justify-between p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 90px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1843,17 +1935,17 @@
                       <circle cx="48" cy="48" r="31" fill="rgba(139, 92, 246, 0.1)" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="term2-score" class="text-xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
-                      <p class="text-xs text-gray-600 font-bold mt-0.5">من 100</p>
+                      <p id="term2-score" class="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
+                      <p class="text-xs text-gray-700 font-bold mt-1">من 100</p>
                     </div>
                   </div>
                   
                   <!-- خط أفقي للجوال -->
-                  <div class="flex-1 sm:hidden term-progress-bar w-full">
+                  <div class="flex-1 term-progress-bar w-full">
                     <div class="term-progress-text">
-                      <span class="font-bold">📗 الفترة الثانية:</span>
-                      <span id="term2-score-mobile" class="font-black">0</span>
-                      <span class="text-gray-600 text-xs">من 100</span>
+                      <span class="font-bold text-base">📗 الفترة الثانية:</span>
+                      <span id="term2-score-mobile" class="font-black text-lg">0</span>
+                      <span class="text-gray-700 text-sm font-bold">من 100</span>
                     </div>
                     <div class="term-progress-bar-container">
                       <div id="term2-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
@@ -1862,7 +1954,7 @@
               </div>
 
             <!-- بطاقة المهام المكتملة -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 105px;">
+              <div class="w-full rounded-xl glow-border flex flex-row items-center justify-between p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 90px;">
                   
                   <!-- الدائرة (للشاشات الكبيرة) -->
                   <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
@@ -1894,17 +1986,17 @@
                       <circle cx="48" cy="48" r="31" fill="rgba(255,255,255,0.1)" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="student-completed-tasks-number" class="text-xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
-                      <p class="text-xs text-gray-600 font-bold mt-0.5">من 45</p>
+                      <p id="student-completed-tasks-number" class="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
+                      <p class="text-xs text-gray-700 font-bold mt-1">من 45</p>
                     </div>
                   </div>
                   
                   <!-- خط أفقي للجوال -->
-                  <div class="flex-1 sm:hidden term-progress-bar w-full">
+                  <div class="flex-1 term-progress-bar w-full">
                     <div class="term-progress-text">
-                      <span class="text-purple-900 font-bold">✅ المهام:</span>
-                      <span id="tasks-score-mobile" class="text-purple-700 font-black">0</span>
-                      <span class="text-gray-600 text-xs">من 45</span>
+                      <span class="text-purple-900 font-bold text-base">✅ المهام:</span>
+                      <span id="tasks-score-mobile" class="text-purple-700 font-black text-lg">0</span>
+                      <span class="text-gray-700 text-sm font-bold">من 45</span>
                     </div>
                     <div class="term-progress-bar-container">
                       <div id="tasks-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
@@ -1913,13 +2005,13 @@
               </div>
 
             <!-- بطاقة نسبة الإنجاز -->
-              <div class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex flex-col sm:flex-row items-center justify-center p-4 sm:p-5" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); animation-delay: 1s; min-height: 105px;">
+              <div class="w-full rounded-xl glow-border flex flex-col items-center justify-center p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 90px;">
                   
                   <!-- للشاشات الكبيرة -->
                   <div class="hidden sm:flex flex-col justify-center flex-1">
                     <div class="flex items-center justify-between mb-2">
-                      <p class="text-purple-700 text-xs font-semibold">⚡ الإنجاز</p>
-                      <p id="student-completion-percentage" class="text-xl font-black bg-gradient-to-r from-purple-500 to-purple-700 bg-clip-text text-transparent">0%</p>
+                      <p class="text-purple-800 text-sm font-bold">⚡ الإنجاز</p>
+                      <p id="student-completion-percentage" class="text-2xl font-black bg-gradient-to-r from-purple-500 to-purple-700 bg-clip-text text-transparent">0%</p>
                     </div>
                     <div class="relative w-full bg-purple-100 rounded-full h-6 overflow-hidden border-2 border-purple-200">
                       <div id="student-progress-bar" class="h-6 rounded-full transition-all duration-1000 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 flex items-center justify-center shadow-lg" style="width: 0%; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);">
@@ -1934,10 +2026,10 @@
                   </div>
                   
                   <!-- للجوال - خط أفقي داخل البطاقة -->
-                  <div class="flex-1 sm:hidden term-progress-bar w-full" style="min-width: 0; overflow: hidden;">
+                  <div class="flex-1 term-progress-bar w-full" style="min-width: 0; overflow: hidden;">
                     <div class="term-progress-text">
-                      <span class="text-purple-900 font-bold">⚡ نسبة الإنجاز:</span>
-                      <span id="progress-percentage-mobile" class="text-purple-700 font-black">0%</span>
+                      <span class="text-purple-900 font-bold text-base">⚡ نسبة الإنجاز:</span>
+                      <span id="progress-percentage-mobile" class="text-purple-700 font-black text-lg">0%</span>
                     </div>
                     <div class="term-progress-bar-container">
                       <div id="progress-bar-fill-mobile" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
@@ -1946,15 +2038,14 @@
               </div>
             
             <!-- زر عرض الدروس - بطاقة جديدة -->
-              <div onclick="showUnitsView()" class="lessons-view-card w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl p-4 sm:p-5" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(139, 92, 246, 0.95) 100%); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 105px; background-size: 200% 200%; animation: shimmer-bg 3s ease-in-out infinite;">
+              <div onclick="showUnitsView()" class="lessons-view-card w-full rounded-xl glow-border flex items-center justify-center cursor-pointer transition-all duration-300 shadow-xl p-4" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(139, 92, 246, 0.95) 100%); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 75px; background-size: 200% 200%; animation: shimmer-bg 3s ease-in-out infinite;">
                 <div class="text-center">
-                  <div class="flex items-center justify-center gap-2 mb-1">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-900 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="flex items-center justify-center gap-2">
+                    <svg class="w-6 h-6 text-purple-900 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
-                    <h3 class="text-lg sm:text-xl font-black text-purple-900 drop-shadow-sm">📚 عرض الدروس</h3>
+                    <h3 class="text-xl font-black text-purple-900 drop-shadow-sm">📚 عرض الدروس</h3>
                   </div>
-                  <p class="text-xs sm:text-sm text-purple-800 font-semibold">اختر الوحدة المطلوبة</p>
                 </div>
               </div>
             </div>
@@ -1969,17 +2060,17 @@
                        ════════════════════════════════════════════════════════════ -->
                   <div id="view-units" class="hidden">
                     <!-- زر العودة -->
-                    <div class="flex justify-center mb-3">
-                      <button onclick="backToTerms()" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex justify-start mb-2 px-2">
+                      <button onclick="backToTerms()" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-base shadow-lg transition-all flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        العودة للإحصائيات
+                        عودة
                       </button>
                     </div>
                     
                     <!-- الوحدات -->
-                    <div id="units-list" class="flex flex-col gap-3 overflow-y-auto" style="max-height: 500px;">
+                    <div id="units-list" class="flex flex-col gap-2 px-2 overflow-y-auto" style="max-height: 500px;">
                       <div class="w-full text-center p-8">
                         <div class="loader mx-auto mb-3"></div>
                         <p class="text-purple-700 text-lg font-semibold">جاري تحميل الوحدات...</p>
@@ -6808,6 +6899,91 @@
         document.getElementById('modal-term2-progress').style.width = `${data.term2.percentage}%`;
       }
     }
+  </script>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- كود كشف الجهاز - Mobile Only Detection -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <script>
+    (function() {
+      // التحقق من حجم الشاشة
+      function checkDeviceType() {
+        const screenWidth = window.innerWidth;
+        const desktopBlockScreen = document.getElementById('desktop-block-screen');
+        const bypassBtn = document.getElementById('bypass-desktop-btn');
+        
+        // إذا كان عرض الشاشة أكبر من 480px (هواتف فقط)
+        if (screenWidth > 480) {
+          // التحقق من إذا المستخدم تجاوز الحظر من قبل
+          const bypassDesktop = localStorage.getItem('bypass_desktop_block');
+          
+          if (bypassDesktop !== 'true') {
+            // إظهار شاشة الحظر
+            desktopBlockScreen.classList.remove('hidden');
+            
+            // إخفاء باقي المحتوى
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('workspace-screen').style.display = 'none';
+            
+            // إنشاء QR Code
+            generateQRCode();
+            
+            // ملء رابط التطبيق
+            const currentUrl = window.location.href;
+            document.getElementById('app-url-input').value = currentUrl;
+            
+            // إظهار زر التجاوز للمعلم بعد 5 ثوانٍ
+            setTimeout(() => {
+              bypassBtn.classList.remove('hidden');
+            }, 5000);
+          }
+        }
+      }
+      
+      // دالة نسخ الرابط
+      window.copyAppUrl = function() {
+        const urlInput = document.getElementById('app-url-input');
+        urlInput.select();
+        document.execCommand('copy');
+        
+        // تغيير نص الزر مؤقتاً
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ تم النسخ';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      };
+      
+      // دالة تجاوز الحظر (للمعلم فقط)
+      window.bypassDesktopBlock = function() {
+        if (confirm('🔓 هل أنت متأكد من فتح التطبيق على الكمبيوتر؟\n\nالتطبيق مصمم للجوال وقد لا يعمل بشكل مثالي على الكمبيوتر.')) {
+          localStorage.setItem('bypass_desktop_block', 'true');
+          location.reload();
+        }
+      };
+      
+      // دالة إنشاء QR Code بسيطة
+      function generateQRCode() {
+        const currentUrl = window.location.href;
+        const qrContainer = document.getElementById('qr-code-container');
+        
+        // استخدام Google Charts API لإنشاء QR Code
+        const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(currentUrl)}&choe=UTF-8`;
+        
+        qrContainer.innerHTML = `
+          <img src="${qrCodeUrl}" alt="QR Code" class="w-48 h-48 rounded-lg shadow-md">
+        `;
+      }
+      
+      // التحقق عند تحميل الصفحة
+      checkDeviceType();
+      
+      // التحقق عند تغيير حجم النافذة
+      window.addEventListener('resize', checkDeviceType);
+      
+      console.log('✅ نظام كشف الجهاز نشط - Mobile Only Mode');
+    })();
   </script>
 
 </body>

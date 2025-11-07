@@ -115,6 +115,96 @@
   </style>
 </head>
 <body class="animated-bg min-h-screen">
+  
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- شاشة "مخصص للجوال فقط" - تظهر على الكمبيوتر -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div id="desktop-block-screen" class="hidden fixed inset-0 z-[9999] bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600">
+    <div class="min-h-screen flex items-center justify-center p-8">
+      <div class="bg-white rounded-3xl shadow-2xl p-12 max-w-2xl w-full text-center">
+        
+        <!-- أيقونة جوال كبيرة -->
+        <div class="mb-8 flex justify-center">
+          <div class="w-32 h-32 bg-gradient-to-br from-teal-100 to-cyan-200 rounded-3xl flex items-center justify-center">
+            <svg class="w-20 h-20 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          </div>
+        </div>
+        
+        <!-- العنوان -->
+        <h1 class="text-4xl font-black text-gray-900 mb-4">📱 لوحة المعلم - مخصصة للجوال فقط</h1>
+        <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+          للحصول على أفضل تجربة، يُرجى فتح لوحة التحكم من جهازك المحمول
+        </p>
+        
+        <!-- خط فاصل -->
+        <div class="border-t-2 border-gray-200 my-8"></div>
+        
+        <!-- طرق الوصول -->
+        <div class="space-y-6">
+          
+          <!-- QR Code -->
+          <div class="bg-gray-50 rounded-2xl p-6">
+            <p class="text-lg font-bold text-gray-800 mb-4">📸 امسح الـ QR Code</p>
+            <div id="qr-code-container-teacher" class="bg-white p-4 rounded-xl inline-block">
+              <!-- سيتم إنشاء QR Code هنا -->
+              <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                <svg class="w-32 h-32 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13-2h-2v3h-3v2h3v3h2v-3h3v-2h-3v-3zm-2 0v-3h-3V8h3V5h-3v3h-2V5h2V3h-2v2h-2v3h5v3h-3v2h5v2h-2v3h2v-3h3v-2h-3z"/>
+                </svg>
+              </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-3">افتح كاميرا الجوال وامسح الكود</p>
+          </div>
+          
+          <!-- أو -->
+          <div class="flex items-center gap-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <span class="text-gray-500 font-semibold">أو</span>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+          
+          <!-- نسخ الرابط -->
+          <div class="bg-gray-50 rounded-2xl p-6">
+            <p class="text-lg font-bold text-gray-800 mb-4">🔗 انسخ الرابط وافتحه من الجوال</p>
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="app-url-input-teacher" 
+                readonly 
+                class="flex-1 bg-white border-2 border-gray-300 rounded-xl px-4 py-3 text-center font-mono text-sm text-gray-700"
+                value="">
+              <button 
+                onclick="copyAppUrlTeacher()" 
+                class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-bold transition flex-shrink-0">
+                📋 نسخ
+              </button>
+            </div>
+            <p class="text-sm text-gray-500 mt-3">أرسل الرابط لجوالك عبر واتساب أو تيليجرام</p>
+          </div>
+          
+        </div>
+        
+        <!-- ملاحظة -->
+        <div class="mt-8 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+          <p class="text-amber-800 text-sm font-semibold">
+            💡 <strong>ملاحظة:</strong> لوحة المعلم مصممة خصيصاً للجوال لسهولة الإدارة من أي مكان
+          </p>
+        </div>
+        
+        <!-- زر تجاوز للمعلم (مخفي افتراضياً) -->
+        <button 
+          id="bypass-desktop-btn-teacher" 
+          onclick="bypassDesktopBlockTeacher()" 
+          class="hidden mt-6 text-gray-400 hover:text-gray-600 text-sm underline transition">
+          🔓 تجاوز واستخدام الكمبيوتر
+        </button>
+        
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content -->
   <main id="dashboard-screen" class="min-h-screen p-4 sm:p-6 animated-bg">
     <div class="max-w-7xl mx-auto">
@@ -1693,5 +1783,92 @@
       }
     }
   </script>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- كود كشف الجهاز - Mobile Only Detection للمعلم -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <script>
+    (function() {
+      // التحقق من حجم الشاشة
+      function checkDeviceType() {
+        const screenWidth = window.innerWidth;
+        const desktopBlockScreen = document.getElementById('desktop-block-screen');
+        const bypassBtn = document.getElementById('bypass-desktop-btn-teacher');
+        
+        // إذا كان عرض الشاشة أكبر من 480px (هواتف فقط)
+        if (screenWidth > 480) {
+          // التحقق من إذا المعلم تجاوز الحظر من قبل
+          const bypassDesktop = localStorage.getItem('bypass_desktop_block_teacher');
+          
+          if (bypassDesktop !== 'true') {
+            // إظهار شاشة الحظر
+            desktopBlockScreen.classList.remove('hidden');
+            
+            // إخفاء باقي المحتوى
+            if (document.getElementById('dashboard-screen')) {
+              document.getElementById('dashboard-screen').style.display = 'none';
+            }
+            
+            // إنشاء QR Code
+            generateQRCodeTeacher();
+            
+            // ملء رابط التطبيق
+            const currentUrl = window.location.href;
+            document.getElementById('app-url-input-teacher').value = currentUrl;
+            
+            // إظهار زر التجاوز بعد 3 ثوانٍ (المعلم محتاج أحياناً)
+            setTimeout(() => {
+              bypassBtn.classList.remove('hidden');
+            }, 3000);
+          }
+        }
+      }
+      
+      // دالة نسخ الرابط
+      window.copyAppUrlTeacher = function() {
+        const urlInput = document.getElementById('app-url-input-teacher');
+        urlInput.select();
+        document.execCommand('copy');
+        
+        // تغيير نص الزر مؤقتاً
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ تم النسخ';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      };
+      
+      // دالة تجاوز الحظر
+      window.bypassDesktopBlockTeacher = function() {
+        if (confirm('🔓 هل تريد استخدام لوحة المعلم على الكمبيوتر؟\n\nاللوحة مصممة للجوال لكن يمكنك استخدامها على الكمبيوتر.')) {
+          localStorage.setItem('bypass_desktop_block_teacher', 'true');
+          location.reload();
+        }
+      };
+      
+      // دالة إنشاء QR Code
+      function generateQRCodeTeacher() {
+        const currentUrl = window.location.href;
+        const qrContainer = document.getElementById('qr-code-container-teacher');
+        
+        // استخدام Google Charts API لإنشاء QR Code
+        const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(currentUrl)}&choe=UTF-8`;
+        
+        qrContainer.innerHTML = `
+          <img src="${qrCodeUrl}" alt="QR Code" class="w-48 h-48 rounded-lg shadow-md">
+        `;
+      }
+      
+      // التحقق عند تحميل الصفحة
+      checkDeviceType();
+      
+      // التحقق عند تغيير حجم النافذة
+      window.addEventListener('resize', checkDeviceType);
+      
+      console.log('✅ نظام كشف الجهاز نشط - لوحة المعلم Mobile Only Mode');
+    })();
+  </script>
+
 </body>
 </html>
