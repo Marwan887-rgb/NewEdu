@@ -1881,7 +1881,7 @@
               </div>
               <div class="text-right">
                 <p class="text-white/70 text-xs font-semibold">الطالب</p>
-                <p id="student-info" class="text-white text-base font-bold drop-shadow-md" style="letter-spacing: 0.5px;"></p>
+                <p id="student-info" class="text-white text-lg font-bold drop-shadow-md" style="letter-spacing: 0.5px;"></p>
               </div>
             </div>
             
@@ -1903,7 +1903,7 @@
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
               </div>
-              <p id="student-info-mobile" class="text-white text-sm font-bold drop-shadow-md flex-1" style="letter-spacing: 0.3px;"></p>
+              <p id="student-info-mobile" class="text-white text-base font-bold drop-shadow-md flex-1" style="letter-spacing: 0.3px;"></p>
             </div>
             
             <!-- زر الخروج -->
@@ -1944,189 +1944,111 @@
                     <div id="terms-cards-view" class="flex flex-col items-stretch justify-center gap-2 terms-cards-container p-2">
             
             <!-- بطاقة الفترة الأولى -->
-              <div class="w-full term-card-mobile rounded-xl glow-border flex flex-row items-center justify-between p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 110px;">
-                  
-                  <!-- الدائرة (للشاشات الكبيرة) -->
-                  <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
-                    <svg class="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90 drop-shadow-lg">
-                      <!-- Outer Glow -->
-                      <circle cx="48" cy="48" r="42" fill="none" stroke="url(#term1GlowGradient)" stroke-width="1.5" opacity="0.3" />
-                      <!-- دائرة الخلفية المتقطعة -->
-                      <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(139, 92, 246, 0.2)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
-                      <!-- دائرة التقدم الملونة -->
-                      <circle id="term1-circle-progress" cx="48" cy="48" r="38" fill="none" 
-                              stroke="url(#term1Gradient)" stroke-width="9" 
-                              stroke-dasharray="238.76" stroke-dashoffset="238.76"
-                              stroke-linecap="round"
-                              class="transition-all duration-1000 ease-out drop-shadow-lg"
-                              style="filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));" />
-                      <!-- التدرجات اللونية -->
-                      <defs>
-                        <linearGradient id="term1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#c084fc;stop-opacity:1" />
-                          <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
-                        </linearGradient>
-                        <linearGradient id="term1GlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#d8b4fe;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
-                        </linearGradient>
-                      </defs>
-                      <!-- Inner Circle Shadow -->
-                      <circle cx="48" cy="48" r="31" fill="rgba(139, 92, 246, 0.1)" />
+              <div class="w-full unit-card-wrapper">
+                <!-- رأس البطاقة -->
+                <div class="unit-card-header">
+                  <div class="unit-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="term1-score" class="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
-                      <p class="text-xs text-gray-700 font-bold mt-1">من 100</p>
-                    </div>
                   </div>
-                  
-                  <!-- خط أفقي للجوال -->
-                  <div class="flex-1 term-progress-bar w-full">
-                    <div class="term-progress-text">
-                      <span class="font-bold text-base">📘 الفترة الأولى:</span>
-                      <span id="term1-score-mobile" class="font-black text-lg">0</span>
-                      <span class="text-gray-700 text-sm font-bold">من 100</span>
-                    </div>
-                    <div class="term-progress-bar-container">
-                      <div id="term1-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
-                    </div>
+                  <h3 class="unit-title">📘 الفترة الأولى</h3>
+                </div>
+                
+                <!-- الدرجة والتقدم -->
+                <div class="unit-stats-grid">
+                  <div class="unit-stat-item" style="grid-column: span 3;">
+                    <div class="stat-value stat-purple" id="term1-score">0</div>
+                    <div class="stat-label">من 100 درجة</div>
                   </div>
+                </div>
+                
+                <!-- شريط التقدم -->
+                <div class="relative w-full bg-purple-100 rounded-full h-2 overflow-hidden border border-purple-200">
+                  <div id="term1-progress-bar-fill" class="h-2 rounded-full transition-all duration-1000 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);"></div>
+                </div>
               </div>
             
             <!-- بطاقة الفترة الثانية -->
-              <div class="w-full term-card-mobile rounded-xl glow-border flex flex-row items-center justify-between p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(196, 181, 253, 0.6); min-height: 110px;">
-                  
-                  <!-- الدائرة (للشاشات الكبيرة) -->
-                  <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
-                    <svg class="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90 drop-shadow-lg">
-                      <!-- Outer Glow -->
-                      <circle cx="48" cy="48" r="42" fill="none" stroke="url(#term2GlowGradient)" stroke-width="1.5" opacity="0.3" />
-                      <!-- دائرة الخلفية المتقطعة -->
-                      <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(139, 92, 246, 0.2)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
-                      <!-- دائرة التقدم الملونة -->
-                      <circle id="term2-circle-progress" cx="48" cy="48" r="38" fill="none" 
-                              stroke="url(#term2Gradient)" stroke-width="9" 
-                              stroke-dasharray="238.76" stroke-dashoffset="238.76"
-                              stroke-linecap="round"
-                              class="transition-all duration-1000 ease-out drop-shadow-lg"
-                              style="filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));" />
-                      <!-- التدرجات اللونية -->
-                      <defs>
-                        <linearGradient id="term2Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#c084fc;stop-opacity:1" />
-                          <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
-                        </linearGradient>
-                        <linearGradient id="term2GlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#d8b4fe;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
-                        </linearGradient>
-                      </defs>
-                      <!-- Inner Circle Shadow -->
-                      <circle cx="48" cy="48" r="31" fill="rgba(139, 92, 246, 0.1)" />
+              <div class="w-full unit-card-wrapper">
+                <!-- رأس البطاقة -->
+                <div class="unit-card-header">
+                  <div class="unit-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="term2-score" class="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
-                      <p class="text-xs text-gray-700 font-bold mt-1">من 100</p>
-                    </div>
                   </div>
-                  
-                  <!-- خط أفقي للجوال -->
-                  <div class="flex-1 term-progress-bar w-full">
-                    <div class="term-progress-text">
-                      <span class="font-bold text-base">📗 الفترة الثانية:</span>
-                      <span id="term2-score-mobile" class="font-black text-lg">0</span>
-                      <span class="text-gray-700 text-sm font-bold">من 100</span>
-                    </div>
-                    <div class="term-progress-bar-container">
-                      <div id="term2-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
-                    </div>
+                  <h3 class="unit-title">📗 الفترة الثانية</h3>
+                </div>
+                
+                <!-- الدرجة والتقدم -->
+                <div class="unit-stats-grid">
+                  <div class="unit-stat-item" style="grid-column: span 3;">
+                    <div class="stat-value stat-purple" id="term2-score">0</div>
+                    <div class="stat-label">من 100 درجة</div>
                   </div>
+                </div>
+                
+                <!-- شريط التقدم -->
+                <div class="relative w-full bg-purple-100 rounded-full h-2 overflow-hidden border border-purple-200">
+                  <div id="term2-progress-bar-fill" class="h-2 rounded-full transition-all duration-1000 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);"></div>
+                </div>
               </div>
 
             <!-- بطاقة المهام المكتملة -->
-              <div class="w-full rounded-xl glow-border flex flex-row items-center justify-between p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 110px;">
-                  
-                  <!-- الدائرة (للشاشات الكبيرة) -->
-                  <div class="relative flex-shrink-0 term-circle-mobile hidden sm:block">
-                    <svg class="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90 drop-shadow-lg">
-                      <!-- Outer Glow -->
-                      <circle cx="48" cy="48" r="42" fill="none" stroke="url(#tasksGlowGradient)" stroke-width="1.5" opacity="0.3" />
-                      <!-- دائرة الخلفية المتقطعة -->
-                      <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="9" stroke-dasharray="1.6,1.6" opacity="0.6" />
-                      <!-- دائرة التقدم الملونة -->
-                      <circle id="tasks-circle-progress" cx="48" cy="48" r="38" fill="none" 
-                              stroke="url(#tasksGradient)" stroke-width="9" 
-                              stroke-dasharray="238.76" stroke-dashoffset="238.76"
-                              stroke-linecap="round"
-                              class="transition-all duration-1000 ease-out drop-shadow-lg"
-                              style="filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.5));" />
-                      <!-- التدرجات اللونية -->
-                      <defs>
-                        <linearGradient id="tasksGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#c084fc;stop-opacity:1" />
-                          <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
-                        </linearGradient>
-                        <linearGradient id="tasksGlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#d8b4fe;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
-                        </linearGradient>
-                      </defs>
-                      <!-- Inner Circle Shadow -->
-                      <circle cx="48" cy="48" r="31" fill="rgba(255,255,255,0.1)" />
+              <div class="w-full unit-card-wrapper">
+                <!-- رأس البطاقة -->
+                <div class="unit-card-header">
+                  <div class="unit-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 11 12 14 22 4"></polyline>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                     </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <p id="student-completed-tasks-number" class="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent leading-none">0</p>
-                      <p class="text-xs text-gray-700 font-bold mt-1">من 45</p>
-                    </div>
                   </div>
-                  
-                  <!-- خط أفقي للجوال -->
-                  <div class="flex-1 term-progress-bar w-full">
-                    <div class="term-progress-text">
-                      <span class="text-purple-900 font-bold text-base">✅ المهام:</span>
-                      <span id="tasks-score-mobile" class="text-purple-700 font-black text-lg">0</span>
-                      <span class="text-gray-700 text-sm font-bold">من 45</span>
-                    </div>
-                    <div class="term-progress-bar-container">
-                      <div id="tasks-progress-bar-fill" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
-                    </div>
+                  <h3 class="unit-title">✅ المهام المكتملة</h3>
+                </div>
+                
+                <!-- الدرجة والتقدم -->
+                <div class="unit-stats-grid">
+                  <div class="unit-stat-item" style="grid-column: span 3;">
+                    <div class="stat-value stat-green" id="student-completed-tasks-number">0</div>
+                    <div class="stat-label">من 45 مهمة</div>
                   </div>
+                </div>
+                
+                <!-- شريط التقدم -->
+                <div class="relative w-full bg-green-100 rounded-full h-2 overflow-hidden border border-green-200">
+                  <div id="tasks-progress-bar-fill" class="h-2 rounded-full transition-all duration-1000 bg-gradient-to-r from-green-400 via-green-500 to-green-600" style="width: 0%; box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);"></div>
+                </div>
               </div>
 
             <!-- بطاقة نسبة الإنجاز -->
-              <div class="w-full rounded-xl glow-border flex flex-col items-center justify-center p-3" style="background: rgba(243, 232, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(221, 214, 254, 0.6); min-height: 110px;">
-                  
-                  <!-- للشاشات الكبيرة -->
-                  <div class="hidden sm:flex flex-col justify-center flex-1">
-                    <div class="flex items-center justify-between mb-2">
-                      <p class="text-purple-800 text-sm font-bold">⚡ الإنجاز</p>
-                      <p id="student-completion-percentage" class="text-2xl font-black bg-gradient-to-r from-purple-500 to-purple-700 bg-clip-text text-transparent">0%</p>
-                    </div>
-                    <div class="relative w-full bg-purple-100 rounded-full h-6 overflow-hidden border-2 border-purple-200">
-                      <div id="student-progress-bar" class="h-6 rounded-full transition-all duration-1000 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 flex items-center justify-center shadow-lg" style="width: 0%; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);">
-                        <span id="progress-text" class="text-xs font-black text-white drop-shadow-lg leading-none">0%</span>
-                      </div>
-                    </div>
-                    <div class="mt-1.5 flex justify-between text-xs text-gray-600 font-semibold">
-                      <span>0%</span>
-                      <span>50%</span>
-                      <span>100%</span>
-                    </div>
+              <div class="w-full unit-card-wrapper">
+                <!-- رأس البطاقة -->
+                <div class="unit-card-header">
+                  <div class="unit-icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
                   </div>
-                  
-                  <!-- للجوال - خط أفقي داخل البطاقة -->
-                  <div class="flex-1 term-progress-bar w-full" style="min-width: 0; overflow: hidden;">
-                    <div class="term-progress-text">
-                      <span class="text-purple-900 font-bold text-base">⚡ نسبة الإنجاز:</span>
-                      <span id="progress-percentage-mobile" class="text-purple-700 font-black text-lg">0%</span>
-                    </div>
-                    <div class="term-progress-bar-container">
-                      <div id="progress-bar-fill-mobile" class="term-progress-bar-fill bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600" style="width: 0%;"></div>
-                    </div>
+                  <h3 class="unit-title">⚡ نسبة الإنجاز</h3>
+                </div>
+                
+                <!-- الدرجة والتقدم -->
+                <div class="unit-stats-grid">
+                  <div class="unit-stat-item" style="grid-column: span 3;">
+                    <div class="stat-value" style="color: #f59e0b;" id="student-completion-percentage">0%</div>
+                    <div class="stat-label">من إجمالي المهام</div>
                   </div>
+                </div>
+                
+                <!-- شريط التقدم -->
+                <div class="relative w-full bg-amber-100 rounded-full h-2 overflow-hidden border border-amber-200">
+                  <div id="student-progress-bar" class="h-2 rounded-full transition-all duration-1000 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" style="width: 0%; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);"></div>
+                </div>
               </div>
             
             <!-- زر عرض الدروس - بطاقة جديدة -->
@@ -2300,7 +2222,7 @@
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                   </svg>
                 </div>
-                <p id="student-info-lesson" class="text-white text-base font-bold drop-shadow-md" style="letter-spacing: 0.5px;"></p>
+                <p id="student-info-lesson" class="text-white text-lg font-bold drop-shadow-md" style="letter-spacing: 0.5px;"></p>
               </div>
               <button onclick="logout()" class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg hover:shadow-xl transform hover:scale-105" style="background: linear-gradient(135deg, #6b21a8, #581c87); color: white;">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -2318,7 +2240,7 @@
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                   </svg>
                 </div>
-                <p id="student-info-lesson-mobile" class="text-white text-sm font-bold drop-shadow-md flex-1" style="letter-spacing: 0.3px;"></p>
+                <p id="student-info-lesson-mobile" class="text-white text-base font-bold drop-shadow-md flex-1" style="letter-spacing: 0.3px;"></p>
               </div>
             </div>
           </div>
