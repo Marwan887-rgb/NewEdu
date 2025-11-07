@@ -2866,8 +2866,7 @@
         
         console.log('✅ تم تحميل الدروس بنجاح، عدد الدروس:', lessonsData.length);
         
-        renderUnits(); // عرض الوحدات في المكان القديم (للتوافق)
-        renderUnitsInFlip(); // عرض الوحدات في الوجه الخلفي للبطاقة
+        // لا نعرض الوحدات تلقائياً - فقط عند الضغط على "عرض الدروس"
       } else {
         list.innerHTML = `<p class="text-red-500 text-center">${sanitize(response.message || 'لم يتم العثور على دروس.')}</p>`;
       }
