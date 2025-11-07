@@ -1324,8 +1324,31 @@
       /* تحسين المحتوى */
       #lesson-content {
         padding: 1rem !important;
-        font-size: 16px !important;
-        line-height: 1.7;
+        font-size: 14px !important;
+        line-height: 1.6;
+      }
+      
+      /* تصغير العناوين والخطوط الكبيرة على الجوال */
+      #lesson-content .text-2xl {
+        font-size: 1.25rem !important; /* من 1.5rem إلى 1.25rem */
+      }
+      
+      #lesson-content .text-xl {
+        font-size: 1.125rem !important; /* من 1.25rem إلى 1.125rem */
+      }
+      
+      #lesson-content .text-lg {
+        font-size: 1rem !important; /* من 1.125rem إلى 1rem */
+      }
+      
+      /* تصغير الخط في الأسئلة والأجوبة */
+      #lesson-content p,
+      #lesson-content .font-semibold {
+        font-size: 14px !important;
+      }
+      
+      #lesson-content h3 {
+        font-size: 1.125rem !important;
       }
       
       /* ════════════════════════════════════════════════════════════
@@ -2392,6 +2415,9 @@
 
     // تفعيل معالجات OTP مباشرة عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
+      // التأكد من أن الصفحة تبدأ من الأعلى
+      window.scrollTo(0, 0);
+      
       // تفعيل نظام OTP
       attachOtpHandlers();
       registerServiceWorker();
