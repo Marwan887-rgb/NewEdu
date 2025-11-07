@@ -1667,17 +1667,14 @@
             <div id="workspace-content" class="p-3">
               
               <!-- ════════════════════════════════════════════════════════════
-                   Flip Card Container - البطاقة القابلة للقلب
+                   Main Content Card - بطاقة المحتوى الرئيسية
                    ════════════════════════════════════════════════════════════ -->
-              <div class="flip-card-container" id="main-flip-card">
+              <div class="main-content-card" style="min-height: 600px; max-height: 650px; background: linear-gradient(135deg, rgba(243, 232, 255, 0.05), rgba(221, 214, 254, 0.05)); border-radius: 20px; padding: 1rem; overflow: hidden;">
                 
-                <!-- البطاقة الداخلية -->
-                <div class="flip-card-inner">
-                  
                   <!-- ════════════════════════════════════════════════════════════
-                       الوجه الأمامي: الفترات
+                       View 1: الفترات والإحصائيات
                        ════════════════════════════════════════════════════════════ -->
-                  <div class="flip-card-front">
+                  <div id="view-terms">
                     <div id="terms-cards-view" class="flex flex-col sm:flex-row flex-wrap items-stretch justify-center gap-2 terms-cards-container p-2">
             
             <!-- بطاقة الفترة الأولى -->
@@ -1867,7 +1864,7 @@
               </div>
             
             <!-- زر عرض الدروس - بطاقة جديدة -->
-              <div onclick="toggleFlipCard()" class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl p-4 sm:p-5" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95)); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 105px;">
+              <div onclick="showUnitsView()" class="w-full sm:flex-1 sm:min-w-[180px] rounded-xl glow-border flex items-center justify-center cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-xl p-4 sm:p-5" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95)); backdrop-filter: blur(10px); border: 2px solid rgba(139, 92, 246, 0.6); min-height: 105px;">
                 <div class="text-center">
                   <div class="flex items-center justify-center gap-2 mb-1">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1883,38 +1880,55 @@
                     </div>
                     <!-- نهاية terms-cards-view -->
                   </div>
-                  <!-- نهاية flip-card-front -->
+                  <!-- نهاية view-terms -->
                   
                   <!-- ════════════════════════════════════════════════════════════
-                       الوجه الخلفي: الوحدات
+                       View 2: الوحدات
                        ════════════════════════════════════════════════════════════ -->
-                  <div class="flip-card-back">
-                    <div class="w-full flex-1 p-4 overflow-y-auto">
-                      <!-- زر العودة للوجه الأول -->
-                      <div class="flex justify-center mb-3">
-                        <button onclick="toggleFlipCard()" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                          </svg>
-                          العودة للإحصائيات
-                        </button>
-                      </div>
-                      
-                      <!-- الوحدات -->
-                      <div id="units-content-flip" class="flex flex-col sm:flex-row flex-wrap items-start justify-center gap-3 sm:gap-4 w-full">
-                        <div class="w-full text-center p-8">
-                          <div class="loader mx-auto mb-3"></div>
-                          <p class="text-purple-700 text-lg font-semibold">جاري تحميل الوحدات...</p>
-                        </div>
+                  <div id="view-units" class="hidden">
+                    <!-- زر العودة -->
+                    <div class="flex justify-center mb-3">
+                      <button onclick="backToTerms()" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        العودة للإحصائيات
+                      </button>
+                    </div>
+                    
+                    <!-- الوحدات -->
+                    <div id="units-list" class="flex flex-col gap-3 overflow-y-auto" style="max-height: 500px;">
+                      <div class="w-full text-center p-8">
+                        <div class="loader mx-auto mb-3"></div>
+                        <p class="text-purple-700 text-lg font-semibold">جاري تحميل الوحدات...</p>
                       </div>
                     </div>
                   </div>
-                  <!-- نهاية flip-card-back -->
+                  <!-- نهاية view-units -->
                   
-                </div>
-                <!-- نهاية flip-card-inner -->
+                  <!-- ════════════════════════════════════════════════════════════
+                       View 3: دروس الوحدة
+                       ════════════════════════════════════════════════════════════ -->
+                  <div id="view-lessons" class="hidden">
+                    <!-- زر العودة -->
+                    <div class="flex justify-center mb-3">
+                      <button onclick="backToUnits()" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        العودة للوحدات
+                      </button>
+                    </div>
+                    
+                    <!-- الدروس -->
+                    <div id="lessons-list" class="lessons-grid-container px-2">
+                      <div class="lessons-grid"></div>
+                    </div>
+                  </div>
+                  <!-- نهاية view-lessons -->
+                  
               </div>
-              <!-- نهاية flip-card-container -->
+              <!-- نهاية main-content-card -->
               
               <!-- الوحدات القديمة (للتوافق مع الكود القديم - مخفية) -->
               <div id="units-content" class="hidden flex flex-col sm:flex-row items-start justify-center gap-2 sm:gap-3 w-full">
@@ -2862,33 +2876,56 @@
     // ════════════════════════════════════════════════════════════
     // دالة قلب البطاقة
     // ════════════════════════════════════════════════════════════
+    // استبدال toggleFlipCard و renderUnitsInFlip بوظائف View الجديدة
     function toggleFlipCard() {
-      const flipCard = document.getElementById('main-flip-card');
-      
-      if (!flipCard) return;
-      
-      // قلب البطاقة
-      const isCurrentlyFlipped = flipCard.classList.contains('flipped');
-      
-      if (isCurrentlyFlipped) {
-        // إذا كانت مقلوبة، ارجعها للأمام
-        flipCard.classList.remove('flipped');
-      } else {
-        // إذا لم تكن مقلوبة، اقلبها للخلف وعرض الوحدات
-        flipCard.classList.add('flipped');
-        renderUnitsInFlip();
-      }
+      showUnitsView();
     }
     
-    // ملء الوحدات في الوجه الخلفي
     function renderUnitsInFlip() {
-      const unitsContentFlip = document.getElementById('units-content-flip');
-      if (!unitsContentFlip) return;
+      showUnitsView();
+    }
+    
+    // View Navigation Functions - التنقل بين الـ Views
+    // ════════════════════════════════════════════════════════════
+    
+    // عرض الوحدات
+    function showUnitsView() {
+      document.getElementById('view-terms').classList.add('hidden');
+      document.getElementById('view-units').classList.remove('hidden');
+      document.getElementById('view-lessons').classList.add('hidden');
+      loadUnitsToList();
+    }
+    
+    // العودة للفترات
+    function backToTerms() {
+      document.getElementById('view-terms').classList.remove('hidden');
+      document.getElementById('view-units').classList.add('hidden');
+      document.getElementById('view-lessons').classList.add('hidden');
+    }
+    
+    // عرض دروس وحدة معينة
+    function showUnitLessonsSimple(unitName) {
+      currentUnit = unitName;
+      document.getElementById('view-units').classList.add('hidden');
+      document.getElementById('view-lessons').classList.remove('hidden');
+      loadLessonsToView(unitName);
+    }
+    
+    // العودة للوحدات
+    function backToUnits() {
+      document.getElementById('view-lessons').classList.add('hidden');
+      document.getElementById('view-units').classList.remove('hidden');
+    }
+    
+    // تحميل الوحدات إلى القائمة
+    function loadUnitsToList() {
+      const unitsList = document.getElementById('units-list');
+      if (!unitsList) return;
       
       // تجميع حسب الوحدة
       const grouped = {};
       if (!lessonsData || lessonsData.length === 0) {
-        unitsContentFlip.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد بيانات دروس</p></div>';
+        unitsList.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد بيانات دروس</p></div>';
         return;
       }
       
@@ -2904,7 +2941,7 @@
       console.log('📚 أسماء الوحدات:', unitsArray);
       
       if (unitsArray.length === 0) {
-        unitsContentFlip.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد وحدات متاحة</p></div>';
+        unitsList.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد وحدات متاحة</p></div>';
         return;
       }
       
@@ -2918,8 +2955,8 @@
         const totalCount = unitLessons.length;
         
         html += `
-          <div class="w-full sm:w-[31%] sm:min-w-[220px] sm:max-w-[260px] flex-shrink-0">
-            <div onclick="showUnitLessonsFromFlip('${unitName.replace(/'/g, "\\'")}')" 
+          <div class="w-full">
+            <div onclick="showUnitLessonsSimple('${unitName.replace(/'/g, "\\'")}')" 
                  class="unit-card-wrapper">
               
               <!-- رأس البطاقة -->
@@ -2961,8 +2998,61 @@
           </div>`;
       });
       
-      unitsContentFlip.innerHTML = html;
-      console.log('✅ تم إضافة الوحدات للوجه الخلفي، عدد الوحدات:', unitsArray.length);
+      unitsList.innerHTML = html;
+      console.log('✅ تم إضافة الوحدات للقائمة، عدد الوحدات:', unitsArray.length);
+    }
+    
+    // تحميل دروس الوحدة إلى view-lessons
+    function loadLessonsToView(unitName) {
+      const lessonsList = document.getElementById('lessons-list');
+      if (!lessonsList) return;
+      
+      // الحصول على دروس الوحدة
+      const unitLessons = lessonsData.filter(l => l.unit === unitName);
+      
+      if (unitLessons.length === 0) {
+        lessonsList.innerHTML = '<div class="w-full text-center p-8"><p class="text-gray-600 text-lg">لا توجد دروس في هذه الوحدة</p></div>';
+        return;
+      }
+      
+      // بناء HTML للدروس
+      const typeIcons = { lesson: '📚', review: '📖', project: '🎨', exam: '🎯', activity: '✏️', unit_exam: '📝' };
+      const typeLabels = { lesson: 'درس', review: 'مراجعة', project: 'مشروع', exam: 'تقويم', activity: 'نشاط', unit_exam: 'اختبار' };
+      const typeColors = {
+        lesson: 'from-blue-400 to-blue-600',
+        review: 'from-indigo-400 to-indigo-600',
+        project: 'from-violet-400 to-violet-600',
+        exam: 'from-purple-400 to-purple-600',
+        activity: 'from-purple-400 to-purple-600',
+        unit_exam: 'from-purple-500 to-purple-700'
+      };
+      
+      let html = '<div class="lessons-grid">';
+      
+      unitLessons.forEach((item) => {
+        const icon = typeIcons[item.type] || '📚';
+        const typeLabel = typeLabels[item.type] || 'عنصر';
+        const colorClass = typeColors[item.type] || 'from-purple-400 to-purple-600';
+        const originalIndex = lessonsData.indexOf(item);
+        
+        html += `
+          <div onclick="openLesson(${originalIndex})" class="lesson-card-item">
+            <div class="lesson-card-icon">
+              <span class="lesson-emoji">${icon}</span>
+            </div>
+            <div class="lesson-card-content">
+              <div class="lesson-type-badge bg-gradient-to-r ${colorClass}">
+                ${typeLabel}
+              </div>
+              <h4 class="lesson-title">${sanitize(item.title || '')}</h4>
+              ${item.weekNumber ? `<p class="lesson-week">أسبوع ${item.weekNumber}</p>` : ''}
+            </div>
+          </div>`;
+      });
+      
+      html += '</div>';
+      lessonsList.innerHTML = html;
+      console.log('✅ تم تحميل دروس الوحدة:', unitName, '- عدد الدروس:', unitLessons.length);
     }
     
     // عرض دروس الوحدة من flip card
