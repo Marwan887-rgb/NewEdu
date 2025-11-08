@@ -35,8 +35,8 @@ async function displayStudentsCards(students) {
           </div>
         </div>
         <div class="text-right">
-          <p class="text-2xl font-bold ${student.totalScore >= 32 ? 'text-green-600' : student.totalScore >= 20 ? 'text-yellow-600' : 'text-red-600'}">
-            ${student.totalScore}/40
+          <p class="text-2xl font-bold ${student.totalScore >= 160 ? 'text-green-600' : student.totalScore >= 100 ? 'text-yellow-600' : 'text-red-600'}">
+            ${student.totalScore}/200
           </p>
           <p class="text-xs text-gray-600">الدرجة</p>
         </div>
@@ -60,21 +60,21 @@ async function displayStudentsCards(students) {
       <div class="grid grid-cols-2 gap-2 text-xs">
         <div class="bg-white rounded-lg p-2">
           <p class="text-gray-600">مهام أدائية</p>
-          <p class="font-bold text-indigo-700">${student.performanceScore}/20</p>
+          <p class="font-bold text-indigo-700">${student.performanceScore}/95</p>
         </div>
         <div class="bg-white rounded-lg p-2">
           <p class="text-gray-600">أنشطة</p>
-          <p class="font-bold text-purple-700">${student.activitiesScore}/5</p>
+          <p class="font-bold text-purple-700">${student.activitiesScore}/15</p>
           <p class="text-gray-500 text-xs">(${student.activitiesCount || 0}/3)</p>
         </div>
         <div class="bg-white rounded-lg p-2">
           <p class="text-gray-600">مشاريع</p>
-          <p class="font-bold text-pink-700">${student.projectsScore}/5</p>
+          <p class="font-bold text-pink-700">${student.projectsScore}/30</p>
           <p class="text-gray-500 text-xs">(${student.projectsCount || 0}/3)</p>
         </div>
         <div class="bg-white rounded-lg p-2">
           <p class="text-gray-600">اختبارات وحدة</p>
-          <p class="font-bold text-cyan-700">${student.unitExamsScore}/10</p>
+          <p class="font-bold text-cyan-700">${student.unitExamsScore}/60</p>
           <p class="text-gray-500 text-xs">(${student.examsCount || 0}/3)</p>
         </div>
       </div>
