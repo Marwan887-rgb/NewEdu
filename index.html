@@ -2418,14 +2418,102 @@
     // ✅ وضع التطوير معطل - لا يوجد أزرار تطوير
     // ════════════════════════════════════════════════════════════
 
+    // ════════════════════════════════════════════════════════════
+    // نظام Session Management - صلاحية ساعة واحدة
+    // ════════════════════════════════════════════════════════════
+    
+    // حفظ session عند تسجيل الدخول
+    function saveSession(studentData) {
+      const session = {
+        student: studentData,
+        timestamp: Date.now(),
+        expiresIn: 60 * 60 * 1000 // ساعة واحدة بالميلي ثانية
+      };
+      localStorage.setItem('student_session', JSON.stringify(session));
+      console.log('✅ تم حفظ الجلسة - صلاحية: ساعة واحدة');
+    }
+    
+    // التحقق من session موجودة وصالحة
+    function checkSession() {
+      try {
+        const sessionStr = localStorage.getItem('student_session');
+        if (!sessionStr) return null;
+        
+        const session = JSON.parse(sessionStr);
+        const now = Date.now();
+        const elapsed = now - session.timestamp;
+        
+        // التحقق من انتهاء الصلاحية (ساعة واحدة)
+        if (elapsed > session.expiresIn) {
+          console.log('⏰ انتهت صلاحية الجلسة');
+          clearSession();
+          return null;
+        }
+        
+        console.log(`✅ الجلسة صالحة - متبقي: ${Math.round((session.expiresIn - elapsed) / 60000)} دقيقة`);
+        return session.student;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة الجلسة:', error);
+        clearSession();
+        return null;
+      }
+    }
+    
+    // تجديد session (عند التفاعل)
+    function refreshSession() {
+      const sessionStr = localStorage.getItem('student_session');
+      if (!sessionStr) return;
+      
+      try {
+        const session = JSON.parse(sessionStr);
+        session.timestamp = Date.now();
+        localStorage.setItem('student_session', JSON.stringify(session));
+        console.log('🔄 تم تجديد الجلسة');
+      } catch (error) {
+        console.error('❌ خطأ في تجديد الجلسة:', error);
+      }
+    }
+    
+    // حذف session
+    function clearSession() {
+      localStorage.removeItem('student_session');
+      console.log('🗑️ تم حذف الجلسة');
+    }
+    
+    // تجديد تلقائي عند النقر أو التمرير
+    let lastActivity = Date.now();
+    function setupAutoRefresh() {
+      ['click', 'scroll', 'keypress', 'touchstart'].forEach(event => {
+        document.addEventListener(event, () => {
+          const now = Date.now();
+          // تجديد كل 5 دقائق من آخر نشاط
+          if (now - lastActivity > 5 * 60 * 1000) {
+            refreshSession();
+            lastActivity = now;
+          }
+        }, { passive: true });
+      });
+    }
+
     // تفعيل معالجات OTP مباشرة عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
       // التأكد من أن الصفحة تبدأ من الأعلى
       window.scrollTo(0, 0);
       
+      // التحقق من session موجودة
+      const savedStudent = checkSession();
+      if (savedStudent) {
+        console.log('🔐 تم العثور على جلسة نشطة');
+        currentStudent = savedStudent;
+        proceedToDashboard();
+      }
+      
       // تفعيل نظام OTP
       attachOtpHandlers();
       registerServiceWorker();
+      
+      // تفعيل التجديد التلقائي
+      setupAutoRefresh();
     });
     
     // ════════════════════════════════════════════════════════════
@@ -2833,6 +2921,10 @@
               class: student.class || 'غير محدد', 
               mobile: student.mobile || mobile 
             };
+            
+            // حفظ session
+            saveSession(currentStudent);
+            
             statusP.textContent = '✅ تم التحقق. سيتم إدخالك الآن...';
             setTimeout(() => proceedToDashboard(), 500);
           } else {
@@ -5029,6 +5121,9 @@
 
     // تسجيل خروج
     function logout() {
+      // حذف session
+      clearSession();
+      
       document.getElementById('dashboard-screen').classList.add('hidden');
       document.getElementById('lesson-screen').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
