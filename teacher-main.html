@@ -1291,7 +1291,7 @@
       window.print();
     }
     
-    // دالة جلب وعرض الإحصائيات التفصيلية
+    // دالة جلب وعرض الإحصائيات التفصيلية - نظام الفترتين
     async function loadStatisticsData() {
       const contentArea = document.getElementById('content-area');
       
@@ -1300,13 +1300,13 @@
           <div class="flex items-center gap-4 mb-6">
             <span class="text-5xl">📈</span>
             <div>
-              <h2 class="text-3xl font-bold text-white">الإحصائيات التفصيلية</h2>
+              <h2 class="text-3xl font-bold text-white">الإحصائيات التفصيلية - نظام الفترتين</h2>
               <p class="text-white/70 text-sm">جاري تحميل البيانات...</p>
             </div>
           </div>
           <div class="text-center py-16">
             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-            <p class="text-white/70 text-lg">جاري التحميل...</p>
+            <p class="text-white/70 text-lg">جاري حساب الإحصائيات...</p>
           </div>
         </div>
       `;
@@ -1321,84 +1321,89 @@
         
         if (studentsError) throw studentsError;
         
-        // حساب إحصائيات كل طالب
+        // حساب إحصائيات كل طالب باستخدام نظام الفترتين
         const studentsStats = await Promise.all(students.map(async (student) => {
-          // المهام الأدائية (45 مهمة)
-          const { data: progress } = await supabase
-            .from('progress')
-            .select('task, lesson_id')
-            .eq('student_mobile', student.mobile);
+          const scoresData = await calculateAllTermsScores(student.mobile, supabase);
           
-          const uniqueTasks = new Set();
-          if (progress) {
-            progress.forEach(t => uniqueTasks.add(`${t.lesson_id}_${t.task}`));
+          if (!scoresData.success) {
+            return {
+              name: student.name,
+              mobile: student.mobile,
+              term1: { performance: { completed: 0, total: 25 }, activities: { score: 0 }, projects: { score: 0 }, exams: { score: 0 } },
+              term2: { performance: { completed: 0, total: 20 }, activities: { score: 0 }, projects: { score: 0 }, exams: { score: 0 } },
+              grandPercentage: 0
+            };
           }
-          const performanceTasks = uniqueTasks.size;
-          
-          // مهام الوحدات
-          const { data: activities } = await supabase
-            .from('activity_submissions')
-            .select('id')
-            .eq('student_mobile', student.mobile);
-          
-          const { data: projects } = await supabase
-            .from('project_submissions')
-            .select('id')
-            .eq('student_mobile', student.mobile)
-            .eq('status', 'approved');
-          
-          const { data: reviews } = await supabase
-            .from('progress')
-            .select('lesson_id')
-            .eq('student_mobile', student.mobile)
-            .in('lesson_id', [40, 41, 42]);
-          
-          const reviewsCount = new Set(reviews?.map(r => r.lesson_id) || []).size;
-          
-          const { data: unitExams } = await supabase
-            .from('unit_exam_submissions')
-            .select('id')
-            .eq('student_mobile', student.mobile);
           
           return {
             name: student.name,
             mobile: student.mobile,
-            performanceTasks: performanceTasks,
-            activities: activities?.length || 0,
-            projects: projects?.length || 0,
-            reviews: reviewsCount,
-            exams: unitExams?.length || 0
+            term1: scoresData.term1,
+            term2: scoresData.term2,
+            grandPercentage: scoresData.grandPercentage
           };
         }));
         
+        // ترتيب حسب النسبة المئوية
+        studentsStats.sort((a, b) => b.grandPercentage - a.grandPercentage);
+        
+        // حساب متوسطات الفصل
+        const avgTerm1Tasks = Math.round(studentsStats.reduce((s, st) => s + st.term1.performance.completed, 0) / students.length);
+        const avgTerm2Tasks = Math.round(studentsStats.reduce((s, st) => s + st.term2.performance.completed, 0) / students.length);
+        const avgActivities = Math.round(studentsStats.reduce((s, st) => s + (st.term1.activities.score > 0 ? 1 : 0) + (st.term2.activities.score > 0 ? 1 : 0), 0) / students.length);
+        const avgProjects = Math.round(studentsStats.reduce((s, st) => s + (st.term1.projects.score > 0 ? 1 : 0) + (st.term2.projects.score > 0 ? 1 : 0), 0) / students.length);
+        const avgExams = Math.round(studentsStats.reduce((s, st) => s + (st.term1.exams.score > 0 ? 1 : 0) + (st.term2.exams.score > 0 ? 1 : 0), 0) / students.length);
+        
         // عرض الجدول
         const statsHTML = studentsStats.map((student, index) => {
-          const totalUnitTasks = student.activities + student.projects + student.reviews + student.exams;
-          const performancePercentage = Math.round((student.performanceTasks / 45) * 100);
-          const unitTasksPercentage = Math.round((totalUnitTasks / 12) * 100);
+          const totalTasks = student.term1.performance.completed + student.term2.performance.completed;
+          const maxTasks = 45; // 25 + 20
           
-          // نسبة التقدم الإجمالية (45 + 12 = 57 مهمة)
-          const totalTasks = student.performanceTasks + totalUnitTasks;
-          const totalPercentage = Math.round((totalTasks / 57) * 100);
+          // حساب عدد الأنشطة والمشاريع والاختبارات المكتملة
+          const activitiesCount = (student.term1.activities.score > 0 ? 1 : 0) + (student.term2.activities.score > 0 ? 1 : 0);
+          const projectsCount = (student.term1.projects.score > 0 ? 1 : 0) + (student.term2.projects.score > 0 ? 1 : 0);
+          const examsCount = (student.term1.exams.score > 0 ? 1 : 0) + (student.term2.exams.score > 0 ? 1 : 0);
+          
+          // ألوان حسب النسبة
+          const getColor = (percentage) => {
+            if (percentage >= 80) return 'text-green-400';
+            if (percentage >= 60) return 'text-yellow-400';
+            if (percentage >= 40) return 'text-orange-400';
+            return 'text-red-400';
+          };
+          
+          const rankColor = index === 0 ? 'text-yellow-300' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-300' : 'text-white/70';
+          const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
           
           return `
             <tr class="border-b border-white/10 hover:bg-white/5 transition">
-              <td class="px-4 py-3 text-center text-white/70">${index + 1}</td>
-              <td class="px-4 py-3">
-                <div class="text-white font-semibold">${student.name}</div>
-                <div class="text-white/50 text-xs mt-1">التقدم: ${totalPercentage}%</div>
+              <td class="px-3 py-4 text-center ${rankColor} font-bold text-lg">${rankIcon}</td>
+              <td class="px-3 py-4 text-white font-semibold">${student.name}</td>
+              <td class="px-3 py-4 text-center">
+                <div class="text-xl font-bold ${getColor((student.term1.performance.completed / 25) * 100)}">${student.term1.performance.completed}</div>
+                <div class="text-xs text-white/50">من 25</div>
               </td>
-              <td class="px-4 py-3 text-center">
-                <div class="text-white font-bold">${student.performanceTasks}/45</div>
-                <div class="text-white/60 text-xs">${performancePercentage}%</div>
+              <td class="px-3 py-4 text-center">
+                <div class="text-xl font-bold ${getColor((student.term2.performance.completed / 20) * 100)}">${student.term2.performance.completed}</div>
+                <div class="text-xs text-white/50">من 20</div>
               </td>
-              <td class="px-4 py-3 text-center text-white/90">${student.projects}/3</td>
-              <td class="px-4 py-3 text-center text-white/90">${student.activities}/3</td>
-              <td class="px-4 py-3 text-center text-white/90">${student.reviews}/3</td>
-              <td class="px-4 py-3 text-center text-white/90">${student.exams}/3</td>
-              <td class="px-4 py-3 text-center">
-                <div class="text-white font-bold">${totalUnitTasks}/12</div>
-                <div class="text-white/60 text-xs">${unitTasksPercentage}%</div>
+              <td class="px-3 py-4 text-center bg-white/5">
+                <div class="text-2xl font-black ${getColor((totalTasks / maxTasks) * 100)}">${totalTasks}</div>
+                <div class="text-xs text-white/50 font-bold">من 45</div>
+              </td>
+              <td class="px-3 py-4 text-center">
+                <div class="text-lg font-bold ${activitiesCount >= 2 ? 'text-green-400' : activitiesCount >= 1 ? 'text-yellow-400' : 'text-red-400'}">${activitiesCount}/3</div>
+              </td>
+              <td class="px-3 py-4 text-center">
+                <div class="text-lg font-bold ${projectsCount >= 2 ? 'text-green-400' : projectsCount >= 1 ? 'text-yellow-400' : 'text-red-400'}">${projectsCount}/3</div>
+              </td>
+              <td class="px-3 py-4 text-center">
+                <div class="text-lg font-bold ${examsCount >= 2 ? 'text-green-400' : examsCount >= 1 ? 'text-yellow-400' : 'text-red-400'}">${examsCount}/3</div>
+              </td>
+              <td class="px-3 py-4 text-center">
+                <div class="inline-block bg-gradient-to-r ${student.grandPercentage >= 80 ? 'from-green-500 to-emerald-500' : student.grandPercentage >= 60 ? 'from-yellow-500 to-amber-500' : student.grandPercentage >= 40 ? 'from-orange-500 to-red-500' : 'from-red-600 to-red-800'} text-white px-4 py-2 rounded-lg font-bold shadow-lg">
+                  ${student.grandPercentage}%
+                </div>
               </td>
             </tr>
           `;
@@ -1406,32 +1411,124 @@
         
         contentArea.innerHTML = `
           <div class="glass-card rounded-2xl p-8" style="border: 2px solid rgba(255, 255, 255, 0.3);">
-            <div class="flex items-center gap-4 mb-6">
-              <span class="text-5xl">📈</span>
-              <div>
-                <h2 class="text-3xl font-bold text-white">الإحصائيات التفصيلية</h2>
-                <p class="text-white/70 text-sm">فصل ${selectedClass} • ${students.length} طالب</p>
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-4">
+                <span class="text-5xl">📈</span>
+                <div>
+                  <h2 class="text-3xl font-bold text-white">الإحصائيات التفصيلية - نظام الفترتين</h2>
+                  <p class="text-white/70 text-sm">فصل ${selectedClass} • ${students.length} طالب</p>
+                </div>
               </div>
             </div>
             
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl p-4 text-center border-2 border-blue-400/30">
+                <div class="text-3xl mb-2">📘</div>
+                <p class="text-white/70 text-sm">متوسط مهام الفترة 1</p>
+                <p class="text-2xl font-black text-blue-300">${avgTerm1Tasks}/25</p>
+              </div>
+              <div class="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-xl p-4 text-center border-2 border-green-400/30">
+                <div class="text-3xl mb-2">📗</div>
+                <p class="text-white/70 text-sm">متوسط مهام الفترة 2</p>
+                <p class="text-2xl font-black text-green-300">${avgTerm2Tasks}/20</p>
+              </div>
+              <div class="bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl p-4 text-center border-2 border-purple-400/30">
+                <div class="text-3xl mb-2">⚡</div>
+                <p class="text-white/70 text-sm">متوسط الأنشطة</p>
+                <p class="text-2xl font-black text-purple-300">${avgActivities}/3</p>
+              </div>
+              <div class="bg-gradient-to-br from-pink-500/20 to-pink-600/20 rounded-xl p-4 text-center border-2 border-pink-400/30">
+                <div class="text-3xl mb-2">🎨</div>
+                <p class="text-white/70 text-sm">متوسط المشاريع</p>
+                <p class="text-2xl font-black text-pink-300">${avgProjects}/3</p>
+              </div>
+              <div class="bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-xl p-4 text-center border-2 border-cyan-400/30">
+                <div class="text-3xl mb-2">📝</div>
+                <p class="text-white/70 text-sm">متوسط الاختبارات</p>
+                <p class="text-2xl font-black text-cyan-300">${avgExams}/3</p>
+              </div>
+            </div>
+            
+            <!-- Table -->
             <div class="overflow-x-auto">
               <table class="w-full">
-                <thead class="bg-white/10">
+                <thead class="bg-gradient-to-r from-indigo-600/50 to-purple-600/50">
                   <tr>
-                    <th class="px-4 py-3 text-white font-bold text-center">#</th>
-                    <th class="px-4 py-3 text-white font-bold text-right">الطالب</th>
-                    <th class="px-4 py-3 text-white font-bold text-center">المهام<br>الأدائية<br>(45)</th>
-                    <th class="px-4 py-3 text-white font-bold text-center">🎨<br>المشاريع<br>(3)</th>
-                    <th class="px-4 py-3 text-white font-bold text-center">⚡<br>الأنشطة<br>(3)</th>
-                    <th class="px-4 py-3 text-white font-bold text-center">📝<br>المراجعات<br>(3)</th>
-                    <th class="px-4 py-3 text-white font-bold text-center">📋<br>الاختبارات<br>(3)</th>
-                    <th class="px-4 py-3 text-white font-bold text-center">📦<br>إجمالي<br>مهام الوحدات<br>(12)</th>
+                    <th class="px-3 py-4 text-white font-bold text-center">#</th>
+                    <th class="px-3 py-4 text-white font-bold text-right">الطالب</th>
+                    <th class="px-3 py-4 text-white font-bold text-center">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">📘</span>
+                        <span>مهام</span>
+                        <span>الفترة 1</span>
+                      </div>
+                    </th>
+                    <th class="px-3 py-4 text-white font-bold text-center">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">📗</span>
+                        <span>مهام</span>
+                        <span>الفترة 2</span>
+                      </div>
+                    </th>
+                    <th class="px-3 py-4 text-white font-bold text-center bg-white/10">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">⚡</span>
+                        <span>إجمالي</span>
+                        <span>المهام</span>
+                      </div>
+                    </th>
+                    <th class="px-3 py-4 text-white font-bold text-center">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">🔧</span>
+                        <span>الأنشطة</span>
+                      </div>
+                    </th>
+                    <th class="px-3 py-4 text-white font-bold text-center">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">🎨</span>
+                        <span>المشاريع</span>
+                      </div>
+                    </th>
+                    <th class="px-3 py-4 text-white font-bold text-center">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">📝</span>
+                        <span>الاختبارات</span>
+                      </div>
+                    </th>
+                    <th class="px-3 py-4 text-white font-bold text-center">
+                      <div class="flex flex-col items-center">
+                        <span class="text-2xl mb-1">📊</span>
+                        <span>الإنجاز</span>
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   ${statsHTML}
                 </tbody>
+                <tfoot class="bg-white/10">
+                  <tr>
+                    <td colspan="2" class="px-3 py-4 text-white font-bold text-right">متوسط الفصل</td>
+                    <td class="px-3 py-4 text-center text-white font-bold">${avgTerm1Tasks}/25</td>
+                    <td class="px-3 py-4 text-center text-white font-bold">${avgTerm2Tasks}/20</td>
+                    <td class="px-3 py-4 text-center text-white font-black text-xl bg-white/5">${avgTerm1Tasks + avgTerm2Tasks}/45</td>
+                    <td class="px-3 py-4 text-center text-white font-bold">${avgActivities}/3</td>
+                    <td class="px-3 py-4 text-center text-white font-bold">${avgProjects}/3</td>
+                    <td class="px-3 py-4 text-center text-white font-bold">${avgExams}/3</td>
+                    <td class="px-3 py-4 text-center text-white font-bold">${Math.round(studentsStats.reduce((s, st) => s + st.grandPercentage, 0) / students.length)}%</td>
+                  </tr>
+                </tfoot>
               </table>
+            </div>
+            
+            <!-- Footer Note -->
+            <div class="mt-6 bg-indigo-500/20 border-2 border-indigo-500/50 rounded-xl p-4 text-center">
+              <p class="text-indigo-200 font-bold">
+                💡 الإحصائيات تعكس التقدم الفعلي في نظام الفترتين | 
+                المهام الأدائية: الفترة 1 (25 مهمة) + الفترة 2 (20 مهمة) = 45 مهمة
+              </p>
             </div>
           </div>
         `;
@@ -1443,6 +1540,7 @@
             <span class="text-6xl mb-4 block">❌</span>
             <h2 class="text-2xl font-bold text-white mb-2">حدث خطأ</h2>
             <p class="text-white/70">لم نتمكن من تحميل الإحصائيات</p>
+            <p class="text-white/50 text-sm mt-2">${error.message}</p>
           </div>
         `;
       }
