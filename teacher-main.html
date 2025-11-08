@@ -1796,7 +1796,8 @@
         const bypassBtn = document.getElementById('bypass-desktop-btn-teacher');
         
         // إذا كان عرض الشاشة أكبر من 480px (هواتف فقط)
-        if (screenWidth > 480) {
+        // تم تعطيل الحظر - المعلم يمكنه استخدام الكمبيوتر والجوال
+        if (false && screenWidth > 480) {
           // التحقق من إذا المعلم تجاوز الحظر من قبل
           const bypassDesktop = localStorage.getItem('bypass_desktop_block_teacher');
           
