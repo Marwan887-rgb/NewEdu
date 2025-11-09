@@ -133,14 +133,21 @@
       showStatus('⏳ جارٍ إضافة الطالب...', 'info');
 
       try {
-        // إضافة الطالب
+        // إضافة الطالب مع chat_id (إذا وُجد)
+        const studentObj = {
+          mobile,
+          name,
+          class: studentClass
+        };
+        
+        // إضافة chat_id إذا تم إدخاله
+        if (chatId) {
+          studentObj.chat_id = chatId;
+        }
+        
         const { data: studentData, error: studentError } = await supabase
           .from('students')
-          .upsert({
-            mobile,
-            name,
-            class: studentClass
-          }, { onConflict: 'mobile' })
+          .upsert(studentObj, { onConflict: 'mobile' })
           .select()
           .single();
 
@@ -150,20 +157,8 @@
           return;
         }
 
-        // إضافة chat_id إذا تم إدخاله
+        // رسالة نجاح
         if (chatId) {
-          const { error: chatError } = await supabase
-            .from('telegram_chats')
-            .upsert({
-              chat_id: parseInt(chatId),
-              student_mobile: mobile
-            }, { onConflict: 'chat_id' });
-
-          if (chatError) {
-            showStatus('⚠️ تم إضافة الطالب لكن فشل حفظ Chat ID: ' + chatError.message, 'error');
-            console.error(chatError);
-            return;
-          }
           showStatus(`✅ تم إضافة الطالب و Chat ID بنجاح! رقم الجوال: ${mobile}`, 'success');
         } else {
           showStatus(`✅ تم إضافة الطالب بنجاح! رقم الجوال: ${mobile}`, 'success');
@@ -198,6 +193,7 @@
               <p class="font-semibold text-gray-800">${student.name}</p>
               <p class="text-sm text-gray-600">📱 ${student.mobile}</p>
               <p class="text-sm text-gray-600">📚 ${student.class}</p>
+              ${student.chat_id ? `<p class="text-sm text-green-600">💬 Chat ID: ${student.chat_id}</p>` : ''}
             </div>
           `).join('');
         }
