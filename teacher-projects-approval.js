@@ -254,6 +254,15 @@ function openApprovalModal(projectId, studentMobile, lessonTitle) {
   document.getElementById('approval-grade').value = '5';
   document.getElementById('approval-notes').value = '';
   
+  // إعادة تعيين زر الحفظ لحالته الأصلية
+  const saveBtn = document.getElementById('save-approval-btn');
+  saveBtn.disabled = false;
+  saveBtn.innerHTML = '💾 حفظ';
+  
+  // إعادة تعيين الاختيار إلى "اعتماد"
+  const approveRadio = document.querySelector('input[name="approval-action"][value="approve"]');
+  if (approveRadio) approveRadio.checked = true;
+  
   modal.classList.remove('hidden');
 }
 
@@ -303,6 +312,10 @@ async function saveProjectApproval() {
       .eq('id', projectId);
 
     if (error) throw error;
+
+    // إعادة تعيين الزر بعد النجاح
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '💾 حفظ';
 
     alert(action === 'approve' ? '✅ تم اعتماد الدرجة بنجاح!' : '❌ تم رفض المشروع');
     

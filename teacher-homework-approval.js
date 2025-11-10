@@ -251,6 +251,14 @@ function openHomeworkApprovalModal(homeworkId, studentMobile, lessonId, studentN
   document.getElementById('homework-approval-lesson-title').textContent = lessonTitle;
   document.getElementById('homework-approval-grade').value = '5';
   document.getElementById('homework-approval-notes').value = '';
+  
+  // إعادة تعيين زر الحفظ لحالته الأصلية
+  const saveBtn = document.getElementById('save-homework-approval-btn');
+  saveBtn.disabled = false;
+  saveBtn.innerHTML = '💾 حفظ';
+  
+  // إعادة تعيين الاختيار إلى "اعتماد"
+  document.querySelector('input[name="homework-approval-action"][value="approve"]').checked = true;
 
   document.getElementById('homework-approval-modal').classList.remove('hidden');
 }
@@ -302,6 +310,10 @@ async function saveHomeworkApproval() {
       .eq('id', currentHomeworkId);
 
     if (error) throw error;
+
+    // إعادة تعيين الزر بعد النجاح
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '💾 حفظ';
 
     alert(action === 'approve' ? '✅ تم اعتماد الدرجة بنجاح!' : '❌ تم رفض الواجب');
     
